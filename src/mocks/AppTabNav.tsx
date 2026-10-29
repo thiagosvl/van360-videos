@@ -4,13 +4,14 @@
 // barra "pisca" (às vezes a aba ativa aparece, às vezes não). Aqui a mesma
 // conta (offsetLeft, sem escala) roda antes de cada quadro, sem timer.
 import React, { useLayoutEffect, useRef } from "react";
+import { continueRender, delayRender } from "remotion";
 import { AppTabNav as Original } from "@/components/ui/AppTabNav.tsx?original";
 
 export * from "@/components/ui/AppTabNav.tsx?original";
 
 export function AppTabNav(props: React.ComponentProps<typeof Original>) {
   const ref = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
+  const posiciona = () => {
     const root = ref.current;
     // o container rolável é o primeiro elemento do AppTabNav (div com overflow-x-auto)
     const container = root?.firstElementChild as HTMLElement | null;
@@ -22,6 +23,24 @@ export function AppTabNav(props: React.ComponentProps<typeof Original>) {
     const escala = c.width / container.offsetWidth || 1;
     const x = (a.left - c.left) / escala + container.scrollLeft;
     container.scrollLeft = Math.max(0, x - container.clientWidth / 2 + ativo.offsetWidth / 2);
+  };
+  useLayoutEffect(() => {
+    posiciona();
+    // a página ainda re-renderiza depois de montar: reposiciona quando tudo assenta,
+    // segurando o quadro até lá (delayRender) para nenhum sair na posição errada
+    const handle = delayRender("Centralizando aba ativa");
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        posiciona();
+        continueRender(handle);
+      });
+    });
+    return () => {
+      cancelAnimationFrame(r1);
+      cancelAnimationFrame(r2);
+      continueRender(handle);
+    };
   });
   return (
     <div ref={ref} data-video-scroll-lock style={{ display: "contents" }}>
