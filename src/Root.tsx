@@ -1,7 +1,8 @@
 import "@/index.css"; // o CSS global do Van360 (tokens, fontes, base)
 import "./video.css";
 import React from "react";
-import { Composition, Folder } from "remotion";
+import { Composition, Folder, Still } from "remotion";
+import { SLIDES_LOJA } from "./loja/Loja";
 import { Teaser, TEASER_DURATION } from "./Teaser";
 import { HookScene } from "./scenes/HookScene";
 import { AlunosScene } from "./scenes/AlunosScene";
@@ -36,6 +37,16 @@ export const RemotionRoot: React.FC = () => (
         durationInFrames={TUTORIAL_PARCELAS_DURATION}
         {...V}
       />
+    </Folder>
+    <Folder name="Loja-AppStore">
+      {SLIDES_LOJA.map((s) => (
+        <Still key={s.id} id={`ios-${s.id}`} component={s.component} width={1290} height={2796} />
+      ))}
+    </Folder>
+    <Folder name="Loja-PlayStore">
+      {SLIDES_LOJA.map((s) => (
+        <Still key={s.id} id={`android-${s.id}`} component={s.component} width={1080} height={1920} />
+      ))}
     </Folder>
     <Folder name="Cenas">
       <Composition id="Gancho" component={HookScene} durationInFrames={90} {...V} />

@@ -66,3 +66,12 @@ código do app para o vídeo funcionar.
 npx remotion still <Id> out/x.png --frame=N   # conferir
 npx remotion render <Id> out/<nome>.mp4 --crf=20 --x264-preset=veryfast
 ```
+
+## Imagens das lojas (App Store / Play Store)
+- Slides em `src/loja/Loja.tsx` (lista `SLIDES_LOJA`), registrados como `<Still>` em
+  `ios-<id>` (1290x2796) e `android-<id>` (1080x1920).
+- Medidas em "u" (1u = 1px numa largura de 1290): o mesmo slide serve aos dois tamanhos,
+  o Android só corta embaixo. Nada importante abaixo de ~2200u.
+- Fundo navy, título branco com destaque âmbar (#FFB300), celular com tela real, e
+  cartões `Destaque` para ampliar o que importa. Título vende benefício, não botão.
+- Gerar: `bash scripts/render-loja.sh` (ou passe o id de um slide). Saída em `out/loja/`.
