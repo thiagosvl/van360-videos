@@ -41,6 +41,7 @@ const MOCK_MAP: Array<[RegExp, string]> = [
   [/src[\\/]hooks[\\/]api[\\/]useRoutes\.ts$/, "useRoutes.ts"],
   [/src[\\/]hooks[\\/]api[\\/]useContratos\.ts$/, "useContratos.ts"],
   [/src[\\/]hooks[\\/]api[\\/]useReciboAnual\.ts$/, "useReciboAnual.ts"],
+  [/src[\\/]components[\\/]common[\\/]SignaturePad\.tsx$/, "SignaturePad.tsx"],
 ];
 
 export const webpackOverride: WebpackOverrideFn = (current) => {
@@ -65,6 +66,8 @@ export const webpackOverride: WebpackOverrideFn = (current) => {
         "@mocks": MOCKS,
         // diálogos e gavetas do app abrem dentro do celular, não no <body>
         "@radix-ui/react-portal$": path.join(MOCKS, "portal.tsx"),
+        // páginas do contrato como imagem (o PDF de verdade, gerado pelo back-end)
+        "react-pdf$": path.join(MOCKS, "react-pdf.tsx"),
         // uma única cópia do React para o app e para o Remotion
         react: path.join(ROOT, "node_modules/react"),
         "react-dom": path.join(ROOT, "node_modules/react-dom"),

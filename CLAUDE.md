@@ -61,8 +61,18 @@ código do app para o vídeo funcionar.
 - O vídeo se ajusta ao áudio: com o áudio em mãos, ajustar `from/duration` dos beats
   e adicionar `<Audio>`.
 
+## Contratos
+- PDF do contrato gerado com o código real do back-end (`node scripts/gerar-contrato.mjs`):
+  páginas viram imagens em `public/contratos/` e o `react-pdf` é trocado por um mock que mostra essas imagens.
+- Assinaturas desenhadas (traço único) em `src/mocks/assinaturas.json`; o quadro de assinatura
+  (`SignaturePad`) é controlado por `VideoState.assinatura` (editando, progresso).
+- Telas com aba em estado interno (ex.: modelo de contrato): `VideoState.abaForcada`.
+- Páginas "tela cheia" (h-screen): `contentClassName="tela-cheia"`.
+
 ## Render
 ```bash
+bash scripts/stills.sh <Id> 100 200 300          # vários stills com um único bundle
+python3 scripts/montagem.py out/st/m.png a.png b.png  # junta stills para conferir
 npx remotion still <Id> out/x.png --frame=N   # conferir
 npx remotion render <Id> out/<nome>.mp4 --crf=20 --x264-preset=veryfast
 ```

@@ -5,12 +5,20 @@
 // conta (offsetLeft, sem escala) roda antes de cada quadro, sem timer.
 import React, { useLayoutEffect, useRef } from "react";
 import { continueRender, delayRender } from "remotion";
+import { useVideoState } from "@mocks/videoState";
 import { AppTabNav as Original } from "@/components/ui/AppTabNav.tsx?original";
 
 export * from "@/components/ui/AppTabNav.tsx?original";
 
 export function AppTabNav(props: React.ComponentProps<typeof Original>) {
   const ref = useRef<HTMLDivElement>(null);
+  const { abaForcada } = useVideoState();
+  // telas cuja aba é estado interno: "toca" na aba pedida pelo vídeo (como o dedo faria)
+  useLayoutEffect(() => {
+    if (!abaForcada || props.activeTab === abaForcada) return;
+    const alvo = ref.current?.querySelector<HTMLElement>(`[id$="-trigger-${abaForcada}"]`);
+    alvo?.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+  }, [abaForcada, props.activeTab]);
   const posiciona = () => {
     const root = ref.current;
     // o container rolável é o primeiro elemento do AppTabNav (div com overflow-x-auto)

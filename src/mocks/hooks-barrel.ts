@@ -19,3 +19,5 @@ export {
   useSetPrincipalResponsavel, useDeleteResponsavelAdicional, useToggleNotificacoesRotaResponsavel, useGerarContratoFlow,
 } from "@mocks/noop-hooks";
 export { usePassageiro, useCobrancasByPassageiro } from "@mocks/carteirinha-hooks";
+export { useContratosViewModel } from "@/hooks/ui/useContratosViewModel";
+export { useAssinarContratoViewModel } from "@mocks/contratos-hooks";

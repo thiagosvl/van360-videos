@@ -311,3 +311,71 @@ export const PEDRO_CARTEIRINHA = {
   contrato_final_url: undefined,
   contrato_url: undefined,
 } as any;
+
+/* ---------- Contratos (Pedro: sem contrato -> pendente -> assinado) ---------- */
+
+/** Passageiro "sem contrato" como a lista de Contratos devolve (tipo: "passageiro"). */
+const semContrato = (id: string, nome: string, responsavel: string, telefone: string) =>
+  ({
+    id,
+    tipo: "passageiro",
+    nome,
+    status: null,
+    valor_cobranca: VALOR_PARCELA,
+    dia_vencimento: 10,
+    responsavel_principal: { nome: responsavel, telefone, cpf: "52998224725", parentesco: "mae" },
+  }) as any;
+
+const comContrato = (id: string, nome: string, responsavel: string, status: "pendente" | "assinado") =>
+  ({
+    id: `ct-${id}`,
+    tipo: "contrato",
+    passageiro_id: id,
+    status,
+    nome,
+    valor_parcela: VALOR_PARCELA,
+    provider: "inhouse",
+    token_acesso: `tk-${id}`,
+    minuta_url: "pedro-minuta",
+    contrato_final_url: status === "assinado" ? "pedro-assinado" : null,
+    created_at: "2026-02-02T10:00:00",
+    assinado_em: status === "assinado" ? "2026-02-03T19:20:00" : null,
+    passageiro: { id, nome, responsavel_principal: { nome: responsavel, telefone: "11999990000" } },
+  }) as any;
+
+export const PEDRO_SEM_CONTRATO = semContrato(PEDRO_ID, NOVO_ALUNO.nome, NOVO_ALUNO.responsavel, "11991234567");
+
+/** etapa 0: antes de gerar | 1: gerado (pendente) | 2: assinado pela mãe */
+export const listaContratos = (etapa: number) => {
+  const pedro =
+    etapa === 0 ? null : { ...comContrato(PEDRO_ID, NOVO_ALUNO.nome, NOVO_ALUNO.responsavel, etapa === 1 ? "pendente" : "assinado"), created_at: "2026-03-12T10:02:00" };
+  const sem = [
+    ...(etapa === 0 ? [PEDRO_SEM_CONTRATO] : []),
+    semContrato("p8", "Arthur Rocha", "Daniela Rocha", "11910987654"),
+    semContrato("p7", "Laura Costa", "Camila Costa", "11921098765"),
+  ];
+  const pendentes = [
+    ...(pedro && etapa === 1 ? [pedro] : []),
+    comContrato("p5", "Sofia Lima", "Fernanda Lima", "pendente"),
+    comContrato("p4", "Miguel Oliveira", "Renata Oliveira", "pendente"),
+  ];
+  const assinados = [
+    ...(pedro && etapa === 2 ? [pedro] : []),
+    comContrato("p1", "Ana Beatriz Souza", "Juliana Souza", "assinado"),
+    comContrato("p2", "Lucas Ferreira", "Marcos Ferreira", "assinado"),
+    comContrato("p3", "Helena Martins", "Patrícia Martins", "assinado"),
+    comContrato("p6", "Davi Santos", "Rodrigo Santos", "assinado"),
+  ];
+  return { sem_contrato: sem, pendentes, assinados };
+};
+
+/** O contrato do Pedro como a página pública de assinatura recebe. */
+export const contratoPublicoPedro = (assinado: boolean) =>
+  ({
+    id: `ct-${PEDRO_ID}`,
+    status: assinado ? "assinado" : "pendente",
+    minuta_url: "pedro-minuta",
+    contrato_final_url: assinado ? "pedro-assinado" : null,
+    usuario: { apelido: MOTORISTA.apelido, nome: MOTORISTA.nome },
+    dados_contrato: { nomePassageiro: NOVO_ALUNO.nome, nomeResponsavel: NOVO_ALUNO.responsavel, anoLetivo: 2026 },
+  }) as any;

@@ -14,3 +14,11 @@
 .phone-screen [role="dialog"] {
   max-height: calc(844px - 30px - 20px - 3rem) !important;
 }
+
+/* Páginas "tela cheia" do app (h-screen = 100vh): no vídeo, a altura do celular sem a barra de status. */
+.phone-screen .tela-cheia .h-screen {
+  height: 814px !important;
+}
+.phone-screen .tela-cheia .min-h-screen {
+  min-height: 814px !important;
+}

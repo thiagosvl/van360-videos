@@ -14,6 +14,14 @@ export type VideoState = {
   pagamento?: Record<string, unknown>;
   /** mês centralizado na barra de meses (pode ser fracionado durante a troca) */
   mesScroll?: number;
+  /** etapa da história dos contratos: 0 antes de gerar, 1 pendente, 2 assinado */
+  contratos?: { etapa: number };
+  /** página pública de assinatura */
+  assinar?: { assinado?: boolean };
+  /** quadro de assinatura: entra em modo de desenho e desenha até `progresso` (0 a 1) */
+  assinatura?: { editando?: boolean; progresso?: number };
+  /** abre esta aba da barra de abas (telas cuja aba é estado interno) */
+  abaForcada?: string;
 };
 
 const Ctx = createContext<VideoState>({});

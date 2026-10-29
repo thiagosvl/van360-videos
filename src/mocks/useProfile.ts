@@ -1,4 +1,5 @@
 // Mock: perfil de motorista titular com as preferências padrão do app.
+import { staticFile } from "remotion";
 import { MOTORISTA } from "@mocks/data";
 
 export const MOCK_PROFILE = {
@@ -7,8 +8,13 @@ export const MOCK_PROFILE = {
   apelido: MOTORISTA.apelido,
   tipo: "motorista",
   // contratos configurados e ativos (assinatura + "usar contratos")
-  assinatura_digital_url: "https://mock.local/assinatura.png",
-  config_contrato: { usar_contratos: true },
+  assinatura_digital_url: staticFile("contratos/assinatura-motorista.png"),
+  config_contrato: {
+    usar_contratos: true,
+    multa_atraso: { valor: 2, tipo: "percentual" },
+    juros_atraso: { valor: 1, tipo: "percentual" },
+    multa_rescisao: { valor: 20, tipo: "percentual" },
+  },
   configuracoes: {
     formato_nome_aluno: "completo",
     formato_nome_responsavel: "primeiro_nome",

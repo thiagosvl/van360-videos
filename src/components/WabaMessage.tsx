@@ -29,14 +29,38 @@ export const WABA_MODELOS = {
       <p className="italic">Caso já tenha efetuado o pagamento, por favor desconsidere esta mensagem.</p>
     </>
   ),
+  /** van360_pais_contrato: contrato pronto para assinar (botão "Assinar Contrato") */
+  contrato: (p: { responsavel: string; aluno: string }) => (
+    <>
+      <p>
+        Olá {p.responsavel}, o contrato de prestação de serviços de transporte escolar de {p.aluno} já está pronto para
+        assinatura digital.
+      </p>
+      <p>A assinatura é rápida, feita pelo celular e garante a vaga e a segurança do transporte.</p>
+    </>
+  ),
 };
+
+/** Botão de link do modelo (ícone de "abrir fora" do WhatsApp). */
+export const BotaoLink: React.FC<{ texto: string }> = ({ texto }) => (
+  <div className="border-t border-[#e9edef] py-2.5 flex items-center justify-center gap-2 text-[#00a884] text-[13px]">
+    <svg viewBox="0 0 24 24" className="w-[17px] h-[17px] stroke-[#00a884] fill-none stroke-[1.8]" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </svg>
+    {texto}
+  </div>
+);
 
 export const WabaMessage: React.FC<{
   motorista: string;
   hora: string;
   comPix?: boolean;
+  /** botão do modelo no lugar do Pix (ex.: <BotaoLink texto="Assinar Contrato" />) */
+  botao?: React.ReactNode;
   children: React.ReactNode;
-}> = ({ motorista, hora, comPix = true, children }) => (
+}> = ({ motorista, hora, comPix = true, botao, children }) => (
   <div className="relative w-full rounded-[24px] bg-[#efeae2] p-3 border border-[#e5e5e5] shadow-inner overflow-hidden">
     <div
       className="absolute inset-0 pointer-events-none bg-cover bg-center"
@@ -58,7 +82,8 @@ export const WabaMessage: React.FC<{
           <span className="shrink-0">{hora}</span>
         </div>
       </div>
-      {comPix && (
+      {botao}
+      {!botao && comPix && (
         <div className="border-t border-[#e9edef] py-2.5 flex items-center justify-center gap-2 text-[#00a884] text-[13px]">
           <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] stroke-[#00a884] fill-none stroke-[1.6]" strokeLinecap="round" strokeLinejoin="round">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
