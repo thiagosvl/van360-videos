@@ -33,6 +33,9 @@ const MOCK_MAP: Array<[RegExp, string]> = [
   [/src[\\/]hooks[\\/]ui[\\/]useManualPaymentViewModel\.tsx?$/, "useManualPaymentViewModel.ts"],
   [/src[\\/]hooks[\\/]ui[\\/]useCobrancasViewModel\.tsx?$/, "useCobrancasViewModel.ts"],
   [/src[\\/]hooks[\\/]api[\\/]useMotoristaFinanceiroApi\.tsx?$/, "useMotoristaFinanceiroApi.ts"],
+  // embrulham o original: o mock importa "arquivo.tsx?original", que não casa com o $ da regex
+  [/src[\\/]components[\\/]common[\\/]DateNavigation\.tsx$/, "DateNavigation.tsx"],
+  [/src[\\/]utils[\\/]detectPlatform\.ts$/, "detectPlatform.ts"],
 ];
 
 export const webpackOverride: WebpackOverrideFn = (current) => {

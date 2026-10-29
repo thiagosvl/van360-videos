@@ -12,6 +12,8 @@ export type VideoState = {
   parcelas?: Record<string, unknown>;
   /** valores do formulário "Registrar pagamento" */
   pagamento?: Record<string, unknown>;
+  /** mês centralizado na barra de meses (pode ser fracionado durante a troca) */
+  mesScroll?: number;
 };
 
 const Ctx = createContext<VideoState>({});

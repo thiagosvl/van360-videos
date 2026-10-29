@@ -22,7 +22,9 @@ class VideoDate extends RealDate {
 if (typeof Element !== "undefined") {
   const original = Element.prototype.scrollTo as any;
   Element.prototype.scrollTo = function (this: Element, ...args: any[]) {
-    if (typeof args[0] === "object" && args[0]) args[0] = { ...args[0], behavior: "auto" };
+    // componentes com rolagem controlada pelo vídeo ignoram rolagens do app
+    if (this.closest?.("[data-video-scroll-lock]")) return;
+    if (typeof args[0] === "object" && args[0]) args[0] = { ...args[0], behavior: "instant" };
     return original.apply(this, args);
   } as any;
 }

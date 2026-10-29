@@ -1,10 +1,10 @@
 import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { WhatsAppMessageContainer, WhatsAppActionButton } from "@/components/ui/WhatsAppMessageContainer";
+import { WabaMessage, WABA_MODELOS } from "../components/WabaMessage";
 import { BRAND, BrandBackground, Headline, ease } from "../components/brand";
 import { LEMBRETE_WHATSAPP, MOTORISTA } from "../mocks/data";
 
-/** Mesma mensagem do WhatsAppShowcaseEmulator do app, com dados fictícios. */
+/** Mensagem automática real (modelo "vence hoje" do WhatsApp Manager), com dados fictícios. */
 export const WhatsAppScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -21,36 +21,9 @@ export const WhatsAppScene: React.FC = () => {
             opacity: interpolate(frame, [18, 26], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
           }}
         >
-          <WhatsAppMessageContainer
-            driverName={MOTORISTA.apelido}
-            time={LEMBRETE_WHATSAPP.hora}
-            className="min-h-0 max-w-none"
-            actionButton={
-              <WhatsAppActionButton
-                label="Copiar código Pix"
-                icon={
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="w-[18px] h-[18px] stroke-[#00a884] fill-none stroke-[1.6]"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                  </svg>
-                }
-              />
-            }
-          >
-            <p>
-              Olá {LEMBRETE_WHATSAPP.responsavel}, a parcela do transporte escolar de {LEMBRETE_WHATSAPP.aluno} no valor de{" "}
-              {LEMBRETE_WHATSAPP.valor} vence HOJE.
-            </p>
-            <p>Por favor, efetue o pagamento para manter o transporte em dia.</p>
-            <p className="italic text-[#54656f] text-[12px] leading-[16px]">
-              Caso já tenha efetuado o pagamento, por favor desconsidere esta mensagem.
-            </p>
-          </WhatsAppMessageContainer>
+          <WabaMessage motorista={MOTORISTA.apelido} hora={LEMBRETE_WHATSAPP.hora}>
+            {WABA_MODELOS.venceHoje(LEMBRETE_WHATSAPP)}
+          </WabaMessage>
         </div>
       </AbsoluteFill>
 

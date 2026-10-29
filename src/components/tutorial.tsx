@@ -1,5 +1,5 @@
 import React from "react";
-import { interpolate, useCurrentFrame } from "remotion";
+import { continueRender, delayRender, interpolate, useCurrentFrame } from "remotion";
 import { BRAND, ease } from "./brand";
 
 /* ------------------------------------------------------------------ */
@@ -168,3 +168,32 @@ export const Caption: React.FC<{ beats: Beat[]; top?: number }> = ({ beats, top 
 /** Duração total de uma lista de falas. */
 export const beatsDuration = (beats: Beat[]) =>
   Math.max(...beats.map((b) => b.from + b.duration));
+
+/* ------------------------------------------------------------------ */
+/* Espera imagens de diálogos do app carregarem antes de fotografar     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Componentes do app mostram "Carregando..." até o onLoad da imagem (ex.: recibo).
+ * Enquanto `ativo`, segura o quadro até toda imagem dentro de diálogos estar
+ * carregada e visível, para nenhum quadro sair com o carregamento na tela.
+ */
+export const useImagensProntas = (ativo: boolean) => {
+  React.useLayoutEffect(() => {
+    if (!ativo) return;
+    const handle = delayRender("Esperando imagem do diálogo");
+    let vivo = true;
+    const checa = () => {
+      if (!vivo) return;
+      const imgs = Array.from(document.querySelectorAll<HTMLImageElement>(".phone-screen [role='dialog'] img"));
+      const prontas = imgs.length > 0 && imgs.every((i) => i.complete && i.naturalWidth > 0 && !i.className.includes("opacity-0"));
+      if (prontas) continueRender(handle);
+      else requestAnimationFrame(checa);
+    };
+    requestAnimationFrame(checa);
+    return () => {
+      vivo = false;
+      continueRender(handle);
+    };
+  });
+};
