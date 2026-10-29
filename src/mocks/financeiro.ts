@@ -147,3 +147,6 @@ export const useUsuarioResumo = (_id?: string, params?: { mes?: number }) => {
 };
 /** lista simples de escolas (Renovação, ajustes em lote) */
 export const useEscolasWithFilters = () => q(ESCOLAS_LISTA);
+
+/** Resumo do mês (o que o perfil traz na tela Início). */
+export const resumoMarco = () => resumo(gastosMarco());

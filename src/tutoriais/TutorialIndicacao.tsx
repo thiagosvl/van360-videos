@@ -2,6 +2,8 @@ import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Routes, Route } from "react-router-dom";
 import MenuPage from "@/pages/MenuPage";
+import Home from "@/pages/Home";
+import { Circulo, Confetes } from "../components/Circulo";
 import { ReferAndEarnDialog } from "@/components/dialogs/ReferAndEarnDialog";
 import { buildReferralShareMessage } from "@/utils/whatsappTemplates";
 import { usarLarguraDeCelular } from "../viewport";
@@ -19,12 +21,12 @@ import { LINK_INDICACAO } from "../mocks/useSubscription";
  * Falas = roteiro. Para encaixar narração, ajuste `from`/`duration`.
  */
 export const BEATS: Beat[] = [
-  { text: "Conhece outro motorista de van? **Indique e ganhe**.", from: 0, duration: 135 },
-  { text: "Cada colega que assinar vale **30 dias grátis** para você.", from: 135, duration: 150 },
-  { text: "E ele ganha **50% de desconto** no primeiro mês.", from: 285, duration: 165 },
-  { text: "É só mandar o seu link **pelo WhatsApp**.", from: 450, duration: 165 },
-  { text: "Quanto mais indicar, **mais meses grátis**.", from: 615, duration: 150 },
-  { text: "Indicou, assinou, **ganhou**.", from: 765, duration: 120 },
+  { text: "Conhece outro motorista de van? **Indique e ganhe**.", from: 0, duration: 165 },
+  { text: "Cada colega que assinar vale **30 dias grátis** para você.", from: 165, duration: 150 },
+  { text: "E ele ganha **50% de desconto** no primeiro mês.", from: 315, duration: 165 },
+  { text: "É só mandar o seu link **pelo WhatsApp**.", from: 480, duration: 165 },
+  { text: "Quanto mais indicar, **mais meses grátis**.", from: 645, duration: 150 },
+  { text: "Indicou, assinou, **ganhou**.", from: 795, duration: 120 },
 ];
 export const TUTORIAL_INDICACAO_DURATION = beatsDuration(BEATS);
 
@@ -65,15 +67,18 @@ const SegmentShell: React.FC<{ seg: Segment; first: boolean; last: boolean; chil
 
 /* pontos de toque (px do celular 390x844), conferidos em stills */
 const P = {
-  indique: { x: 195, y: 300 },
-  comoFunciona: { x: 195, y: 330 },
+  menuNav: { x: 355, y: 798 },
+  indique: { x: 199, y: 577 },
+  comoFunciona: { x: 194, y: 417 },
   entendi: { x: 195, y: 750 },
   whatsapp: { x: 270, y: 640 },
 };
 
 const T = {
-  tocaIndique: 100,
-  abreDialogo: 106,
+  tocaMenu: 58,
+  abreMenu: 62,
+  tocaIndique: 118,
+  abreDialogo: 124,
   tocaComoFunciona: B[3] + 20,
   abreDrawer: B[3] + 26,
   tocaEntendi: B[4] - 10,
@@ -83,49 +88,65 @@ const T = {
 
 const TelaApp: React.FC = () => {
   const frame = useCurrentFrame();
+  const noMenu = frame >= T.abreMenu;
   const dialogo = frame >= T.abreDialogo;
   const drawer = frame >= T.abreDrawer && frame < T.fechaDrawer;
+  const route = noMenu ? "/menu" : "/inicio";
+  // no Menu: aproxima no "Indique e Ganhe", toca e volta ao normal com o diálogo abrindo
+  const zoom = interpolate(frame, [T.abreMenu + 8, T.abreMenu + 28, T.tocaIndique + 2, T.tocaIndique + 18], [1, 1.6, 1.6, 1], {
+    ...clamp,
+    easing: ease,
+  });
   return (
-    <VideoStateProvider value={{ indicacoes: 2 }}>
-      <PhoneScreen
-        route="/menu"
-        pageTitle="Menu"
-        scale={SCALE}
-        overlay={
-          <>
-            {dialogo && (
-              <React.Fragment key={`dialogo-${drawer}`}>
-                <ReferAndEarnDialog isOpen onClose={noop} />
-                {drawer && (
-                  <>
-                    {/* a gaveta real "Como funciona?", aberta por fora do diálogo (no app ela sobe do pé da tela) */}
-                    <div style={{ position: "absolute", left: -999, top: 0 }} data-gatilho-drawer>
-                      <ReferralHowItWorksDrawer bonusDaysPerReferral={30} />
-                    </div>
-                    <AcoesNaTela dentro="[data-gatilho-drawer]" passos={[{ tocar: "Como funciona?" }]} />
-                  </>
+    <div style={{ clipPath: "inset(-70px -500px -600px -500px)" }}>
+      <div style={{ scale: String(zoom), transformOrigin: `${(12 + P.indique.x) * SCALE}px ${(12 + P.indique.y) * SCALE}px` }}>
+        <VideoStateProvider value={{ indicacoes: 2, comResumo: true }}>
+          <PhoneScreen
+            key={route}
+            route={route}
+            pageTitle={noMenu ? "Menu" : "Início"}
+            scale={SCALE}
+            overlay={
+              <>
+                {/* Início: circula o Menu no rodapé */}
+                <Circulo x={P.menuNav.x} y={P.menuNav.y - 4} w={74} h={58} desde={14} ate={T.tocaMenu + 2} />
+                {dialogo && (
+                  <React.Fragment key={`dialogo-${drawer}`}>
+                    <ReferAndEarnDialog isOpen onClose={noop} />
+                    {drawer && (
+                      <>
+                        {/* a gaveta real "Como funciona?", aberta por fora do diálogo (no app ela sobe do pé da tela) */}
+                        <div style={{ position: "absolute", left: -999, top: 0 }} data-gatilho-drawer>
+                          <ReferralHowItWorksDrawer bonusDaysPerReferral={30} />
+                        </div>
+                        <AcoesNaTela dentro="[data-gatilho-drawer]" passos={[{ tocar: "Como funciona?" }]} />
+                      </>
+                    )}
+                  </React.Fragment>
                 )}
-              </React.Fragment>
-            )}
-            <Finger
-              showFrom={T.tocaIndique - 24}
-              hideAt={T.tocaWhatsApp + 8}
-              steps={[
-                { at: T.tocaIndique - 24, ...P.indique },
-                { at: T.tocaIndique, ...P.indique, tap: true },
-                { at: T.tocaComoFunciona, ...P.comoFunciona, tap: true },
-                { at: T.tocaEntendi, ...P.entendi, tap: true },
-                { at: T.tocaWhatsApp, ...P.whatsapp, tap: true },
-              ]}
-            />
-          </>
-        }
-      >
-        <Routes>
-          <Route path="/menu" element={<MenuPage />} />
-        </Routes>
-      </PhoneScreen>
-    </VideoStateProvider>
+                <Finger
+                  showFrom={T.tocaMenu - 22}
+                  hideAt={T.tocaWhatsApp + 8}
+                  steps={[
+                    { at: T.tocaMenu - 22, ...P.menuNav },
+                    { at: T.tocaMenu, ...P.menuNav, tap: true },
+                    { at: T.tocaIndique, ...P.indique, tap: true },
+                    { at: T.tocaComoFunciona, ...P.comoFunciona, tap: true },
+                    { at: T.tocaEntendi, ...P.entendi, tap: true },
+                    { at: T.tocaWhatsApp, ...P.whatsapp, tap: true },
+                  ]}
+                />
+              </>
+            }
+          >
+            <Routes>
+              <Route path="/inicio" element={<Home />} />
+              <Route path="/menu" element={<MenuPage />} />
+            </Routes>
+          </PhoneScreen>
+        </VideoStateProvider>
+      </div>
+    </div>
   );
 };
 
@@ -155,7 +176,15 @@ const TelaFim: React.FC = () => {
         route="/menu"
         pageTitle="Menu"
         scale={SCALE}
-        overlay={<ReferAndEarnDialog isOpen onClose={noop} />}
+        overlay={
+          <>
+            <ReferAndEarnDialog isOpen onClose={noop} />
+            {/* mais um colega assinou: círculo nos dias ganhos e confetes */}
+            <Circulo x={279} y={491} w={118} h={48} desde={52} ate={150} />
+            <Confetes x={279} y={480} desde={50} />
+            <Confetes x={108} y={480} desde={54} quantidade={20} />
+          </>
+        }
       >
         <Routes>
           <Route path="/menu" element={<MenuPage />} />

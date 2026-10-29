@@ -1,6 +1,8 @@
 // Mock: perfil de motorista titular com as preferências padrão do app.
 import { staticFile } from "remotion";
 import { MOTORISTA } from "@mocks/data";
+import { useVideoState } from "@mocks/videoState";
+import { resumoMarco } from "@mocks/financeiro";
 
 export const MOCK_PROFILE = {
   id: MOTORISTA.id,
@@ -23,9 +25,11 @@ export const MOCK_PROFILE = {
 } as any;
 
 export function useProfile(_userId?: string) {
+  // a tela Início só mostra os números com o resumo; os outros vídeos seguem sem ele
+  const comResumo = (useVideoState() as any).comResumo;
   return {
     profile: MOCK_PROFILE,
-    summary: undefined as any,
+    summary: (comResumo ? resumoMarco() : undefined) as any,
     isLoading: false,
     isError: false,
     error: null,

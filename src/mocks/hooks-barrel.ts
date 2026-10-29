@@ -27,3 +27,4 @@ export { useGastos, useVeiculos, useEscolas, useCobrancas, useGastoCategorias, u
 export { useDeleteGasto, useCreateGasto, useUpdateGasto, useCreateGastoCategoria } from "@mocks/noop-hooks";
 export { useDebounce } from "@/hooks/ui/useDebounce";
 export { useEscolasWithFilters } from "@mocks/financeiro";
+export { useDashboardViewModel } from "@/hooks/ui/useDashboardViewModel";

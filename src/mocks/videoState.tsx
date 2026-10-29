@@ -30,6 +30,8 @@ export type VideoState = {
   renovacao?: import("./renovacao").EstadoRenovacao;
   /** indicações concluídas (Indique e Ganhe) */
   indicacoes?: number;
+  /** perfil com o resumo do mês (tela Início com números) */
+  comResumo?: boolean;
 };
 
 const Ctx = createContext<VideoState>({});

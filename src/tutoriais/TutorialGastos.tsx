@@ -6,6 +6,7 @@ import Relatorios from "@/pages/Relatorios";
 import GastoFormDialog from "@/components/dialogs/GastoFormDialog";
 import { moneyMask } from "@/utils/masks";
 import { PhoneScreen } from "../components/PhoneScreen";
+import { Circulo } from "../components/Circulo";
 import { BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
 import { VideoStateProvider } from "../mocks/videoState";
@@ -71,21 +72,6 @@ const RolaDialogo: React.FC<{ y: number }> = ({ y }) => {
 const RolaKpis: React.FC<{ x: number }> = ({ x }) => (
   <style>{`.phone-screen .w-max { translate: ${-x}px 0px !important; }`}</style>
 );
-
-/** Círculo "à mão" em volta de um valor (px do celular), desenhado em ~12 quadros. */
-const Circulo: React.FC<{ x: number; y: number; w: number; h: number; desde: number; ate: number }> = ({ x, y, w, h, desde, ate }) => {
-  const frame = useCurrentFrame();
-  const traco = interpolate(frame, [desde, desde + 12], [0, 1], { ...clamp, easing: ease });
-  const opacity = interpolate(frame, [ate - 8, ate], [1, 0], clamp);
-  if (frame < desde) return null;
-  // elipse levemente aberta e inclinada, como um risco de caneta
-  const d = `M ${w * 0.92} ${h * 0.22} C ${w * 0.7} ${-h * 0.12}, ${w * 0.08} ${h * 0.02}, ${w * 0.04} ${h * 0.5} C ${0} ${h * 1.02}, ${w * 0.9} ${h * 1.08}, ${w * 0.98} ${h * 0.5} C ${w * 1.02} ${h * 0.24}, ${w * 0.8} ${h * 0.06}, ${w * 0.62} ${h * 0.04}`;
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: "absolute", left: x - w / 2, top: y - h / 2, overflow: "visible", opacity }}>
-      <path d={d} fill="none" stroke="#2563eb" strokeWidth={3} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - traco} />
-    </svg>
-  );
-};
 
 /* pontos de toque (px do celular 390x844), conferidos em stills */
 const P = {
