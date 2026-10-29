@@ -1,1 +1,1 @@
-export { useUsuarioResumo } from "@mocks/noop-hooks";
+export { useUsuarioResumo } from "@mocks/financeiro";

@@ -31,3 +31,9 @@ export const useSetPrincipalResponsavel = mutation;
 export const useDeleteResponsavelAdicional = mutation;
 export const useToggleNotificacoesRotaResponsavel = mutation;
 export const useGerarContratoFlow = () => ({ iniciarFluxoGerarContrato: noop });
+
+// gastos (nada é salvo no vídeo)
+export const useDeleteGasto = mutation;
+export const useCreateGasto = mutation;
+export const useUpdateGasto = mutation;
+export const useCreateGastoCategoria = mutation;

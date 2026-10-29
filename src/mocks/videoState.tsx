@@ -22,6 +22,8 @@ export type VideoState = {
   assinatura?: { editando?: boolean; progresso?: number };
   /** abre esta aba da barra de abas (telas cuja aba é estado interno) */
   abaForcada?: string;
+  /** gastos registrados durante o vídeo (somam aos de março) */
+  gastosExtras?: any[];
 };
 
 const Ctx = createContext<VideoState>({});

@@ -12,7 +12,7 @@ export { useCobrancasViewModel } from "@mocks/useCobrancasViewModel";
 export {
   useDeleteCobranca, useDesfazerPagamento, useToggleNotificacoesCobranca, useCreateCobranca,
   useRestaurarCobranca, useRegistrarPagamentoManual, useComplementarPagamentoManual, useUpdateCobranca,
-  useTutorialsConfig, usePassageiros,
+  useTutorialsConfig,
 } from "@mocks/noop-hooks";
 export {
   useDeletePassageiro, useDeletePassageiroMatricula, useToggleAtivoPassageiro, useUpdatePassageiro,
@@ -21,3 +21,7 @@ export {
 export { usePassageiro, useCobrancasByPassageiro } from "@mocks/carteirinha-hooks";
 export { useContratosViewModel } from "@/hooks/ui/useContratosViewModel";
 export { useAssinarContratoViewModel } from "@mocks/contratos-hooks";
+export { useFilters } from "@/hooks/ui/useFilters";
+export { useGastosViewModel } from "@/hooks/ui/useGastosViewModel";
+export { useGastos, useVeiculos, useEscolas, useCobrancas, useGastoCategorias, usePassageiros, useUsuarioResumo } from "@mocks/financeiro";
+export { useDeleteGasto, useCreateGasto, useUpdateGasto, useCreateGastoCategoria } from "@mocks/noop-hooks";
