@@ -15,6 +15,8 @@ import { TutorialAlunosSolicitacoes, TUTORIAL_ALUNOS_SOLICITACOES_DURATION } fro
 import { TutorialParcelas, TUTORIAL_PARCELAS_DURATION } from "./tutoriais/TutorialParcelas";
 import { TutorialCarteirinha, TUTORIAL_CARTEIRINHA_DURATION } from "./tutoriais/TutorialCarteirinha";
 import { DebugFinanceiro, ESTADOS_FINANCEIRO } from "./debug/DebugFinanceiro";
+import { TutorialGastos, TUTORIAL_GASTOS_DURATION } from "./tutoriais/TutorialGastos";
+import { TutorialRelatorios, TUTORIAL_RELATORIOS_DURATION } from "./tutoriais/TutorialRelatorios";
 import { TutorialContratos, TUTORIAL_CONTRATOS_DURATION } from "./tutoriais/TutorialContratos";
 
 const V = { width: 1080, height: 1920, fps: 30 };
@@ -51,6 +53,18 @@ export const RemotionRoot: React.FC = () => (
         id="TutorialContratos"
         component={TutorialContratos}
         durationInFrames={TUTORIAL_CONTRATOS_DURATION}
+        {...V}
+      />
+      <Composition
+        id="TutorialGastos"
+        component={TutorialGastos}
+        durationInFrames={TUTORIAL_GASTOS_DURATION}
+        {...V}
+      />
+      <Composition
+        id="TutorialRelatorios"
+        component={TutorialRelatorios}
+        durationInFrames={TUTORIAL_RELATORIOS_DURATION}
         {...V}
       />
     </Folder>

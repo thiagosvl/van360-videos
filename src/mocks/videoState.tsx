@@ -24,6 +24,8 @@ export type VideoState = {
   abaForcada?: string;
   /** gastos registrados durante o vídeo (somam aos de março) */
   gastosExtras?: any[];
+  /** valores do formulário "Registrar Gasto" */
+  gastoForm?: Record<string, unknown>;
 };
 
 const Ctx = createContext<VideoState>({});

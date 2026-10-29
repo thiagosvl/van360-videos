@@ -60,6 +60,22 @@ export const gastosMarco = (extras: any[] = []) =>
     ...extras,
   ].sort((a, b) => (a.data < b.data ? 1 : a.data > b.data ? -1 : 0));
 
+/** O gasto lançado no vídeo de Gastos: pneus em 4x, a 1ª parcela cai hoje (12/03). */
+export const NOVO_GASTO = {
+  id: "g-novo",
+  created_at: "2026-03-12T10:30:00",
+  usuario_id: MOTORISTA.id,
+  descricao: "Pneus novos",
+  valor: 400,
+  data: "2026-03-12",
+  categoria: "manutencao",
+  veiculo_id: "v1",
+  veiculo: { id: "v1", placa: "ABC1D23" },
+  parcelamento_id: "parc-pneus",
+  numero_parcela: 1,
+  total_parcelas: 4,
+};
+
 /* ---------- alunos e parcelas ---------- */
 const PERIODOS = ["manha", "tarde", "manha", "integral"];
 const ESC = Object.values(ESCOLAS);

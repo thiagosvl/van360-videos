@@ -68,6 +68,9 @@ export const webpackOverride: WebpackOverrideFn = (current) => {
         "@radix-ui/react-portal$": path.join(MOCKS, "portal.tsx"),
         // páginas do contrato como imagem (o PDF de verdade, gerado pelo back-end)
         "react-pdf$": path.join(MOCKS, "react-pdf.tsx"),
+        // formulário de gasto preenchido pelo vídeo (mocks/react-hook-form.ts)
+        "react-hook-form$": path.join(MOCKS, "react-hook-form.ts"),
+        "react-hook-form-original$": path.join(APP_ROOT, "node_modules/react-hook-form/dist/index.esm.mjs"),
         // uma única cópia do React para o app e para o Remotion
         react: path.join(ROOT, "node_modules/react"),
         "react-dom": path.join(ROOT, "node_modules/react-dom"),
