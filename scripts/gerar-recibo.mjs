@@ -15,14 +15,16 @@ import { Resvg } from "@resvg/resvg-js";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const font = fs.readFileSync(path.join(root, "assets/Inter-Bold.ttf"));
-const logo = `data:image/png;base64,${fs.readFileSync(path.join(root, "assets/logo-van360-recibo.png")).toString("base64")}`;
+const dataUrl = (arquivo) => `data:image/png;base64,${fs.readFileSync(path.join(root, arquivo)).toString("base64")}`;
+const logoVan360 = dataUrl("assets/logo-van360-recibo.png");
 
 // dados fictícios (mesmos do vídeo de Parcelas)
 const RECIBOS = [
   {
     arquivo: "recibo-davi-marco.png",
     id: "a3f9c2e1-7b4d-4e2a-9c1f-5d8e6b2a0c47",
-    motoristaNome: "Carlos Almeida",
+    motoristaNome: "Thiago Almeida",
+    logoMotorista: "assets/logo-motorista-tio-thiago.png",
     valor: 280,
     data: "12/03/2026",
     pagadorNome: "Rodrigo Santos",
@@ -46,8 +48,10 @@ const row = (label, value) => ({
 });
 
 for (const r of RECIBOS) {
-  // sem logo do motorista: o back-end usa o logo do Van360 no cabeçalho
-  const headerLogo = logo;
+  // como no back-end: logo do motorista no cabeçalho (fallback: Van360)
+  // e, quando há logo do motorista, um Van360 pequeno no rodapé
+  const logoMotorista = r.logoMotorista ? dataUrl(r.logoMotorista) : null;
+  const headerLogo = logoMotorista || logoVan360;
   const tree = {
     type: "div",
     props: {
@@ -101,7 +105,12 @@ for (const r of RECIBOS) {
           type: "div",
           props: {
             style: { marginTop: "auto", paddingTop: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" },
-            children: [{ type: "div", props: { style: { fontSize: "12px", color: "#94a3b8" }, children: "Recibo digital gerado pela plataforma Van360." } }],
+            children: [
+              { type: "div", props: { style: { fontSize: "12px", color: "#94a3b8" }, children: "Recibo digital gerado pela plataforma Van360." } },
+              logoMotorista
+                ? { type: "img", props: { src: logoVan360, style: { width: "70px", height: "24px", opacity: 0.6, objectFit: "contain" } } }
+                : null,
+            ].filter(Boolean),
           },
         },
       ],

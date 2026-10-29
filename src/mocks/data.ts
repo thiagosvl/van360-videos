@@ -6,8 +6,8 @@ import type { Passageiro } from "@/types/passageiro";
 
 export const MOTORISTA = {
   id: "mock-user-1",
-  nome: "Carlos Almeida",
-  apelido: "Tio Carlos",
+  nome: "Thiago Almeida",
+  apelido: "Tio Thiago",
 };
 
 export const ESCOLAS = {
@@ -119,7 +119,7 @@ const MAIS_ALUNOS: Array<[string, string]> = [
   ["Alice Moura", "Bruno Moura"], ["Heitor Campos", "Simone Campos"], ["Manuela Dias", "André Dias"],
   ["Bernardo Teixeira", "Luciana Teixeira"], ["Lorena Pires", "Vinícius Pires"], ["Theo Cardoso", "Mariana Cardoso"],
   ["Cecília Ramos", "Fábio Ramos"], ["Gael Monteiro", "Priscila Monteiro"], ["Isis Andrade", "Leandro Andrade"],
-  ["Samuel Freitas", "Débora Freitas"], ["Clara Vieira", "Thiago Vieira"], ["Noah Carvalho", "Elaine Carvalho"],
+  ["Samuel Freitas", "Débora Freitas"], ["Clara Vieira", "Paulo Vieira"], ["Noah Carvalho", "Elaine Carvalho"],
   ["Lívia Rezende", "Gustavo Rezende"],
 ];
 

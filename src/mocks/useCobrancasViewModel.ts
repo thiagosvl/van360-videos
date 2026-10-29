@@ -31,7 +31,7 @@ export function useCobrancasViewModel() {
     setPageAReceber: noop,
     pageRecebidas: 1,
     setPageRecebidas: noop,
-    limit: 50,
+    limit: 20, // como no app: com 1 página e limite 20, a paginação some sozinha
     setLimit: noop,
     totalPagesAReceber: 1,
     totalPagesRecebidas: 1,
