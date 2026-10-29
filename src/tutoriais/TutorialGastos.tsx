@@ -64,14 +64,27 @@ const RolaDialogo: React.FC<{ y: number }> = ({ y }) => {
   return <div ref={ref} />;
 };
 
-/** Desliza a fileira de números do topo (ela rola de lado no celular). */
-const RolaKpis: React.FC<{ x: number }> = ({ x }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const fileira = ref.current?.closest(".phone-screen")?.querySelector<HTMLElement>(".w-max");
-    if (fileira) fileira.style.translate = `${-x}px 0px`;
-  });
-  return <div ref={ref} />;
+/**
+ * Desliza a fileira de números do topo (ela rola de lado no celular).
+ * Via CSS (e não mexendo no DOM depois): sai igual em todos os quadros.
+ */
+const RolaKpis: React.FC<{ x: number }> = ({ x }) => (
+  <style>{`.phone-screen .w-max { translate: ${-x}px 0px !important; }`}</style>
+);
+
+/** Círculo "à mão" em volta de um valor (px do celular), desenhado em ~12 quadros. */
+const Circulo: React.FC<{ x: number; y: number; w: number; h: number; desde: number; ate: number }> = ({ x, y, w, h, desde, ate }) => {
+  const frame = useCurrentFrame();
+  const traco = interpolate(frame, [desde, desde + 12], [0, 1], { ...clamp, easing: ease });
+  const opacity = interpolate(frame, [ate - 8, ate], [1, 0], clamp);
+  if (frame < desde) return null;
+  // elipse levemente aberta e inclinada, como um risco de caneta
+  const d = `M ${w * 0.92} ${h * 0.22} C ${w * 0.7} ${-h * 0.12}, ${w * 0.08} ${h * 0.02}, ${w * 0.04} ${h * 0.5} C ${0} ${h * 1.02}, ${w * 0.9} ${h * 1.08}, ${w * 0.98} ${h * 0.5} C ${w * 1.02} ${h * 0.24}, ${w * 0.8} ${h * 0.06}, ${w * 0.62} ${h * 0.04}`;
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: "absolute", left: x - w / 2, top: y - h / 2, overflow: "visible", opacity }}>
+      <path d={d} fill="none" stroke="#2563eb" strokeWidth={3} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - traco} />
+    </svg>
+  );
 };
 
 /* pontos de toque (px do celular 390x844), conferidos em stills */
@@ -136,13 +149,17 @@ export const TutorialGastos: React.FC = () => {
 
   // "por categoria": a fileira de números desliza até o Maior Gasto
   const kpiX = !naRelatorios && frame >= B[4] ? interpolate(frame, [B[4] + 20, B[4] + 60], [0, 200], { ...clamp, easing: ease }) : 0;
-  // lucro real: destaque na linha "Lucro Atual"
-  const destaque = interpolate(frame, [B[6] + 10, B[6] + 22, B[7] - 10, B[7]], [0, 1, 1, 0], clamp);
+  // lucro real: aproxima a câmera na linha "Lucro Atual" e aponta com uma seta
+  const zoom = interpolate(frame, [B[6] - 4, B[6] + 18, B[7] - 16, B[7] + 4], [1, 1.6, 1.6, 1], { ...clamp, easing: ease });
+  // ponto da linha "Lucro Atual" no vídeo (celular em x 257, y 557, escala 1.45)
+  const FOCO = { x: 257 + 200 * SCALE, y: 557 + 395 * SCALE };
 
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
-      <AbsoluteFill style={{ alignItems: "center", top: 540 }}>
+      <AbsoluteFill style={{ top: 470, overflow: "hidden", WebkitMaskImage: "linear-gradient(to bottom, transparent 0px, black 40px)" }}>
+      <AbsoluteFill style={{ scale: String(zoom), transformOrigin: `${FOCO.x}px ${FOCO.y - 470}px` }}>
+      <AbsoluteFill style={{ alignItems: "center", top: 70 }}>
         <div style={{ translate: `0px ${rise}px` }}>
           <VideoStateProvider value={{ gastoForm, gastosExtras }}>
             <PhoneScreen
@@ -156,22 +173,7 @@ export const TutorialGastos: React.FC = () => {
                   {formAberto && <GastoFormDialog isOpen onClose={noop} veiculos={VEICULOS} allowBatchCreation />}
                   {formAberto && <RolaDialogo y={rolaForm} />}
                   {!naRelatorios && <RolaKpis x={kpiX} />}
-                  {naRelatorios && destaque > 0 && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        left: 18,
-                        right: 18,
-                        top: 362,
-                        height: 52,
-                        borderRadius: 16,
-                        border: "3px solid #2563eb",
-                        boxShadow: "0 0 0 6px rgba(37,99,235,0.15)",
-                        opacity: destaque,
-                        scale: String(0.96 + 0.04 * destaque),
-                      }}
-                    />
-                  )}
+                  {naRelatorios && <Circulo x={310} y={386} w={124} h={40} desde={B[6] + 18} ate={B[7] - 6} />}
                   <Finger
                     showFrom={B[3] + 6}
                     hideAt={T.tocaSalvar + 10}
@@ -195,6 +197,8 @@ export const TutorialGastos: React.FC = () => {
             </PhoneScreen>
           </VideoStateProvider>
         </div>
+      </AbsoluteFill>
+      </AbsoluteFill>
       </AbsoluteFill>
       <AbsoluteFill style={{ alignItems: "center", top: 160, opacity: logoIn }}>
         <Img src={staticFile("logo-van360-horizontal.png")} style={{ width: 260 }} />
