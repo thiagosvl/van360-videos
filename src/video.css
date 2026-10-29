@@ -1,0 +1,15 @@
+/* Ajustes só para vídeo (não afetam o app). */
+
+/* Animações CSS rodam no relógio do navegador, não no do vídeo:
+   desligadas, todo movimento vem do Remotion (useCurrentFrame). */
+.phone-screen *,
+.phone-screen *::before,
+.phone-screen *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Diálogos do app usam 100dvh; no vídeo a "tela" é o celular (844px). */
+.phone-screen [role="dialog"] {
+  max-height: calc(844px - 30px - 20px - 3rem) !important;
+}
