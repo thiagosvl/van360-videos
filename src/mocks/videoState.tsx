@@ -8,6 +8,10 @@ export type VideoState = {
   externalForm?: Record<string, string>;
   /** valores do formulário de aprovação (RevisarSolicitacaoDialog) */
   revisar?: Record<string, string>;
+  /** sobrescreve campos do view model da tela de Parcelas */
+  parcelas?: Record<string, unknown>;
+  /** valores do formulário "Registrar pagamento" */
+  pagamento?: Record<string, unknown>;
 };
 
 const Ctx = createContext<VideoState>({});

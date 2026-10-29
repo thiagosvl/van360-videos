@@ -42,6 +42,15 @@ Leia antes de criar ou mudar qualquer vídeo deste projeto.
    (`externalForm`, `revisar`).
 6. Registrar em `src/Root.tsx`, renderizar stills de cada beat, conferir, renderizar MP4.
 
+## Relógio fixo
+"Hoje" no vídeo é sempre 12/03/2026 (`src/clock.ts`). Vencimentos, atrasos, "há 2 min"
+e mês atual dependem disso; monte os dados fictícios em cima dessa data.
+
+## Mensagens do WhatsApp
+Textos dos modelos reais (WhatsApp Manager) ficam em `src/components/WabaMessage.tsx`.
+Nunca inventar texto de mensagem automática: usar os modelos ou pedir print ao Thiago.
+Nunca mostrar duas mensagens automáticas diferentes na mesma conversa.
+
 ## Mocks (camada de dados)
 Ficam em `src/mocks/` e são trocados em `webpack-override.ts` (MOCK_MAP). Tela nova
 que quebra no build normalmente precisa de mais um hook mockado ali. Nunca mudar o

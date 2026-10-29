@@ -10,6 +10,7 @@ import { WhatsAppScene } from "./scenes/WhatsAppScene";
 import { OutroScene } from "./scenes/OutroScene";
 import { TutorialAlunosLista, TUTORIAL_ALUNOS_LISTA_DURATION } from "./tutoriais/TutorialAlunosLista";
 import { TutorialAlunosSolicitacoes, TUTORIAL_ALUNOS_SOLICITACOES_DURATION } from "./tutoriais/TutorialAlunosSolicitacoes";
+import { TutorialParcelas, TUTORIAL_PARCELAS_DURATION } from "./tutoriais/TutorialParcelas";
 
 const V = { width: 1080, height: 1920, fps: 30 };
 
@@ -27,6 +28,12 @@ export const RemotionRoot: React.FC = () => (
         id="TutorialAlunosSolicitacoes"
         component={TutorialAlunosSolicitacoes}
         durationInFrames={TUTORIAL_ALUNOS_SOLICITACOES_DURATION}
+        {...V}
+      />
+      <Composition
+        id="TutorialParcelas"
+        component={TutorialParcelas}
+        durationInFrames={TUTORIAL_PARCELAS_DURATION}
         {...V}
       />
     </Folder>

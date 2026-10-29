@@ -7,3 +7,10 @@ export { useSession } from "@mocks/useSession";
 export { useProfile } from "@mocks/useProfile";
 export { usePassageiroFormDadosCadastraisViewModel } from "@/hooks/ui/usePassageiroFormDadosCadastraisViewModel";
 export { usePrePassageiros, useDeletePrePassageiro, useAppRating } from "@mocks/noop-hooks";
+export { useLayout } from "@/contexts/LayoutContext";
+export { useCobrancasViewModel } from "@mocks/useCobrancasViewModel";
+export {
+  useDeleteCobranca, useDesfazerPagamento, useToggleNotificacoesCobranca, useCreateCobranca,
+  useRestaurarCobranca, useRegistrarPagamentoManual, useComplementarPagamentoManual, useUpdateCobranca,
+  useTutorialsConfig, usePassageiros,
+} from "@mocks/noop-hooks";

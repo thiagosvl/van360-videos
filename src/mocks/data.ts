@@ -111,3 +111,83 @@ export const CARTEIRINHA_NOVO_ALUNO = {
 
 /** Domínio mostrado no link de cadastro (no app vem de VITE_PUBLIC_APP_DOMAIN). */
 export const LINK_DOMINIO = "https://app.van360.com.br";
+
+/* ---------- Parcelas (relógio do vídeo: 12/03/2026, ver src/clock.ts) ---------- */
+
+const MAIS_ALUNOS: Array<[string, string]> = [
+  ["Gabriel Nunes", "Aline Nunes"], ["Valentina Prado", "Rafael Prado"], ["Enzo Barros", "Tatiane Barros"],
+  ["Alice Moura", "Bruno Moura"], ["Heitor Campos", "Simone Campos"], ["Manuela Dias", "André Dias"],
+  ["Bernardo Teixeira", "Luciana Teixeira"], ["Lorena Pires", "Vinícius Pires"], ["Theo Cardoso", "Mariana Cardoso"],
+  ["Cecília Ramos", "Fábio Ramos"], ["Gael Monteiro", "Priscila Monteiro"], ["Isis Andrade", "Leandro Andrade"],
+  ["Samuel Freitas", "Débora Freitas"], ["Clara Vieira", "Thiago Vieira"], ["Noah Carvalho", "Elaine Carvalho"],
+  ["Lívia Rezende", "Gustavo Rezende"],
+];
+
+/** 24 alunos: os 8 da lista + 16 extras (só aparecem em Parcelas). */
+export const ALUNOS_PARCELAS = [
+  ...PASSAGEIROS.map((p) => ({ id: p.id, nome: p.nome, responsavel: p.responsavel_principal?.nome ?? "" })),
+  ...MAIS_ALUNOS.map(([nome, responsavel], i) => ({ id: `x${i + 1}`, nome, responsavel })),
+];
+
+export const VALOR_PARCELA = 280;
+
+type Parcela = { alunoId: string; dia: number; pago: boolean; diaPagamento?: number };
+
+const cobranca = (mes: number, p: Parcela) => {
+  const a = ALUNOS_PARCELAS.find((x) => x.id === p.alunoId)!;
+  const mm = String(mes).padStart(2, "0");
+  return {
+    id: `c-${mes}-${p.alunoId}`,
+    passageiro_id: p.alunoId,
+    mes,
+    ano: 2026,
+    valor: VALOR_PARCELA,
+    status: p.pago ? "pago" : "pendente",
+    data_vencimento: `2026-${mm}-${String(p.dia).padStart(2, "0")}`,
+    data_pagamento: p.pago ? `2026-${mm}-${String(p.diaPagamento ?? p.dia).padStart(2, "0")}T10:00:00` : undefined,
+    passageiro: {
+      id: p.alunoId,
+      nome: a.nome,
+      valor_cobranca: VALOR_PARCELA,
+      responsavel_principal: { nome: a.responsavel, telefone: "11999990000" },
+    },
+  } as any;
+};
+
+const diaVenc = (i: number) => [5, 10, 15, 20][i % 4];
+
+/** Março: 2 atrasados (5 e 10), 3 a vencer, 19 pagos. */
+export const MARCO_A_RECEBER = [
+  { alunoId: "p2", dia: 5, pago: false },
+  { alunoId: "p5", dia: 10, pago: false },
+  { alunoId: "p3", dia: 15, pago: false },
+  { alunoId: "p6", dia: 15, pago: false },
+  { alunoId: "p8", dia: 20, pago: false },
+].map((p) => cobranca(3, p));
+
+const PENDENTES_MARCO = new Set(["p2", "p5", "p3", "p6", "p8"]);
+export const MARCO_RECEBIDAS = ALUNOS_PARCELAS.filter((a) => !PENDENTES_MARCO.has(a.id)).map((a, i) =>
+  cobranca(3, { alunoId: a.id, dia: diaVenc(i), pago: true }),
+);
+
+/** Fevereiro: tudo pago, menos 1. */
+export const FEV_A_RECEBER = [cobranca(2, { alunoId: "p2", dia: 5, pago: false })];
+export const FEV_RECEBIDAS = ALUNOS_PARCELAS.filter((a) => a.id !== "p2").map((a, i) =>
+  cobranca(2, { alunoId: a.id, dia: diaVenc(i), pago: true }),
+);
+
+/** O aluno que tem o pagamento registrado no vídeo. */
+export const ALUNO_PAGAMENTO = "p6"; // Davi Santos
+
+export const totaisParcelas = (aReceber: any[], recebidas: any[]) => {
+  const soma = (l: any[]) => l.reduce((s, c) => s + Number(c.valor), 0);
+  const hoje = "2026-03-12";
+  const atrasado = soma(aReceber.filter((c) => c.data_vencimento < hoje && c.mes === 3) )
+    + soma(aReceber.filter((c) => c.mes < 3));
+  return {
+    totalPrevisto: soma(aReceber) + soma(recebidas),
+    totalRecebido: soma(recebidas),
+    totalAReceber: soma(aReceber),
+    totalAtrasado: atrasado,
+  };
+};

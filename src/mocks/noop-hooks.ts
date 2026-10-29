@@ -7,3 +7,17 @@ export const useDeletePrePassageiro = () => ({ mutateAsync: asyncNoop, mutate: n
 export const useAppRating = () => ({ trackAlunoCadastradoOuAprovado: noop, requestReview: noop });
 export const useUsuarioResumo = (..._a: any[]) => ({ data: undefined, isLoading: false });
 export const useActivityTracker = () => ({ trackActivity: noop });
+
+// mutações de parcelas (nada é salvo no vídeo)
+const mutation = () => ({ mutate: noop, mutateAsync: asyncNoop, isPending: false });
+export const useDeleteCobranca = mutation;
+export const useDesfazerPagamento = mutation;
+export const useToggleNotificacoesCobranca = mutation;
+export const useCreateCobranca = mutation;
+export const useRestaurarCobranca = mutation;
+export const useRegistrarPagamentoManual = mutation;
+export const useComplementarPagamentoManual = mutation;
+export const useUpdateCobranca = mutation;
+export const useTutorialsConfig = (..._a: any[]) => ({ config: undefined, shouldShowTutorial: false });
+export const usePassageiros = (..._a: any[]) => ({ data: { list: [] }, isLoading: false });
+export const useMotoristaFinanceiroApi = () => ({ financeiro: { chave_pix_repasse: null, tipo_chave_pix: null, modo_cobranca: "LEMBRETES" }, isLoading: false });

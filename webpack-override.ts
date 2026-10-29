@@ -30,6 +30,9 @@ const MOCK_MAP: Array<[RegExp, string]> = [
   [/src[\\/]hooks[\\/]business[\\/]useActivityTracker\.tsx?$/, "useActivityTracker.ts"],
   [/src[\\/]hooks[\\/]form[\\/]usePassageiroExternalForm\.tsx?$/, "usePassageiroExternalForm.ts"],
   [/src[\\/]hooks[\\/]ui[\\/]useRevisarSolicitacaoViewModel\.tsx?$/, "useRevisarSolicitacaoViewModel.ts"],
+  [/src[\\/]hooks[\\/]ui[\\/]useManualPaymentViewModel\.tsx?$/, "useManualPaymentViewModel.ts"],
+  [/src[\\/]hooks[\\/]ui[\\/]useCobrancasViewModel\.tsx?$/, "useCobrancasViewModel.ts"],
+  [/src[\\/]hooks[\\/]api[\\/]useMotoristaFinanceiroApi\.tsx?$/, "useMotoristaFinanceiroApi.ts"],
 ];
 
 export const webpackOverride: WebpackOverrideFn = (current) => {

@@ -35,7 +35,7 @@ export const PainelScene: React.FC = () => {
             {/* mesma estrutura do bloco superior da Home.tsx */}
             <div className="space-y-3.5">
               <div className="px-1">
-                <p className="text-xs font-medium text-[#737373]">quarta-feira, 10 de março</p>
+                <p className="text-xs font-medium text-[#737373]">quinta-feira, 12 de março</p>
               </div>
               <section
                 className="px-1"
