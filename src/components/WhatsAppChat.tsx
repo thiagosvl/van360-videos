@@ -12,7 +12,9 @@ export const WhatsAppChat: React.FC<{
   mensagem: string;
   /** frame em que a mensagem aparece */
   enviaEm: number;
-}> = ({ contato, mensagem, enviaEm }) => {
+  /** desce a conversa (px), para mensagens longas */
+  rolagem?: number;
+}> = ({ contato, mensagem, enviaEm, rolagem = 0 }) => {
   const frame = useCurrentFrame();
   const show = interpolate(frame, [enviaEm, enviaEm + 12], [0, 1], {
     extrapolateLeft: "clamp",
@@ -50,6 +52,7 @@ export const WhatsAppChat: React.FC<{
             translate: `0px ${(1 - show) * 30}px`,
             scale: String(0.96 + 0.04 * show),
             transformOrigin: "100% 100%",
+            marginTop: -rolagem,
           }}
         >
           <div className="text-[12.5px] leading-[17px] space-y-0">
@@ -74,7 +77,14 @@ export const WhatsAppChat: React.FC<{
   );
 };
 
+/** _itálico_ e *negrito* do WhatsApp */
 const renderItalico = (texto: string) =>
-  texto.split(/(_[^_]+_)/g).map((p, i) =>
-    p.startsWith("_") && p.endsWith("_") ? <em key={i}>{p.slice(1, -1)}</em> : <React.Fragment key={i}>{p}</React.Fragment>,
+  texto.split(/(_[^_]+_|\*[^*]+\*)/g).map((p, i) =>
+    p.length > 2 && p.startsWith("_") && p.endsWith("_") ? (
+      <em key={i}>{p.slice(1, -1)}</em>
+    ) : p.length > 2 && p.startsWith("*") && p.endsWith("*") ? (
+      <strong key={i}>{p.slice(1, -1)}</strong>
+    ) : (
+      <React.Fragment key={i}>{p}</React.Fragment>
+    ),
   );

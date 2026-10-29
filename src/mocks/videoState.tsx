@@ -28,6 +28,8 @@ export type VideoState = {
   gastoForm?: Record<string, unknown>;
   /** estado da renovação (ver mocks/renovacao.ts) */
   renovacao?: import("./renovacao").EstadoRenovacao;
+  /** indicações concluídas (Indique e Ganhe) */
+  indicacoes?: number;
 };
 
 const Ctx = createContext<VideoState>({});

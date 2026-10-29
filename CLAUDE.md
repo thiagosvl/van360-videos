@@ -45,6 +45,13 @@ Leia antes de criar ou mudar qualquer vídeo deste projeto.
 ## Relógio fixo
 "Hoje" no vídeo é sempre 12/03/2026 (`src/clock.ts`). Vencimentos, atrasos, "há 2 min"
 e mês atual dependem disso; monte os dados fictícios em cima dessa data.
+Um vídeo pode usar outra data com `usarHoje("...")` no corpo da composição (a Renovação usa 10/12/2026).
+Telas que leem `window.innerWidth` (ex.: Menu): `usarLarguraDeCelular()` (src/viewport.ts).
+
+## Diálogos com estado interno
+Para tocar/escolher/digitar de verdade (useState do app), use `<AcoesNaTela passos=[...]>`
+com a mesma `key` do diálogo (o passo atual). Barras e rodapés `fixed` da página ficam presos
+ao fim da página no vídeo: renderize a versão real no `overlay`.
 
 ## Mensagens do WhatsApp
 Textos dos modelos reais (WhatsApp Manager) ficam em `src/components/WabaMessage.tsx`.
