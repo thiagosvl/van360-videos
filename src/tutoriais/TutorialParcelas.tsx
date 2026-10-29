@@ -3,9 +3,7 @@ import { AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurren
 import Cobrancas from "@/pages/Cobrancas";
 import ManualPaymentDialog from "@/components/dialogs/ManualPaymentDialog";
 import { ReceiptDialog } from "@/components/dialogs/ReceiptDialog";
-import { ActionSheet } from "@/components/common/ActionSheet";
-import { CobrancaSummary } from "@/components/features/cobranca/CobrancaSummary";
-import { useCobrancaActions } from "@/hooks/ui/useCobrancaActions";
+import { ParcelaActions } from "../components/ParcelaActions";
 import { PhoneScreen } from "../components/PhoneScreen";
 import { WabaMessage, WABA_MODELOS } from "../components/WabaMessage";
 import { BrandBackground, ease, usePhoneRise } from "../components/brand";
@@ -73,28 +71,6 @@ const P = {
 };
 
 /* ------------------------------------------------------------------ */
-
-const ParcelaActions: React.FC<{ cobranca: any; open: boolean }> = ({ cobranca, open }) => {
-  const actions = useCobrancaActions({
-    cobranca,
-    onRegistrarPagamento: noop,
-    onVerCarteirinha: noop,
-    onEditarCobranca: noop,
-    onVerRecibo: cobranca.recibo_url ? noop : undefined,
-    onEnviarCobranca: noop,
-  } as any);
-  return (
-    <ActionSheet
-      open={open}
-      onOpenChange={noop}
-      actions={actions
-        .filter((a: any) => !a.hidden)
-        .map((a: any) => ({ label: a.label, title: a.title, description: a.description, icon: a.icon, onClick: noop, isDestructive: a.isDestructive, hasSeparatorAfter: a.hasSeparatorAfter, swipeColor: a.swipeColor }))}
-    >
-      <CobrancaSummary cobranca={cobranca} />
-    </ActionSheet>
-  );
-};
 
 /** Celular com a tela real de Parcelas, controlada quadro a quadro. */
 const TelaParcelas: React.FC = () => {

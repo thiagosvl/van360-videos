@@ -21,3 +21,13 @@ export const useUpdateCobranca = mutation;
 export const useTutorialsConfig = (..._a: any[]) => ({ config: undefined, shouldShowTutorial: false });
 export const usePassageiros = (..._a: any[]) => ({ data: { list: [] }, isLoading: false });
 export const useMotoristaFinanceiroApi = () => ({ financeiro: { chave_pix_repasse: null, tipo_chave_pix: null, modo_cobranca: "LEMBRETES" }, isLoading: false });
+
+// carteirinha
+export const useDeletePassageiro = mutation;
+export const useDeletePassageiroMatricula = mutation;
+export const useToggleAtivoPassageiro = mutation;
+export const useUpdatePassageiro = mutation;
+export const useSetPrincipalResponsavel = mutation;
+export const useDeleteResponsavelAdicional = mutation;
+export const useToggleNotificacoesRotaResponsavel = mutation;
+export const useGerarContratoFlow = () => ({ iniciarFluxoGerarContrato: noop });

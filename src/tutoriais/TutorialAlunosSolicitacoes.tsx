@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { FileText, Receipt, Route } from "lucide-react";
+import { Routes, Route } from "react-router-dom";
+import PassageiroCarteirinha from "@/pages/PassageiroCarteirinha";
 import { Tabs } from "@/components/ui/tabs";
 import { AppTabNav } from "@/components/ui/AppTabNav";
 import { QuickRegistrationLink } from "@/components/features/passageiro/QuickRegistrationLink";
@@ -9,7 +10,6 @@ import { PassageirosList } from "@/components/features/passageiro/PassageirosLis
 import PrePassageiros from "@/components/features/passageiro/PrePassageiros";
 import { RevisarSolicitacaoDialog } from "@/components/dialogs/RevisarSolicitacaoDialog";
 import PassageiroExternalForm from "@/pages/PassageiroExternalForm";
-import { ResponsavelCarteirinhaHeader } from "@/components/features/responsavel/carteirinha/ResponsavelCarteirinhaHeader";
 import { buildPrePassageiroShareMessage } from "@/utils/whatsappTemplates";
 import { PhoneScreen } from "../components/PhoneScreen";
 import { WhatsAppChat } from "../components/WhatsAppChat";
@@ -17,7 +17,7 @@ import { BRAND, BrandBackground, ease, usePhoneRise } from "../components/brand"
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
 import { VideoStateProvider } from "../mocks/videoState";
 import { MOCK_PROFILE } from "../mocks/useProfile";
-import { CARTEIRINHA_NOVO_ALUNO, LINK_DOMINIO, MOTORISTA, NOVO_ALUNO, PASSAGEIROS, PRE_PASSAGEIRO } from "../mocks/data";
+import { LINK_DOMINIO, MOTORISTA, NOVO_ALUNO, PASSAGEIROS, PEDRO_ID, PRE_PASSAGEIRO } from "../mocks/data";
 
 /**
  * Tutorial: "O pai cadastra, você só aprova" (aba Solicitações da tela de Alunos).
@@ -52,7 +52,7 @@ const SEGMENTS: Segment[] = [
   { id: "whatsapp", from: B[2], to: B[3], label: "Seu WhatsApp" },
   { id: "form-pai", from: B[3], to: B[4], label: "Celular do pai" },
   { id: "app-solic", from: B[4], to: B[6], label: "Seu celular" },
-  { id: "pai-cart", from: B[6], to: TUTORIAL_ALUNOS_SOLICITACOES_DURATION, label: "Celular do pai" },
+  { id: "app-cart", from: B[6], to: TUTORIAL_ALUNOS_SOLICITACOES_DURATION, label: "Seu celular" },
 ];
 
 /** Entra deslizando da direita e sai pela esquerda. */
@@ -257,57 +257,18 @@ const TelaSolicitacoes: React.FC = () => {
   );
 };
 
-/** Celular do pai: a carteirinha digital do filho (mesma página do app do responsável). */
-const TelaCarteirinhaPai: React.FC = () => {
+/** Seu celular: a carteirinha REAL do aluno recém-aprovado (visão do motorista). */
+const TelaCarteirinha: React.FC = () => {
   const frame = useCurrentFrame(); // relativo a B[6]
-  const beneficios = [
-    { icon: Receipt, titulo: "Parcelas", texto: "geradas automaticamente", at: B[7] - B[6] + 10 },
-    { icon: FileText, titulo: "Contrato", texto: "pronto para gerar", at: B[7] - B[6] + 40 },
-    { icon: Route, titulo: "Rotas", texto: "é só incluir o aluno", at: B[7] - B[6] + 70 },
-  ];
-
+  const tab = frame >= B[7] - B[6] + 12 ? "contrato" : "parcelas";
+  const route = `/alunos/${PEDRO_ID}?tab=${tab}&ano=2026`;
+  // na aba Parcelas, desce um pouco para mostrar as parcelas já geradas
+  const scroll = tab === "parcelas" ? interpolate(frame, [70, 130], [0, 300], { ...clamp, easing: ease }) : 0;
   return (
-    <PhoneScreen route="/responsavel/carteirinha" scale={SCALE} showChrome={false} contentClassName="">
-      <div className="min-h-[844px] bg-[#f5f5f5] text-[#0a0a0a] flex flex-col">
-        {/* mesmo cabeçalho da ResponsavelCarteirinhaBase.tsx */}
-        <header className="border-b border-[#e5e5e5] bg-white px-4 pt-[calc(0.875rem+var(--safe-area-top))] pb-3.5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <img src="/assets/logo-van360.webp" alt="Van360" className="h-8 w-auto" />
-            <h1 className="text-sm font-bold text-[#0a0a0a] tracking-tight">Carteirinha Digital</h1>
-            <div className="h-9 w-9" />
-          </div>
-        </header>
-        <main className="flex-1 p-4 w-full space-y-4">
-          <div
-            style={{
-              scale: String(interpolate(frame, [16, 34], [0.9, 1], { ...clamp, easing: ease })),
-              opacity: interpolate(frame, [16, 28], [0, 1], clamp),
-            }}
-          >
-            <ResponsavelCarteirinhaHeader carteirinha={CARTEIRINHA_NOVO_ALUNO} />
-          </div>
-          <div className="space-y-2.5">
-            {beneficios.map((b) => (
-              <div
-                key={b.titulo}
-                className="bg-white rounded-[20px] border border-[#e5e5e5] shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-3.5 flex items-center gap-3"
-                style={{
-                  opacity: interpolate(frame, [b.at, b.at + 10], [0, 1], clamp),
-                  translate: interpolate(frame, [b.at, b.at + 16], ["0px 16px", "0px 0px"], { ...clamp, easing: ease }),
-                }}
-              >
-                <div className="w-10 h-10 rounded-[14px] bg-primary/10 text-primary border border-primary/15 flex items-center justify-center shrink-0">
-                  <b.icon className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#0a0a0a]">{b.titulo}</span>
-                  <span className="text-xs text-[#737373]">{b.texto}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </main>
-      </div>
+    <PhoneScreen key={route} route={route} pageTitle="Carteirinha" scale={SCALE} scrollY={scroll}>
+      <Routes>
+        <Route path="/alunos/:passageiro_id" element={<PassageiroCarteirinha />} />
+      </Routes>
     </PhoneScreen>
   );
 };
@@ -317,7 +278,7 @@ const TELAS: Record<string, React.FC> = {
   whatsapp: TelaWhatsApp,
   "form-pai": TelaFormPai,
   "app-solic": TelaSolicitacoes,
-  "pai-cart": TelaCarteirinhaPai,
+  "app-cart": TelaCarteirinha,
 };
 
 /* ------------------------------------------------------------------ */

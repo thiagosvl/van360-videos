@@ -9,9 +9,11 @@ import { AlunosScene } from "./scenes/AlunosScene";
 import { PainelScene } from "./scenes/PainelScene";
 import { WhatsAppScene } from "./scenes/WhatsAppScene";
 import { OutroScene } from "./scenes/OutroScene";
+import { DebugCarteirinha } from "./debug/DebugCarteirinha";
 import { TutorialAlunosLista, TUTORIAL_ALUNOS_LISTA_DURATION } from "./tutoriais/TutorialAlunosLista";
 import { TutorialAlunosSolicitacoes, TUTORIAL_ALUNOS_SOLICITACOES_DURATION } from "./tutoriais/TutorialAlunosSolicitacoes";
 import { TutorialParcelas, TUTORIAL_PARCELAS_DURATION } from "./tutoriais/TutorialParcelas";
+import { TutorialCarteirinha, TUTORIAL_CARTEIRINHA_DURATION } from "./tutoriais/TutorialCarteirinha";
 
 const V = { width: 1080, height: 1920, fps: 30 };
 
@@ -36,6 +38,23 @@ export const RemotionRoot: React.FC = () => (
         component={TutorialParcelas}
         durationInFrames={TUTORIAL_PARCELAS_DURATION}
         {...V}
+      />
+      <Composition
+        id="TutorialCarteirinha"
+        component={TutorialCarteirinha}
+        durationInFrames={TUTORIAL_CARTEIRINHA_DURATION}
+        {...V}
+      />
+    </Folder>
+    <Folder name="Debug">
+      <Composition
+        id="DebugCarteirinha"
+        component={DebugCarteirinha}
+        durationInFrames={1}
+        width={1800}
+        height={910}
+        fps={30}
+        defaultProps={{ tab: "parcelas", ano: "2026", scrolls: [0, 700, 1400, 2100] }}
       />
     </Folder>
     <Folder name="Loja-AppStore">

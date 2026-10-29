@@ -24,6 +24,7 @@ const MOCK_MAP: Array<[RegExp, string]> = [
   [/src[\\/]hooks[\\/]business[\\/]useSession\.ts$/, "useSession.ts"],
   [/src[\\/]hooks[\\/]business[\\/]useProfile\.ts$/, "useProfile.ts"],
   [/src[\\/]integrations[\\/]supabase[\\/]client\.ts$/, "supabase-client.ts"],
+  [/src[\\/]services[\\/]sessionManager\.ts$/, "sessionManager.ts"],
   [/src[\\/]hooks[\\/]ui[\\/]useIsMobile\.tsx?$/, "useIsMobile.ts"],
   [/src[\\/]hooks[\\/]business[\\/]useSubscriptionAccess\.tsx?$/, "useSubscriptionAccess.ts"],
   [/src[\\/]hooks[\\/]api[\\/]useUsuarioResumo\.tsx?$/, "useUsuarioResumo.ts"],
@@ -36,6 +37,9 @@ const MOCK_MAP: Array<[RegExp, string]> = [
   // embrulham o original: o mock importa "arquivo.tsx?original", que não casa com o $ da regex
   [/src[\\/]components[\\/]common[\\/]DateNavigation\.tsx$/, "DateNavigation.tsx"],
   [/src[\\/]utils[\\/]detectPlatform\.ts$/, "detectPlatform.ts"],
+  [/src[\\/]hooks[\\/]api[\\/]useRoutes\.ts$/, "useRoutes.ts"],
+  [/src[\\/]hooks[\\/]api[\\/]useContratos\.ts$/, "useContratos.ts"],
+  [/src[\\/]hooks[\\/]api[\\/]useReciboAnual\.ts$/, "useReciboAnual.ts"],
 ];
 
 export const webpackOverride: WebpackOverrideFn = (current) => {

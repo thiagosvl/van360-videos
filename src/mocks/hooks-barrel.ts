@@ -14,3 +14,8 @@ export {
   useRestaurarCobranca, useRegistrarPagamentoManual, useComplementarPagamentoManual, useUpdateCobranca,
   useTutorialsConfig, usePassageiros,
 } from "@mocks/noop-hooks";
+export {
+  useDeletePassageiro, useDeletePassageiroMatricula, useToggleAtivoPassageiro, useUpdatePassageiro,
+  useSetPrincipalResponsavel, useDeleteResponsavelAdicional, useToggleNotificacoesRotaResponsavel, useGerarContratoFlow,
+} from "@mocks/noop-hooks";
+export { usePassageiro, useCobrancasByPassageiro } from "@mocks/carteirinha-hooks";

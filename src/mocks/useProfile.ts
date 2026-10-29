@@ -6,6 +6,9 @@ export const MOCK_PROFILE = {
   nome: MOTORISTA.nome,
   apelido: MOTORISTA.apelido,
   tipo: "motorista",
+  // contratos configurados e ativos (assinatura + "usar contratos")
+  assinatura_digital_url: "https://mock.local/assinatura.png",
+  config_contrato: { usar_contratos: true },
   configuracoes: {
     formato_nome_aluno: "completo",
     formato_nome_responsavel: "primeiro_nome",

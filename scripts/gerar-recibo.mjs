@@ -32,6 +32,32 @@ const RECIBOS = [
     referencia: "Março/2026",
     metodo: "PIX",
   },
+  {
+    arquivo: "recibo-ana-marco.png",
+    id: "7c2e9b14-3d5a-4f8e-b1c6-2a9d4e7f0b35",
+    motoristaNome: "Thiago Almeida",
+    logoMotorista: "assets/logo-motorista-tio-thiago.png",
+    valor: 280,
+    data: "08/03/2026",
+    pagadorNome: "Juliana Souza",
+    passageiroNome: "Ana Beatriz Souza",
+    referencia: "Março/2026",
+    metodo: "PIX",
+  },
+];
+
+// recibos anuais (back-end: generateAnnualReceipt)
+const RECIBOS_ANUAIS = [
+  {
+    arquivo: "recibo-anual-ana-2025.png",
+    ano: 2025,
+    motoristaNome: "Thiago Almeida",
+    logoMotorista: "assets/logo-motorista-tio-thiago.png",
+    responsavelNome: "Juliana Souza",
+    passageiroNome: "Ana Beatriz Souza",
+    emissao: "10/12/2025",
+    meses: ["Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"].map((m) => ({ mesNome: m, valor: 280 })),
+  },
 ];
 
 const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -119,6 +145,116 @@ for (const r of RECIBOS) {
 
   let svg = await satori(tree, { width: 600, height: 800, fonts: [{ name: "Inter", data: font, weight: 700, style: "normal" }] });
   svg = svg.replace(/(<image[^>]+width="240"[^>]+)preserveAspectRatio="xMidYMid"/, '$1preserveAspectRatio="xMinYMid meet"');
+  const png = new Resvg(svg, { fitTo: { mode: "zoom", value: 2 } }).render().asPng();
+  fs.writeFileSync(path.join(root, "public/recibos", r.arquivo), png);
+  console.log("ok", r.arquivo);
+}
+
+const rowAnual = (label, value) => row(label, value);
+
+for (const r of RECIBOS_ANUAIS) {
+  const logoMotorista = r.logoMotorista ? dataUrl(r.logoMotorista) : null;
+  const headerLogo = logoMotorista || logoVan360;
+  const totalPago = r.meses.reduce((s, m) => s + m.valor, 0);
+  const canvasHeight = Math.max(720, 600 + r.meses.length * 36);
+  const rowsMeses = r.meses.map((item) => ({
+    type: "div",
+    props: {
+      style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 16px", borderBottom: "1px solid #f1f5f9", fontSize: "13px" },
+      children: [
+        { type: "div", props: { style: { width: "100px", fontWeight: "bold", color: "#334155" }, children: item.mesNome.slice(0, 3).toUpperCase() } },
+        { type: "div", props: { style: { flex: 1, color: "#16a34a", fontWeight: "bold" }, children: "PAGO" } },
+        { type: "div", props: { style: { width: "140px", textAlign: "right", fontWeight: "bold", color: "#0f172a" }, children: brl(item.valor) } },
+      ],
+    },
+  }));
+  const tree = {
+    type: "div",
+    props: {
+      style: { display: "flex", flexDirection: "column", width: "600px", height: `${canvasHeight}px`, backgroundColor: "#ffffff", padding: "40px", fontFamily: "Inter" },
+      children: [
+        {
+          type: "div",
+          props: {
+            style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" },
+            children: [
+              { type: "img", props: { src: headerLogo, style: { maxWidth: "240px", maxHeight: "85px", objectFit: "contain" } } },
+              { type: "div", props: { style: { backgroundColor: "#f1f5f9", color: "#475569", fontSize: "11px", fontWeight: "bold", padding: "5px 12px", borderRadius: "999px" }, children: `REFERÊNCIA ${r.ano}` } },
+            ],
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: { display: "flex", flexDirection: "column", marginBottom: "24px" },
+            children: [
+              { type: "div", props: { style: { fontSize: "26px", fontWeight: "bold", color: "#0f172a", marginBottom: "4px" }, children: "Recibo Anual de Pagamento" } },
+              { type: "div", props: { style: { fontSize: "14px", fontWeight: "bold", color: "#334155", marginBottom: "2px" }, children: r.motoristaNome } },
+              { type: "div", props: { style: { fontSize: "13px", color: "#64748b" }, children: "Prestação de Serviços de Transporte Escolar" } },
+            ],
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: { backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", padding: "16px 22px", borderRadius: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" },
+            children: [
+              { type: "div", props: { style: { fontSize: "13px", fontWeight: "bold", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }, children: "TOTAL PAGO" } },
+              { type: "div", props: { style: { fontSize: "26px", fontWeight: "bold", color: "#0f172a" }, children: brl(totalPago) } },
+            ],
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: { display: "flex", flexDirection: "column", gap: "14px", marginBottom: "28px" },
+            children: [rowAnual("Pagador", r.responsavelNome), rowAnual("Aluno", r.passageiroNome)],
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: { display: "flex", flexDirection: "column" },
+            children: [
+              { type: "div", props: { style: { fontSize: "12px", fontWeight: "bold", color: "#475569", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }, children: `DETALHES DO PAGAMENTO ${r.ano}` } },
+              {
+                type: "div",
+                props: {
+                  style: { display: "flex", flexDirection: "column", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" },
+                  children: [
+                    {
+                      type: "div",
+                      props: {
+                        style: { display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#f8fafc", padding: "8px 16px", fontSize: "12px", fontWeight: "bold", color: "#475569", borderBottom: "1px solid #e2e8f0" },
+                        children: [
+                          { type: "div", props: { style: { width: "100px" }, children: "Data" } },
+                          { type: "div", props: { style: { flex: 1 }, children: "Status" } },
+                          { type: "div", props: { style: { width: "140px", textAlign: "right" }, children: "Valor" } },
+                        ],
+                      },
+                    },
+                    ...rowsMeses,
+                  ],
+                },
+              },
+            ],
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: { marginTop: "auto", paddingTop: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" },
+            children: [
+              { type: "div", props: { style: { fontSize: "11px", color: "#94a3b8" }, children: `Recibo digital gerado pela plataforma Van360 • Emitido em ${r.emissao}` } },
+              logoMotorista ? { type: "img", props: { src: logoVan360, style: { width: "70px", height: "24px", opacity: 0.6, objectFit: "contain" } } } : null,
+            ].filter(Boolean),
+          },
+        },
+      ],
+    },
+  };
+  let svg = await satori(tree, { width: 600, height: canvasHeight, fonts: [{ name: "Inter", data: font, weight: 700, style: "normal" }] });
+  svg = svg.replace(/(<image[^>]+)preserveAspectRatio="xMidYMid"/, '$1preserveAspectRatio="xMinYMid meet"');
   const png = new Resvg(svg, { fitTo: { mode: "zoom", value: 2 } }).render().asPng();
   fs.writeFileSync(path.join(root, "public/recibos", r.arquivo), png);
   console.log("ok", r.arquivo);

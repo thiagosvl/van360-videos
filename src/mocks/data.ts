@@ -191,3 +191,123 @@ export const totaisParcelas = (aReceber: any[], recebidas: any[]) => {
     totalAtrasado: atrasado,
   };
 };
+
+/* ---------- Carteirinha (Ana Beatriz, visão do motorista) ---------- */
+
+export const VEICULO = { id: "v1", modelo: "Sprinter", placa: "ABC1D23" };
+
+export const ANA_ID = "p1";
+
+const parcelaAna = (ano: number, mes: number, pago: boolean, diaPagamento = 8) => {
+  const mm = String(mes).padStart(2, "0");
+  return {
+    id: `ana-${ano}-${mm}`,
+    passageiro_id: ANA_ID,
+    mes,
+    ano,
+    valor: VALOR_PARCELA,
+    status: pago ? "pago" : "pendente",
+    tipo_pagamento: pago ? "PIX" : undefined,
+    data_vencimento: `${ano}-${mm}-10`,
+    data_pagamento: pago ? `${ano}-${mm}-${String(diaPagamento).padStart(2, "0")}T10:00:00` : undefined,
+    recibo_url: pago && ano === 2026 && mes === 3 ? "RECIBO_ANA_MARCO" : undefined,
+    passageiro: { id: ANA_ID, nome: "Ana Beatriz Souza", responsavel_principal: { nome: "Juliana Souza", telefone: "11987654321" } },
+  } as any;
+};
+
+/** 2025: fevereiro a dezembro, tudo pago (recibo anual liberado). */
+export const ANA_PARCELAS_2025 = Array.from({ length: 11 }, (_, i) => parcelaAna(2025, i + 2, true));
+/** 2026: jan a mar pagos, abr a dez a vencer (hoje = 12/03/2026). */
+export const ANA_PARCELAS_2026 = Array.from({ length: 12 }, (_, i) => parcelaAna(2026, i + 1, i < 3));
+
+export const ANA_CARTEIRINHA = {
+  id: ANA_ID,
+  usuario_id: MOTORISTA.id,
+  nome: "Ana Beatriz Souza",
+  genero: "feminino",
+  data_nascimento: "2017-08-21",
+  ativo: true,
+  isento: false,
+  ano_letivo: 2026,
+  anos_matriculados: [2025, 2026],
+  periodo: "manha",
+  modalidade: "ida_volta",
+  turma: "3º ano",
+  sala: "B",
+  horario_entrada: "07:00",
+  horario_saida: "12:00",
+  escola: ESCOLAS.aurora,
+  escola_id: ESCOLAS.aurora.id,
+  escola_nome: ESCOLAS.aurora.nome,
+  veiculo: VEICULO,
+  veiculo_id: VEICULO.id,
+  valor_cobranca: VALOR_PARCELA,
+  dia_vencimento: 10,
+  data_inicio_cobranca: "2025-02-01",
+  data_fim_cobranca: "2026-12-31",
+  data_inicio_transporte: "2025-02-01",
+  enviar_notificacoes: true,
+  logradouro: "Rua das Palmeiras",
+  numero: "120",
+  bairro: "Jardim Aurora",
+  cidade: "São Paulo",
+  estado: "SP",
+  cep: "04500-000",
+  created_at: "2025-01-20T10:00:00",
+  responsavel_principal: { id: "r1", nome: "Juliana Souza", telefone: "11987654321", parentesco: "mae", tipo: "principal" },
+  responsaveis: [
+    { id: "r1", responsavel_id: "r1", nome: "Juliana Souza", telefone: "11987654321", parentesco: "mae", tipo: "principal" },
+    { id: "r2", responsavel_id: "r2", nome: "Ricardo Souza", telefone: "11976541234", parentesco: "pai", tipo: "adicional" },
+  ],
+  contrato_id: "ct1",
+  status_contrato: "assinado",
+  contrato_status: "assinado",
+  contrato_provider: "van360",
+  contrato_ano: 2026,
+  contrato_final_url: "https://mock.local/contrato.pdf",
+  contrato_url: "https://mock.local/contrato.pdf",
+} as any;
+
+/* ---------- Carteirinha do aluno recém-aprovado (vídeo de Solicitações) ---------- */
+
+export const PEDRO_ID = "p-novo";
+
+/** Aprovado hoje: parcelas de abril a dezembro já geradas, sem contrato ainda. */
+export const PEDRO_PARCELAS_2026 = Array.from({ length: 9 }, (_, i) => {
+  const mes = i + 4;
+  const mm = String(mes).padStart(2, "0");
+  return {
+    id: `pedro-2026-${mm}`,
+    passageiro_id: PEDRO_ID,
+    mes,
+    ano: 2026,
+    valor: VALOR_PARCELA,
+    status: "pendente",
+    data_vencimento: `2026-${mm}-10`,
+    passageiro: { id: PEDRO_ID, nome: NOVO_ALUNO.nome, responsavel_principal: { nome: NOVO_ALUNO.responsavel, telefone: "11991234567" } },
+  } as any;
+});
+
+export const PEDRO_CARTEIRINHA = {
+  ...ANA_CARTEIRINHA,
+  id: PEDRO_ID,
+  nome: NOVO_ALUNO.nome,
+  genero: "masculino",
+  data_nascimento: "2017-05-14",
+  anos_matriculados: [2026],
+  turma: NOVO_ALUNO.turma,
+  sala: null,
+  data_inicio_cobranca: "2026-04-01",
+  data_fim_cobranca: "2026-12-31",
+  data_inicio_transporte: "2026-03-12",
+  created_at: "2026-03-12T09:58:00",
+  responsavel_principal: { id: "r9", nome: NOVO_ALUNO.responsavel, telefone: "11991234567", parentesco: "mae", tipo: "principal" },
+  responsaveis: [{ id: "r9", responsavel_id: "r9", nome: NOVO_ALUNO.responsavel, telefone: "11991234567", parentesco: "mae", tipo: "principal" }],
+  contrato_id: undefined,
+  status_contrato: undefined,
+  contrato_status: "sem_contrato",
+  contrato_provider: undefined,
+  contrato_ano: 2026,
+  contrato_final_url: undefined,
+  contrato_url: undefined,
+} as any;
