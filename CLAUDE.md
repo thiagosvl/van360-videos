@@ -68,8 +68,9 @@ npx remotion render <Id> out/<nome>.mp4 --crf=20 --x264-preset=veryfast
 ```
 
 ## Imagens das lojas (App Store / Play Store)
-- Slides em `src/loja/Loja.tsx` (lista `SLIDES_LOJA`), registrados como `<Still>` em
-  `ios-<id>` (1290x2796) e `android-<id>` (1080x1920).
+- Slides em `src/loja/Loja.tsx` (lista `SLIDES_LOJA`), peças visuais em `src/loja/base.tsx`,
+  telas do app em `src/loja/telas.tsx`. Registrados como `<Still>` em `ios-<id>` (1290x2796,
+  os 10) e `android-<id>` (1080x1920, os marcados `android: true`, máx. 8; o 8º leva o selo).
 - Medidas em "u" (1u = 1px numa largura de 1290): o mesmo slide serve aos dois tamanhos,
   o Android só corta embaixo. Nada importante abaixo de ~2200u.
 - Fundo navy, título branco com destaque âmbar (#FFB300), celular com tela real, e

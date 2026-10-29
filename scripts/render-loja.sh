@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Gera as imagens das lojas em out/loja/{ios,android}/
-# Uso: bash scripts/render-loja.sh            (todas)
-#      bash scripts/render-loja.sh 1-cobranca (uma)
+# Uso: bash scripts/render-loja.sh               (todas)
+#      bash scripts/render-loja.sh 01-cobranca   (uma ou mais, separadas por espaço)
 set -e
 cd "$(dirname "$0")/.."
-SLIDES=${1:-"1-cobranca 2-financeiro 3-cadastro 4-recibo 5-organizacao 6-marca"}
 EXTRA=${REMOTION_BROWSER:+--browser-executable=$REMOTION_BROWSER}
-npx remotion bundle --out-dir=out/bundle-loja >/dev/null
-for s in $SLIDES; do
-  for p in ios android; do
-    npx remotion still out/bundle-loja "$p-$s" "out/loja/$p/$s.png" $EXTRA --log=error
-  done
+npx remotion bundle --out-dir=out/bundle-loja --log=error >/dev/null
+IDS=$(npx remotion compositions out/bundle-loja --quiet $EXTRA 2>/dev/null | tr ' ' '\n' | grep -E '^(ios|android)-' || true)
+for id in $IDS; do
+  slide=${id#*-}
+  if [ -n "$1" ] && ! [[ " $* " == *" $slide "* ]]; then continue; fi
+  npx remotion still out/bundle-loja "$id" "out/loja/${id%%-*}/$slide.png" $EXTRA --log=error
 done
 echo "ok: out/loja"

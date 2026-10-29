@@ -63,8 +63,8 @@ export const RemotionRoot: React.FC = () => (
       ))}
     </Folder>
     <Folder name="Loja-PlayStore">
-      {SLIDES_LOJA.map((s) => (
-        <Still key={s.id} id={`android-${s.id}`} component={s.component} width={1080} height={1920} />
+      {SLIDES_LOJA.filter((s) => s.android).map((s) => (
+        <Still key={s.id} id={`android-${s.id}`} component={s.component} defaultProps={{ android: true }} width={1080} height={1920} />
       ))}
     </Folder>
     <Folder name="Cenas">
