@@ -370,12 +370,40 @@ export const listaContratos = (etapa: number) => {
 };
 
 /** O contrato do Pedro como a página pública de assinatura recebe. */
-export const contratoPublicoPedro = (assinado: boolean) =>
+export const contratoPublicoPedro = (assinado: boolean, base = "pedro", anoLetivo = 2026) =>
   ({
     id: `ct-${PEDRO_ID}`,
     status: assinado ? "assinado" : "pendente",
-    minuta_url: "pedro-minuta",
-    contrato_final_url: assinado ? "pedro-assinado" : null,
+    minuta_url: `${base}-minuta`,
+    contrato_final_url: assinado ? `${base}-assinado` : null,
     usuario: { apelido: MOTORISTA.apelido, nome: MOTORISTA.nome },
-    dados_contrato: { nomePassageiro: NOVO_ALUNO.nome, nomeResponsavel: NOVO_ALUNO.responsavel, anoLetivo: 2026 },
+    dados_contrato: { nomePassageiro: NOVO_ALUNO.nome, nomeResponsavel: NOVO_ALUNO.responsavel, anoLetivo },
   }) as any;
+
+/* ---------- Renovação: Pedro confirmado para 2027 (reajuste de 10%) ---------- */
+export const PEDRO_PARCELAS_2027 = Array.from({ length: 11 }, (_, i) => {
+  const mes = i + 2;
+  const mm = String(mes).padStart(2, "0");
+  return {
+    id: `pedro-2027-${mm}`,
+    passageiro_id: PEDRO_ID,
+    mes,
+    ano: 2027,
+    valor: 308,
+    status: "pendente",
+    data_vencimento: `2027-${mm}-10`,
+    passageiro: { id: PEDRO_ID, nome: NOVO_ALUNO.nome, responsavel_principal: { nome: NOVO_ALUNO.responsavel, telefone: "11991234567" } },
+  } as any;
+});
+
+export const PEDRO_CARTEIRINHA_2027 = {
+  ...PEDRO_CARTEIRINHA,
+  anos_matriculados: [2026, 2027],
+  valor_cobranca: 308,
+  turma: "3º ano",
+  data_inicio_cobranca: "2027-02-01",
+  data_fim_cobranca: "2027-12-31",
+  contrato_status: "assinado",
+  status_contrato: "assinado",
+  contrato_ano: 2027,
+} as any;

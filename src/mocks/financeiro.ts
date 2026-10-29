@@ -145,3 +145,5 @@ export const useUsuarioResumo = (_id?: string, params?: { mes?: number }) => {
   const gastos = useGastosDoVideo();
   return q(params?.mes ? resumo(gastos) : undefined);
 };
+/** lista simples de escolas (Renovação, ajustes em lote) */
+export const useEscolasWithFilters = () => q(ESCOLAS_LISTA);

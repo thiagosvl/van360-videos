@@ -39,6 +39,17 @@ export const WABA_MODELOS = {
       <p>A assinatura é rápida, feita pelo celular e garante a vaga e a segurança do transporte.</p>
     </>
   ),
+  /** van360_pais_renovacao: confirmar a renovação do ano seguinte (botão "Confirmar Transporte") */
+  renovacao: (p: { responsavel: string; aluno: string; ano: number }) => (
+    <>
+      <p>Olá, {p.responsavel}!</p>
+      <p>
+        Estamos organizando o itinerário e precisamos <b>confirmar a renovação</b> no transporte escolar do {p.aluno} para o ano
+        letivo de <b>{p.ano}</b>.
+      </p>
+      <p>Acesse o link abaixo para confirmar:</p>
+    </>
+  ),
 };
 
 /** Botão de link do modelo (ícone de "abrir fora" do WhatsApp). */

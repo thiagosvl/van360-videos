@@ -5,7 +5,17 @@ import { MotionGlobalConfig } from "framer-motion";
  * letivo saem iguais em qualquer dia que o vídeo for renderizado.
  * Para mudar a data de todos os vídeos, troque VIDEO_NOW.
  */
-export const VIDEO_NOW = new Date("2026-03-12T13:00:00Z").getTime();
+export const VIDEO_NOW_PADRAO = new Date("2026-03-12T13:00:00Z").getTime();
+export let VIDEO_NOW = VIDEO_NOW_PADRAO;
+
+/**
+ * Troca o "hoje" de UM vídeo (ex.: Renovação acontece em dezembro).
+ * Chame no corpo do componente da composição, antes de renderizar as telas:
+ * cada aba do navegador renderiza só uma composição, então não vaza para outras.
+ */
+export function usarHoje(iso: string) {
+  VIDEO_NOW = new Date(iso).getTime();
+}
 
 const RealDate = Date;
 class VideoDate extends RealDate {

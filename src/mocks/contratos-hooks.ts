@@ -9,7 +9,7 @@ export function useAssinarContratoViewModel(_p?: { token?: string }) {
   const { assinar } = useVideoState();
   const sigCanvas = useRef(null);
   return {
-    contrato: contratoPublicoPedro(!!assinar?.assinado),
+    contrato: contratoPublicoPedro(!!assinar?.assinado, assinar?.arquivo ?? "pedro", assinar?.anoLetivo ?? 2026),
     isLoading: false,
     isError: false,
     // o diálogo de assinatura é posto pelo vídeo no overlay do celular

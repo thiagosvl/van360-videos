@@ -17,7 +17,7 @@ export type VideoState = {
   /** etapa da história dos contratos: 0 antes de gerar, 1 pendente, 2 assinado */
   contratos?: { etapa: number };
   /** página pública de assinatura */
-  assinar?: { assinado?: boolean };
+  assinar?: { assinado?: boolean; /** páginas em public/contratos (padrão "pedro") */ arquivo?: string; anoLetivo?: number };
   /** quadro de assinatura: entra em modo de desenho e desenha até `progresso` (0 a 1) */
   assinatura?: { editando?: boolean; progresso?: number };
   /** abre esta aba da barra de abas (telas cuja aba é estado interno) */
@@ -26,6 +26,8 @@ export type VideoState = {
   gastosExtras?: any[];
   /** valores do formulário "Registrar Gasto" */
   gastoForm?: Record<string, unknown>;
+  /** estado da renovação (ver mocks/renovacao.ts) */
+  renovacao?: import("./renovacao").EstadoRenovacao;
 };
 
 const Ctx = createContext<VideoState>({});

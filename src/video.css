@@ -22,3 +22,10 @@
 .phone-screen .tela-cheia .min-h-screen {
   min-height: 814px !important;
 }
+
+/* Páginas públicas com rodapé fixo: a página inteira tem a altura do celular (o rodapé fica embaixo). */
+.phone-screen .tela-cheia-fixa .min-h-screen {
+  min-height: 814px !important;
+  height: 814px !important;
+  overflow: hidden !important;
+}

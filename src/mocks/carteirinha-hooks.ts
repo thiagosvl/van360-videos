@@ -1,6 +1,7 @@
 // Dados da carteirinha vindos do vídeo (aluno, parcelas por ano, recibo anual).
 import { staticFile } from "remotion";
-import { ANA_CARTEIRINHA, ANA_PARCELAS_2025, ANA_PARCELAS_2026, PEDRO_CARTEIRINHA, PEDRO_ID, PEDRO_PARCELAS_2026 } from "@mocks/data";
+import { useVideoState } from "@mocks/videoState";
+import { ANA_CARTEIRINHA, ANA_PARCELAS_2025, ANA_PARCELAS_2026, PEDRO_CARTEIRINHA, PEDRO_CARTEIRINHA_2027, PEDRO_ID, PEDRO_PARCELAS_2026, PEDRO_PARCELAS_2027 } from "@mocks/data";
 
 const RECIBOS: Record<string, string> = {
   RECIBO_ANA_MARCO: "recibos/recibo-ana-marco.png",
@@ -8,8 +9,11 @@ const RECIBOS: Record<string, string> = {
 
 const comRecibo = (c: any) => (c.recibo_url && RECIBOS[c.recibo_url] ? { ...c, recibo_url: staticFile(RECIBOS[c.recibo_url]) } : c);
 
+/** Pedro já renovado para 2027 (vídeo de Renovação) */
+const usePedroRenovado = () => (useVideoState() as any).renovacao?.status?.[PEDRO_ID] === "confirmado";
+
 export const usePassageiro = (id?: string, ..._a: any[]) => ({
-  data: id === PEDRO_ID ? PEDRO_CARTEIRINHA : ANA_CARTEIRINHA,
+  data: id === PEDRO_ID ? (usePedroRenovado() ? PEDRO_CARTEIRINHA_2027 : PEDRO_CARTEIRINHA) : ANA_CARTEIRINHA,
   isLoading: false,
   isError: false,
   error: null,
@@ -17,7 +21,7 @@ export const usePassageiro = (id?: string, ..._a: any[]) => ({
 });
 
 export const useCobrancasByPassageiro = (id?: string, ano?: string | number) => ({
-  data: (id === PEDRO_ID ? PEDRO_PARCELAS_2026 : String(ano) === "2025" ? ANA_PARCELAS_2025 : ANA_PARCELAS_2026).map(comRecibo),
+  data: (id === PEDRO_ID ? (String(ano) === "2027" ? PEDRO_PARCELAS_2027 : PEDRO_PARCELAS_2026) : String(ano) === "2025" ? ANA_PARCELAS_2025 : ANA_PARCELAS_2026).map(comRecibo),
   isLoading: false,
   isFetching: false,
   isError: false,

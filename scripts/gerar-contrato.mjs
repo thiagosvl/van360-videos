@@ -86,7 +86,7 @@ const stubs = {
       contents: {
         logger: "export const logger = { info(){}, warn(){}, error(){}, debug(){} };",
         storage: "export const storageProvider = globalThis.__storage;",
-        repo: "export const contractRepository = globalThis.__repo;",
+        repo: "export const contractRepository = new Proxy({}, { get: (_, k) => globalThis.__repo[k] });",
       }[a.path],
       loader: "js",
     }));
@@ -164,35 +164,59 @@ const dados = {
   logoCondutorUrl: dataUrl(fs.readFileSync(path.join(root, "assets/logo-motorista-tio-thiago.png"))),
 };
 
-globalThis.__repo = {
-  getMinutaAndData: async () => ({
-    data: { minuta_url: "https://mock.local/contratos/minutas/pedro.pdf", dados_contrato: dados },
-    error: null,
-  }),
-};
+/** Contratos gerados: o do vídeo de Contratos (2026) e o da Renovação (2027, com 10% de reajuste). */
+const CONTRATOS = [
+  { id: "pedro", hoje: "2026-03-12T13:00:00Z", assinadoEm: "2026-03-12T10:14:00", dados },
+  {
+    id: "pedro-2027",
+    hoje: "2026-12-10T13:00:00Z",
+    assinadoEm: "2026-12-10T10:31:00",
+    dados: {
+      ...dados,
+      valorMensal: 308,
+      ano: 2027,
+      dataInicio: "2027-02-01",
+      dataFim: "2027-12-17",
+      dataInicioCobranca: "2027-02-01",
+      dataFimCobranca: "2027-12-31",
+      valorTotal: 3388,
+      qtdParcelas: 11,
+      valorParcela: 308,
+    },
+  },
+];
 
-// "hoje" fixo, igual ao vídeo (src/clock.ts)
 const RealDate = Date;
-globalThis.Date = class extends RealDate {
-  constructor(...a) { super(...(a.length ? a : ["2026-03-12T13:00:00Z"])); }
-  static now() { return new RealDate("2026-03-12T13:00:00Z").getTime(); }
-};
-
 const { InHouseContractProvider } = await import(bundle);
 const provider = new InHouseContractProvider();
-await provider.gerarContrato({ contratoId: "pedro", dadosContrato: dados });
-await provider.processarAssinatura({
-  contratoId: "pedro",
-  assinaturaBase64: dataUrl(sigResponsavel),
-  nomeAssinante: "Carla Alves",
-  metadados: { ip: "177.38.214.92", userAgent: "Mozilla/5.0 (iPhone)", timestamp: "2026-03-12T10:14:00" },
-});
 
-/* ---------- PDF -> imagens das páginas ---------- */
-for (const [nome, chave] of [["minuta", "minutas/pedro.pdf"], ["assinado", "assinados/pedro.pdf"]]) {
-  const pdf = path.join(tmp, `${nome}.pdf`);
-  fs.writeFileSync(pdf, arquivos[chave]);
-  for (const f of fs.readdirSync(outDir).filter((f) => f.startsWith(`pedro-${nome}-`))) fs.unlinkSync(path.join(outDir, f));
-  execFileSync("pdftoppm", ["-png", "-scale-to-x", "1080", "-scale-to-y", "-1", pdf, path.join(outDir, `pedro-${nome}`)]);
+for (const c of CONTRATOS) {
+  // "hoje" fixo, igual ao vídeo (src/clock.ts)
+  globalThis.Date = class extends RealDate {
+    constructor(...a) { super(...(a.length ? a : [c.hoje])); }
+    static now() { return new RealDate(c.hoje).getTime(); }
+  };
+  globalThis.__repo = {
+    getMinutaAndData: async () => ({
+      data: { minuta_url: `https://mock.local/contratos/minutas/${c.id}.pdf`, dados_contrato: c.dados },
+      error: null,
+    }),
+  };
+  await provider.gerarContrato({ contratoId: c.id, dadosContrato: c.dados });
+  await provider.processarAssinatura({
+    contratoId: c.id,
+    assinaturaBase64: dataUrl(sigResponsavel),
+    nomeAssinante: "Carla Alves",
+    metadados: { ip: "177.38.214.92", userAgent: "Mozilla/5.0 (iPhone)", timestamp: c.assinadoEm },
+  });
+
+  /* ---------- PDF -> imagens das páginas ---------- */
+  for (const [nome, chave] of [["minuta", `minutas/${c.id}.pdf`], ["assinado", `assinados/${c.id}.pdf`]]) {
+    const pdf = path.join(tmp, `${c.id}-${nome}.pdf`);
+    fs.writeFileSync(pdf, arquivos[chave]);
+    const base = `${c.id}-${nome}`;
+    for (const f of fs.readdirSync(outDir).filter((f) => new RegExp(`^${base}-\\d+\\.png$`).test(f))) fs.unlinkSync(path.join(outDir, f));
+    execFileSync("pdftoppm", ["-png", "-scale-to-x", "1080", "-scale-to-y", "-1", pdf, path.join(outDir, base)]);
+  }
 }
 console.log(fs.readdirSync(outDir).join("\n"));
