@@ -36,6 +36,7 @@ const MOCK_MAP: Array<[RegExp, string]> = [
   [/src[\\/]hooks[\\/]api[\\/]useMotoristaFinanceiroApi\.tsx?$/, "useMotoristaFinanceiroApi.ts"],
   // embrulham o original: o mock importa "arquivo.tsx?original", que não casa com o $ da regex
   [/src[\\/]components[\\/]common[\\/]DateNavigation\.tsx$/, "DateNavigation.tsx"],
+  [/src[\\/]components[\\/]ui[\\/]AppTabNav\.tsx$/, "AppTabNav.tsx"],
   [/src[\\/]utils[\\/]detectPlatform\.ts$/, "detectPlatform.ts"],
   [/src[\\/]hooks[\\/]api[\\/]useRoutes\.ts$/, "useRoutes.ts"],
   [/src[\\/]hooks[\\/]api[\\/]useContratos\.ts$/, "useContratos.ts"],

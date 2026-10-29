@@ -1,3 +1,4 @@
+import { MotionGlobalConfig } from "framer-motion";
 /**
  * Relógio fixo do vídeo: "hoje" é sempre 12/03/2026 às 10h (horário de Brasília).
  * Deixa os vídeos determinísticos: vencimentos, "há 2 min", mês atual e ano
@@ -28,3 +29,7 @@ if (typeof Element !== "undefined") {
     return original.apply(this, args);
   } as any;
 }
+
+// Animações do framer-motion (ex.: lista de parcelas da carteirinha entrando com fade)
+// também rodam no relógio real e "piscam" entre quadros. No vídeo, vão direto ao estado final.
+MotionGlobalConfig.skipAnimations = true;
