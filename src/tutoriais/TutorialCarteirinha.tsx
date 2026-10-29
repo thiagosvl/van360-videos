@@ -2,11 +2,11 @@ import React from "react";
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Routes, Route } from "react-router-dom";
 import PassageiroCarteirinha from "@/pages/PassageiroCarteirinha";
-import { PassageirosList } from "@/components/features/passageiro/PassageirosList";
 import { ReceiptDialog } from "@/components/dialogs/ReceiptDialog";
 import { AnnualReceiptDialog } from "@/components/dialogs/AnnualReceiptDialog";
 import { PhoneScreen } from "../components/PhoneScreen";
 import { ParcelaActions } from "../components/ParcelaActions";
+import { TelaAlunos } from "../components/TelaAlunos";
 import { BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration, useImagensProntas } from "../components/tutorial";
 import { ANA_ID, ANA_PARCELAS_2026, PASSAGEIROS } from "../mocks/data";
@@ -46,7 +46,7 @@ const T = {
 
 // pontos de toque (px do celular 390x844) — conferidos em stills
 const P = {
-  aluno: { x: 190, y: 152 },
+  aluno: { x: 182, y: 483 },
   marco: { x: 190, y: 446 },
   verRecibo: { x: 170, y: 637 },
   anoAnterior: { x: 38, y: 128 },
@@ -176,7 +176,7 @@ export const TutorialCarteirinha: React.FC = () => {
             }
           >
             {naLista ? (
-              <PassageirosList passageiros={PASSAGEIROS.slice(0, 6)} onHistorico={noop} onEdit={noop} onToggleClick={noop} onDeleteClick={noop} />
+              <TelaAlunos passageiros={PASSAGEIROS.slice(0, 4)} />
             ) : (
               <Routes>
                 <Route path="/alunos/:passageiro_id" element={<PassageiroCarteirinha />} />
