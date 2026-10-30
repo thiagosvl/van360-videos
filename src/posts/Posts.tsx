@@ -1,12 +1,12 @@
 import React from "react";
 import { Img, staticFile } from "remotion";
 import {
-  AlertCircle, Banknote, Check, ClipboardList, Clock, FileSignature, FileText, Fuel, Image as ImageIcon,
-  MessageCircle, PiggyBank, Receipt, ShieldCheck, Smartphone, Sparkles, UserPlus, UserRound, Wallet, Wrench, X,
+  AlertCircle, Banknote, Check, ClipboardList, Clock, CreditCard, Handshake, Unlock, FileText, Fuel, Image as ImageIcon,
+  MessageCircle, PiggyBank, Receipt, ShieldCheck, Smartphone, Sparkles, UserRound, Wallet, Wrench, X,
 } from "lucide-react";
 import { AMBER, Ampliado, BLUE, Celular, Destaque, GREEN, NAVY, RED, Rotulo, WHATS, useU } from "../loja/base";
 import { BolhaLembrete, TelaAprovacao, TelaFormPai, TelaParcelas, TelaRelatorios } from "../loja/telas";
-import { BRANCO_SUAVE, Chamada, Etiqueta, Item, Lista, Post, Texto } from "./base";
+import { BRANCO_SUAVE, Chamada, Destacado, Etiqueta, Item, Lista, Post, Texto } from "./base";
 
 /**
  * Posts do feed (1080x1350). Cada post é uma lista de slides; estático = 1 slide.
@@ -17,7 +17,8 @@ import { BRANCO_SUAVE, Chamada, Etiqueta, Item, Lista, Post, Texto } from "./bas
 type Slide = React.FC;
 export type PostDef = { id: string; slides: Slide[] };
 
-const CTA_SUB = "Lembrete automático no WhatsApp, parcelas, recibos e muito mais. **R$ 25 por mês**, tudo incluso.";
+const CTA_SUB = "Lembrete automático no WhatsApp, parcelas, recibos e muito mais, num app só.";
+const SEM_CARTAO = "Sem cartão, sem compromisso, sem fidelidade.";
 
 /** Último slide padrão dos carrosséis. */
 const fechamento = (n: number): Slide => () => {
@@ -39,6 +40,8 @@ const fechamento = (n: number): Slide => () => {
           color: BRANCO_SUAVE,
         }}
       >
+        {SEM_CARTAO}
+        <br />
         Link na bio
       </div>
     </Post>
@@ -167,12 +170,13 @@ const atrasado: Slide[] = [
   dica(6, 7, "Dê baixa e mande o **recibo** na hora", "Assim você nunca cobra quem já pagou, que é a situação mais chata de todas.", Receipt, AMBER),
   () => (
     <Post pagina={[7, 7]} brilhoY={1000}>
-      <Texto top={190} tamanho={104} titulo={"O Van360 faz as dicas 1 e 5 **por você**"} />
+      <Texto top={170} tamanho={104} titulo={"O Van360 faz as dicas 1, 4 e 5 **por você**"} />
       <Lista top={620}>
         <Item icone={MessageCircle} cor={WHATS} titulo="Lembrete automático" texto="No WhatsApp do pai, no dia do vencimento" />
+        <Item icone={Banknote} cor={GREEN} titulo="Sua chave Pix na mensagem" texto="O pai já recebe como pagar" />
         <Item icone={Receipt} cor={BLUE} titulo="Recibo pronto" texto="Com a sua logo, é só mandar" />
       </Lista>
-      <Chamada top={1150} texto="Teste grátis por 15 dias" />
+      <Chamada top={1280} texto="Teste grátis por 15 dias" />
     </Post>
   ),
 ];
@@ -444,20 +448,155 @@ const cadastro: Slide[] = [
   ),
 ];
 
-/* ============ 8. Estático: oferta ============ */
+/* ============ 8. Estático: teste grátis (sem falar de preço) ============ */
 
 const oferta: Slide[] = [
   () => (
     <Post brilhoY={900}>
-      <Texto top={110} centro tamanho={140} titulo={"R$ 25 por mês.\n**Tudo incluso.**"} />
-      <Lista top={480} gap={20}>
-        <Item icone={MessageCircle} cor={WHATS} titulo="Lembrete automático no WhatsApp" />
-        <Item icone={Receipt} cor={BLUE} titulo="Parcelas e recibos com sua logo" />
-        <Item icone={FileSignature} cor={GREEN} titulo="Contrato assinado pelo celular" />
-        <Item icone={UserPlus} cor={NAVY} titulo="Cadastro feito pelo pai" />
+      <Texto
+        top={110}
+        centro
+        tamanho={150}
+        titulo={"Comece\n**grátis**"}
+        sub="São 15 dias pra testar o Van360 na sua rotina de transporte escolar."
+      />
+      <Lista top={660} gap={24}>
+        <Item icone={CreditCard} cor={BLUE} titulo="Sem cartão de crédito" texto="Não pede nenhum dado de pagamento" />
+        <Item icone={Handshake} cor={GREEN} titulo="Sem compromisso" texto="Gostou, continua. Não gostou, tudo bem." />
+        <Item icone={Unlock} cor={NAVY} titulo="Sem fidelidade" texto="Nada de contrato longo" />
       </Lista>
-      <Chamada top={1330} texto="15 dias grátis, sem cartão" />
+      <Chamada top={1330} texto="Teste grátis por 15 dias" />
     </Post>
+  ),
+];
+
+/* ============ 9 a 11. Estáticos: depoimentos reais (falas dos áudios, sem editar palavras) ============ */
+
+const Depoimento: React.FC<{
+  fala: string;
+  apoio: string;
+  nome: string;
+  local: string;
+  avatar?: string;
+  inicial: string;
+  tamanho?: number;
+}> = ({ fala, apoio, nome, local, avatar, inicial, tamanho = 92 }) => {
+  const u = useU();
+  return (
+    <Post brilhoY={1250}>
+      <div style={{ position: "absolute", top: 120 * u, left: 90 * u }}>
+        <Etiqueta texto="DEPOIMENTO REAL" fundo="rgba(255,255,255,0.12)" cor="white" />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: 200 * u,
+          left: 70 * u,
+          fontFamily: "Manrope",
+          fontWeight: 800,
+          fontSize: 340 * u,
+          lineHeight: 1,
+          color: AMBER,
+        }}
+      >
+        “
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: 470 * u,
+          left: 90 * u,
+          right: 90 * u,
+          fontFamily: "Manrope",
+          fontWeight: 800,
+          fontSize: tamanho * u,
+          lineHeight: 1.12,
+          letterSpacing: "-0.03em",
+          color: "white",
+          textWrap: "balance",
+        }}
+      >
+        <Destacado texto={fala} />
+        <div
+          style={{
+            marginTop: 44 * u,
+            fontFamily: "Inter",
+            fontWeight: 500,
+            fontSize: 44 * u,
+            lineHeight: 1.4,
+            letterSpacing: 0,
+            color: BRANCO_SUAVE,
+            textWrap: "pretty",
+          }}
+        >
+          {apoio}
+        </div>
+      </div>
+      <div style={{ position: "absolute", left: 90 * u, right: 90 * u, top: 1200 * u, display: "flex", alignItems: "center", gap: 32 * u }}>
+        <div
+          style={{
+            width: 150 * u,
+            height: 150 * u,
+            borderRadius: 999,
+            background: "white",
+            border: `${6 * u}px solid ${AMBER}`,
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          {avatar ? (
+            <Img src={staticFile(avatar)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 70 * u, color: NAVY }}>{inicial}</span>
+          )}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 * u }}>
+          <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 56 * u, color: "white" }}>{nome}</span>
+          <span style={{ fontFamily: "Inter", fontWeight: 500, fontSize: 38 * u, color: BRANCO_SUAVE }}>Transporte escolar · {local}</span>
+        </div>
+      </div>
+    </Post>
+  );
+};
+
+const depVerinha: Slide[] = [
+  () => (
+    <Depoimento
+      fala="Trabalho há mais de 30 anos com **transporte escolar** e sempre foi na base do caderninho, da planilha de Excel e da agenda."
+      apoio="Hoje, eu uso o Van360 no meu dia a dia do transporte escolar."
+      tamanho={80}
+      nome="Tia Verinha"
+      local="Gravataí, RS"
+      avatar="depoimentos/verinha-avatar.png"
+      inicial="V"
+    />
+  ),
+];
+
+const depRicardo: Slide[] = [
+  () => (
+    <Depoimento
+      fala="Para mim, o **fim da papelada** com contrato é o melhor."
+      apoio="Já migrei todos os meus contratos para o aplicativo, com assinatura digital dos pais, inclusive os que eu não tinha feito contrato ainda."
+      nome="Tio Ricardo"
+      local="Santa Maria, DF"
+      inicial="R"
+    />
+  ),
+];
+
+const depFlavio: Slide[] = [
+  () => (
+    <Depoimento
+      fala="Hoje, eu mesmo **não fico mais sem** a plataforma Van360."
+      apoio="É bom para os dois lados também, tanto para o pai como para nós, condutores."
+      nome="Tio Flávio"
+      local="Americana, SP"
+      inicial="F"
+    />
   ),
 ];
 
@@ -469,5 +608,8 @@ export const POSTS: PostDef[] = [
   { id: "05-antes-depois", slides: antesDepois },
   { id: "06-recibo", slides: recibo },
   { id: "07-cadastro-pelo-pai", slides: cadastro },
-  { id: "08-oferta", slides: oferta },
+  { id: "08-teste-gratis", slides: oferta },
+  { id: "09-depoimento-verinha", slides: depVerinha },
+  { id: "10-depoimento-ricardo", slides: depRicardo },
+  { id: "11-depoimento-flavio", slides: depFlavio },
 ];
