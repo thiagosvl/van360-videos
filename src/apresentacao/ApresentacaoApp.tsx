@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import Rotas from "@/pages/Rotas";
@@ -20,20 +20,36 @@ import { TutorialGastos } from "../tutoriais/TutorialGastos";
  * Apresentação do app (landing page e resposta no WhatsApp), ~90s, narração do Thiago.
  * Reaproveita trechos dos tutoriais (telas reais) e tem cenas próprias no começo e no fim.
  */
-export const BEATS: Beat[] = [
-  { text: "Cobrar pai no WhatsApp, anotar pagamento no caderno, correr atrás de recibo… **dá para largar isso**.", from: 0, duration: 180 },
-  { text: "Mais de **500 motoristas** já organizam o transporte escolar no celular com o Van360.", from: 180, duration: 150 },
-  { text: "Você manda um link, o pai **preenche o cadastro** do filho e a **carteirinha digital** fica pronta.", from: 330, duration: 360 },
-  { text: "Todo mês, o app avisa o pai **no WhatsApp**, com a sua chave Pix.", from: 690, duration: 240 },
-  { text: "E você vê na hora **quem pagou** e quem está devendo.", from: 930, duration: 180 },
-  { text: "Pagou? O **recibo** sai pronto.", from: 1110, duration: 180 },
-  { text: "O contrato, o pai **assina pelo celular**, com validade jurídica. Sem papel.", from: 1290, duration: 315 },
-  { text: "Você anota os gastos da van e o app mostra o seu **lucro de verdade**, mês a mês.", from: 1605, duration: 300 },
-  { text: "Monta as **rotas** e faz a chamada na saída da escola em poucos toques.", from: 1905, duration: 240 },
-  { text: "Menos tempo cobrando e conferindo, **mais tempo para você**.", from: 2145, duration: 150 },
-  { text: "Teste **15 dias grátis**, sem cartão.", from: 2295, duration: 150 },
-  { text: "Você dirige. **A gente organiza.**", from: 2445, duration: 180 },
+/** Duração de cada fala gravada (public/narracao/fala-NN.mp3), em segundos. */
+const NARRACAO = [6.61, 6.27, 5.33, 8.83, 6.35, 6.92, 10.19, 10.76, 8.6, 7.55, 7.16];
+/** quadros de cada bloco: a fala + um respiro; o 3º bloco segura um pouco mais (duas telas) */
+const dur = (i: number) => Math.max(Math.ceil((NARRACAO[i] + 0.35) * 30), i === 2 ? 210 : 0);
+
+const TEXTOS = [
+  "Cobrar pai no WhatsApp, anotar pagamento no caderno, correr atrás de recibo… **dá para largar isso**.",
+  "Mais de **500 motoristas** já organizam o transporte escolar no celular com o Van360.",
+  "Você manda um link, o pai **preenche o cadastro** do filho e a **carteirinha digital** fica pronta.",
+  "Todo mês, o app avisa o pai **no WhatsApp**, com a sua chave Pix.",
+  "E você vê na hora **quem pagou** e quem está devendo.",
+  "Pagou? O **recibo** sai pronto.",
+  "O contrato, o pai **assina pelo celular**, com validade jurídica. Sem papel.",
+  "Você anota os gastos da van e o app mostra o seu **lucro de verdade**, mês a mês.",
+  "Monta as **rotas** e faz a chamada na saída da escola em poucos toques.",
+  "Menos tempo cobrando e conferindo, **mais tempo para você**.",
+  "Teste **15 dias grátis**, sem cartão.",
 ];
+
+export const BEATS: Beat[] = (() => {
+  let t = 0;
+  const lista: Beat[] = TEXTOS.map((text, i) => {
+    const b = { text, from: t, duration: dur(i) };
+    t += dur(i);
+    return b;
+  });
+  // o slogan fica na tela no fim (a fala dele já está na narração)
+  lista.push({ text: "Você dirige. **A gente organiza.**", from: t, duration: 90 });
+  return lista;
+})();
 export const APRESENTACAO_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -47,14 +63,15 @@ const FADE = 10;
 /* trechos dos tutoriais: [início no vídeo, componente, de, até]       */
 /* ------------------------------------------------------------------ */
 type Trecho = { em: number; Comp: React.FC; de: number; ate: number };
+const LEN = (n: number) => B[n + 1] - B[n];
 const TRECHOS: Trecho[] = [
-  { em: B[3], Comp: TutorialAlunosSolicitacoes, de: 300, ate: 480 }, // o pai preenche o cadastro
-  { em: B[3] + 180, Comp: TutorialAlunosSolicitacoes, de: 828, ate: 1008 }, // carteirinha pronta
-  { em: B[4], Comp: TutorialParcelas, de: 1170, ate: 1410 }, // lembretes no WhatsApp do pai
-  { em: B[5], Comp: TutorialParcelas, de: 150, ate: 330 }, // painel: quem pagou, quem deve
-  { em: B[6], Comp: TutorialParcelas, de: 840, ate: 1020 }, // recibo
-  { em: B[7], Comp: TutorialContratos, de: 795, ate: 1110 }, // assinatura do pai
-  { em: B[8], Comp: TutorialGastos, de: 700, ate: 1000 }, // lucro real
+  { em: B[3], Comp: TutorialAlunosSolicitacoes, de: 300, ate: 300 + LEN(3) / 2 }, // o pai preenche o cadastro
+  { em: B[3] + LEN(3) / 2, Comp: TutorialAlunosSolicitacoes, de: 828, ate: 828 + LEN(3) / 2 }, // carteirinha pronta
+  { em: B[4], Comp: TutorialParcelas, de: 1426 - LEN(4), ate: 1426 }, // lembretes no WhatsApp do pai
+  { em: B[5], Comp: TutorialParcelas, de: 150, ate: 150 + LEN(5) }, // painel: quem pagou, quem deve
+  { em: B[6], Comp: TutorialParcelas, de: 1018 - LEN(6), ate: 1018 }, // recibo
+  { em: B[7], Comp: TutorialContratos, de: 795, ate: 795 + LEN(7) }, // assinatura do pai
+  { em: B[8], Comp: TutorialGastos, de: 1000 - LEN(8), ate: 1000 }, // lucro real
 ];
 
 /** Um trecho de tutorial, sem a legenda dele, com fade curto na entrada e na saída. */
@@ -223,7 +240,7 @@ const Fechamento: React.FC = () => {
   const { fps } = useVideoConfig();
   const logo = spring({ frame: frame - 6, fps, config: { damping: 14 } });
   const selo = spring({ frame: frame - (B[11] - B[10]), fps, config: { damping: 12 } });
-  const slogan = spring({ frame: frame - (B[12] - B[10]), fps, config: { damping: 14 } });
+  const slogan = spring({ frame: frame - (B[12] - B[10] - 45), fps, config: { damping: 14 } });
   return (
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", top: 120 }}>
       <Img src={staticFile("logo-van360-horizontal.png")} style={{ width: 560, scale: String(logo), opacity: logo }} />
@@ -294,6 +311,11 @@ export const ApresentacaoApp: React.FC = () => {
       <Sequence from={B[10]} name="Fechamento">
         <Fechamento />
       </Sequence>
+      {NARRACAO.map((_, i) => (
+        <Sequence key={`fala-${i}`} from={B[i + 1]} name={`Fala ${i + 1}`}>
+          <Audio src={staticFile(`narracao/fala-${String(i + 1).padStart(2, "0")}.mp3`)} />
+        </Sequence>
+      ))}
       {/* por cima de tudo (os trechos de tutorial trazem o próprio fundo).
           Nos dois últimos beats o fechamento mostra o texto (selo e slogan). */}
       <Caption beats={BEATS.slice(0, 10)} />
