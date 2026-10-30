@@ -32,6 +32,8 @@ export type VideoState = {
   indicacoes?: number;
   /** perfil com o resumo do mês (tela Início com números) */
   comResumo?: boolean;
+  /** data escolhida no campo "Data da Ausência" (yyyy-MM-dd) */
+  dataAusencia?: string;
 };
 
 const Ctx = createContext<VideoState>({});

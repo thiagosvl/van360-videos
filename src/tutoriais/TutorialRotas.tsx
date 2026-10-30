@@ -12,6 +12,7 @@ import { TelaBloqueio, Notificacao } from "../components/TelaBloqueio";
 import { BRAND, BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
 import { usarLarguraDeCelular } from "../viewport";
+import { VideoStateProvider } from "../mocks/videoState";
 import { ESCOLAS_CHAMADA, execucaoIda } from "../mocks/rotas";
 
 /**
@@ -43,8 +44,8 @@ const SLIDE = 18;
 /* ------------------------------------------------------------------ */
 type Segment = { id: string; from: number; to: number; label: string };
 const SEGMENTS: Segment[] = [
-  { id: "rotas", from: 0, to: B[3] + 50, label: "Seu celular" },
-  { id: "aviso-inicio", from: B[3] + 50, to: B[4], label: "Celular do pai" },
+  { id: "rotas", from: 0, to: B[3] + 70, label: "Seu celular" },
+  { id: "aviso-inicio", from: B[3] + 70, to: B[4], label: "Celular do pai" },
   { id: "execucao", from: B[4], to: B[6], label: "Seu celular" },
   { id: "aviso-embarque", from: B[6], to: B[7], label: "Celular do pai" },
   { id: "falta-pai", from: B[7], to: B[7] + 120, label: "Celular do pai" },
@@ -108,8 +109,9 @@ const P = {
   continuar2: { x: 265, y: 543 },
   alunoChamada: { x: 195, y: 430 },
   salvarChamada: { x: 297, y: 627 },
-  dataAusencia: { x: 195, y: 532 },
-  salvarAusencia: { x: 316, y: 677 },
+  fecharEndereco: { x: 341, y: 416 },
+  dataAusencia: { x: 195, y: 492 },
+  salvarAusencia: { x: 284, y: 641 },
 };
 
 /* ------------------------------------------------------------------ */
@@ -120,9 +122,10 @@ const T1 = {
   abreRota: B[1] + 131,
   tocaEndereco: B[2] + 122,
   abreEndereco: B[2] + 128,
-  fechaEndereco: B[3] - 6,
-  tocaIniciar: B[3] + 25,
-  iniciada: B[3] + 31,
+  tocaFechar: B[3] - 14,
+  fechaEndereco: B[3] - 8,
+  tocaIniciar: B[3] + 22,
+  iniciada: B[3] + 28,
 };
 
 const TelaRotas: React.FC = () => {
@@ -135,7 +138,7 @@ const TelaRotas: React.FC = () => {
   const route = naRota ? "/rotas/executar/r1" : "/rotas";
   return (
     <PhoneScreen
-      key={`${route}-${iniciada}`}
+      key={`${route}-${iniciada}-${enderecoAberto}`}
       route={route}
       pageTitle={naRota ? "Ida Manhã" : "Rotas"}
       scale={SCALE}
@@ -151,6 +154,7 @@ const TelaRotas: React.FC = () => {
               { at: T1.tocaIda - 22, ...P.idaManha },
               { at: T1.tocaIda, ...P.idaManha, tap: true },
               { at: T1.tocaEndereco, ...P.endereco, tap: true },
+              { at: T1.tocaFechar, ...P.fecharEndereco, tap: true },
               { at: T1.tocaIniciar, ...P.iniciar, tap: true },
             ]}
           />
@@ -170,7 +174,7 @@ const TelaRotas: React.FC = () => {
 /* ------------------------------------------------------------------ */
 const AVISO_INICIO: Notificacao[] = [
   { titulo: "Rota Iniciada! 🚌", corpo: "A van iniciou a rota de ida para a escola às 06:35. Avisaremos quando estiver a caminho da sua residência!", chegaEm: 14, hora: "06:35" },
-  { titulo: "Van a Caminho! 🚌", corpo: "A van está a caminho para buscar o Pedro.", chegaEm: 70 },
+  { titulo: "Van a Caminho! 🚌", corpo: "A van está a caminho para buscar o Pedro.", chegaEm: 55 },
 ];
 const AVISO_EMBARQUE: Notificacao[] = [
   { titulo: "Embarque Confirmado ✅", corpo: "O Pedro embarcou na van às 06:52 a caminho da escola!", chegaEm: 16, hora: "06:52" },
@@ -245,16 +249,17 @@ const TelaExecucao: React.FC = () => {
 /* ------------------------------------------------------------------ */
 /* Celular do pai: registra a falta                                     */
 /* ------------------------------------------------------------------ */
-const T3 = { passos: [20, 40], tocaSalvar: 92 };
+const T3 = { tocaData: 24, tocaSalvar: 84 };
 const TelaFaltaPai: React.FC = () => {
   const frame = useCurrentFrame(); // relativo a B[7]
-  const passo = T3.passos.filter((t) => frame >= t).length;
   const aberto = frame < T3.tocaSalvar + 6;
+  // o toque no campo já escolhe a data (hoje), sem mostrar o calendário
+  const dataAusencia = frame >= T3.tocaData + 2 ? "2026-03-12" : undefined;
   return (
     <PhoneScreen route="/" scale={SCALE} showChrome={false} contentClassName="">
       <div className="absolute inset-0 bg-[#f5f5f5]" />
       {aberto && (
-        <React.Fragment key={`falta-${passo}`}>
+        <VideoStateProvider value={{ dataAusencia }}>
           <ResponsavelNotificarAusenciaDialog
             open
             onOpenChange={noop}
@@ -263,8 +268,7 @@ const TelaFaltaPai: React.FC = () => {
             rotas={[{ id: "r1", nome: "Ida Manhã", periodo: "manha" }]}
             token="video"
           />
-          <AcoesNaTela passos={([{ tocar: "dd/mm/aaaa" }, { tocar: "12" }] as any).slice(0, passo)} />
-        </React.Fragment>
+        </VideoStateProvider>
       )}
       <div className="absolute inset-0 z-[70]">
         <Finger
@@ -272,7 +276,7 @@ const TelaFaltaPai: React.FC = () => {
           hideAt={T3.tocaSalvar + 8}
           steps={[
             { at: 8, ...P.dataAusencia },
-            { at: T3.passos[0] - 2, ...P.dataAusencia, tap: true },
+            { at: T3.tocaData, ...P.dataAusencia, tap: true },
             { at: T3.tocaSalvar, ...P.salvarAusencia, tap: true },
           ]}
         />
@@ -287,7 +291,7 @@ const TelaFaltaRota: React.FC = () => (
     route="/rotas/executar/r1"
     pageTitle="Ida Manhã"
     scale={SCALE}
-    overlay={<Circulo x={200} y={330} w={340} h={58} desde={30} ate={TUTORIAL_ROTAS_DURATION - B[7] - 120 - 8} />}
+    overlay={<Circulo x={100} y={333} w={196} h={58} desde={30} ate={TUTORIAL_ROTAS_DURATION - B[7] - 120 - 8} />}
   >
     <Routes>
       <Route path="/rotas/executar/r1" element={<TelaRota estado={execucaoIda({ ausentes: ["p4"] })} />} />
