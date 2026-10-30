@@ -17,14 +17,18 @@ Leia antes de criar ou mudar qualquer vídeo deste projeto.
 - **Venda/anúncio**: gancho nos 2 primeiros segundos, 3 ou 4 benefícios gerais
   (sem detalhar a tela), fechamento com slogan "Você dirige. A gente organiza." e CTA.
 
-## Capa (obrigatória em todo vídeo)
-- Todo vídeo novo ou refeito sai com capa (miniatura do WhatsApp/Instagram), entregue junto com o MP4.
+## Capa (obrigatória em todo vídeo, aplicada no próprio MP4)
+- Todo vídeo novo ou refeito é ENTREGUE COM A CAPA NO PRIMEIRO QUADRO (0,5s), para o WhatsApp/Instagram
+  usar como miniatura. Nunca entregar o vídeo sem a capa aplicada; o PNG avulso vai junto.
 - Componente `CapaVideo` (src/components/CapaVideo.tsx). Tudo é configurável e muda a cada vídeo:
   `quadro` (qual tela do vídeo aparece no celular), `titulo` (`**palavra**` em azul),
-  `botao` (texto, padrão "Veja como funciona"), `icone` (padrão ▶; null tira) e `subtitulo` (ex.: "Em 46 segundos").
-- Registrar no Root, pasta "Capas", com uma linha `capa("Capa<Video>", DURACAO, { Video, quadro, titulo, botao, icone, subtitulo })`.
+  `botao` (texto, padrão "Veja como funciona"), `icone` (padrão ▶; null tira) e `subtitulo` (ex.: "Em 47 segundos").
+- Registrar no Root, pasta "Finais", com `capa("<Nome>", DURACAO, { Video, quadro, titulo, botao, icone, subtitulo })`.
+  Isso cria `Capa<Nome>` (PNG) e `<Nome>Final` (vídeo com a capa na frente, = o que se entrega).
 - Quadro: uma tela real cheia e bonita do próprio vídeo. Título vende benefício (até ~6 palavras).
-- Gerar: `npx remotion still Capa<Video> out/capa-<video>.png`. Conferir o PNG antes de entregar.
+- Gerar: `npx remotion still Capa<Nome> out/capa-<nome>.png` e `npx remotion render <Nome>Final out/<nome>.mp4 ...`
+  (+ normalizar o áudio). Conferir o PNG antes de entregar.
+- Narração sem buracos: se a tela continua e a voz acabou (>1s de silêncio), encurtar o beat ou acrescentar fala.
 
 ## Áreas seguras (player de stories do app)
 - Topo (até ~200px): barra de progresso, título e botões. Nada importante.
@@ -92,7 +96,7 @@ código do app para o vídeo funcionar.
 - Depois de "Salvar", nunca deixar o celular vazio: manter a tela e mostrar o toast real do app.
 
 ## Status dos tutoriais (out/2026)
-Com narração (voz Thiago) e efeitos: TutorialRotas.
+Com narração (voz Thiago), efeitos e capa: TutorialRotas (entregar RotasFinal).
 Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
 TutorialIndicacao, TutorialAlunosLista, TutorialAlunosSolicitacoes, TutorialCarteirinha,
 TutorialContratos, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.

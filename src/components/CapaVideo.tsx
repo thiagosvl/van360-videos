@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Freeze, Img, staticFile } from "remotion";
+import { AbsoluteFill, Freeze, Img, Sequence, staticFile } from "remotion";
 import { BRAND } from "./brand";
 import { SemLegenda } from "./tutorial";
 
@@ -109,3 +109,21 @@ export const CapaVideo: React.FC<CapaProps> = ({ Video, quadro, titulo, botao = 
     </div>
   </AbsoluteFill>
 );
+
+/** Quadros que a capa fica no começo do vídeo final (vira a miniatura do WhatsApp). */
+export const CAPA_QUADROS = 15;
+
+/** Vídeo final para entregar: a capa nos primeiros quadros e depois o vídeo inteiro. */
+export const ComCapa: React.FC<CapaProps> = (props) => {
+  const { Video } = props;
+  return (
+    <AbsoluteFill>
+      <Sequence durationInFrames={CAPA_QUADROS} name="capa">
+        <CapaVideo {...props} />
+      </Sequence>
+      <Sequence from={CAPA_QUADROS} name="video">
+        <Video />
+      </Sequence>
+    </AbsoluteFill>
+  );
+};

@@ -27,8 +27,9 @@ export const BEATS: Beat[] = [
   { text: "Parada por parada: embarcou ou faltou, **um toque**. Nenhum aluno esquecido.", from: 510, duration: 195 },
   { text: "Na porta da escola, a **chamada de embarque** sai em segundos.", from: 705, duration: 165 },
   { text: "E o pai acompanha tudo: **embarque e desembarque** confirmados.", from: 870, duration: 165 },
-  { text: "Filho não vai? O pai avisa e a **falta já aparece** na sua rota.", from: 1035, duration: 225 },
-  { text: "Rota organizada, **dia mais tranquilo**.", from: 1260, duration: 120 },
+  { text: "Filho não vai? O pai avisa e a **falta já aparece** na sua rota.", from: 1035, duration: 150 },
+  { text: "Você sabe **quem vai e quem não vai** antes de sair.", from: 1185, duration: 105 },
+  { text: "Rota organizada, **dia mais tranquilo**.", from: 1290, duration: 120 },
 ];
 export const TUTORIAL_ROTAS_DURATION = beatsDuration(BEATS);
 
@@ -392,13 +393,13 @@ const SFX: SfxEvent[] = [
   // a falta aparece na rota
   { at: B[7] + T3.fim + 30, sfx: "pop", volume: 0.7 },
   // logo
-  { at: B[8] + 20, sfx: "chime", volume: 0.6 },
+  { at: B[9] + 20, sfx: "chime", volume: 0.6 },
 ];
 
 export const TutorialRotas: React.FC = () => {
   usarLarguraDeCelular();
   const frame = useCurrentFrame();
-  const logoIn = interpolate(frame, [B[8] + 20, B[8] + 40], [0, 1], clamp);
+  const logoIn = interpolate(frame, [B[9] + 20, B[9] + 40], [0, 1], clamp);
   return (
     <BrandBackground>
       <Caption beats={BEATS} />

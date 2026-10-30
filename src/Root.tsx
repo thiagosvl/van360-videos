@@ -22,32 +22,40 @@ import { TutorialIndicacao, TUTORIAL_INDICACAO_DURATION } from "./tutoriais/Tuto
 import { ApresentacaoApp, APRESENTACAO_DURATION } from "./apresentacao/ApresentacaoApp";
 import { TutorialRotas, TUTORIAL_ROTAS_DURATION } from "./tutoriais/TutorialRotas";
 import { Capa } from "./apresentacao/Capa";
-import { CapaVideo, CapaProps } from "./components/CapaVideo";
+import { CAPA_QUADROS, CapaVideo, CapaProps, ComCapa } from "./components/CapaVideo";
 import { TutorialContratos, TUTORIAL_CONTRATOS_DURATION } from "./tutoriais/TutorialContratos";
 
 const V = { width: 1080, height: 1920, fps: 30 };
 
-/** Capa: composição do tamanho do vídeo (as cenas dependem disso); a imagem sai do quadro 0 congelado em `quadro`. */
-const capa = (id: string, duracao: number, props: CapaProps) => {
-  const C: React.FC = () => <CapaVideo {...props} />;
-  return <Composition key={id} id={id} component={C} durationInFrames={duracao} {...V} />;
+/**
+ * Capa de um vídeo: gera duas composições a partir da MESMA configuração:
+ *  - `Capa<Nome>`: só a imagem da capa (PNG avulso)
+ *  - `<Nome>Final`: o vídeo para entregar, com a capa nos primeiros quadros
+ */
+const capa = (nome: string, duracao: number, props: CapaProps) => {
+  const Img: React.FC = () => <CapaVideo {...props} />;
+  const Final: React.FC = () => <ComCapa {...props} />;
+  return [
+    <Composition key={`Capa${nome}`} id={`Capa${nome}`} component={Img} durationInFrames={duracao} {...V} />,
+    <Composition key={`${nome}Final`} id={`${nome}Final`} component={Final} durationInFrames={duracao + CAPA_QUADROS} {...V} />,
+  ];
 };
 
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="CapaApresentacao" component={Capa} durationInFrames={TUTORIAL_PARCELAS_DURATION} {...V} />
-    <Folder name="Capas">
-      {/* uma linha por vídeo: tela (quadro), título, botão, ícone e subtítulo */}
+    <Folder name="Finais">
+      {/* um bloco por vídeo: tela (quadro), título, botão, ícone e subtítulo da capa */}
       {[
-        capa("CapaRotas", TUTORIAL_ROTAS_DURATION, {
+        capa("Rotas", TUTORIAL_ROTAS_DURATION, {
           Video: TutorialRotas,
           quadro: 640,
           titulo: "Sua rota organizada, **parada por parada**",
           botao: "Veja como funciona",
           icone: "▶",
-          subtitulo: "Em 46 segundos",
+          subtitulo: "Em 47 segundos",
         }),
-      ]}
+      ].flat()}
     </Folder>
     <Composition id="Teaser" component={Teaser} durationInFrames={TEASER_DURATION} {...V} />
     <Folder name="Tutoriais">
