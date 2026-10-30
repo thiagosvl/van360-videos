@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Audio, Img, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { ClipboardCheck, Fuel, Wallet } from "lucide-react";
+import { ClipboardCheck, Fuel, Wallet, X } from "lucide-react";
 import { usarLarguraDeCelular } from "../viewport";
 import { AMBER, Ampliado, Celular, Destaque, Fundo, GREEN, NAVY, RED, Rotulo, useU } from "../loja/base";
 import { BolhaLembrete, TelaCarteirinha, TelaChamada, TelaParcelas, TelaRelatorios, TelaWhatsAppPai } from "../loja/telas";
@@ -21,20 +21,20 @@ const FIM = FIM_AUDIO + 140;
 export const DEPOIMENTO_FLAVIO_DURATION = FIM;
 
 const T = {
-  mapa: 117,
-  americana: 159,
-  app: 221,
-  sensacional: 448,
-  custoBeneficio: 572,
-  rotina: 640,
-  custo: 866,
-  aluno: 926,
-  doisLados: 958,
-  pai: 1060,
-  condutores: 1100,
-  seguranca: 1123,
-  fluxo: 1303,
-  regiao: 1415,
+  mapa: 122,
+  americana: 164,
+  app: 226,
+  sensacional: 453,
+  custoBeneficio: 577,
+  rotina: 645,
+  custo: 871,
+  aluno: 931,
+  doisLados: 963,
+  pai: 1065,
+  condutores: 1105,
+  seguranca: 1128,
+  fluxo: 1308,
+  regiao: 1420,
 };
 
 /* ------------------------------------------------------------------ */
@@ -45,7 +45,7 @@ const CenaGancho: React.FC = () => {
   const frame = useCurrentFrame();
   const assenta = useMola(0, 9);
   const icone = useMola(-30, 10); // já aceso no primeiro quadro
-  const sai = useSaida(100, 116);
+  const sai = useSaida(105, 121);
   const pulsa = 1 + 0.04 * Math.sin(frame / 5);
   const COLS = 4;
   const N = 16;
@@ -107,30 +107,71 @@ const CenaGancho: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* Custo-benefício: o preço                                            */
+/* Custo-benefício sem citar preço: um app no lugar de tudo isso        */
 /* ------------------------------------------------------------------ */
-const CartaoPreco: React.FC = () => {
+const SUBSTITUI = ["Caderno de pagamentos", "Planilha de Excel", "Recibo de papel", "Cobrar pai no WhatsApp", "Contrato impresso"];
+
+const CartaoTudoNumApp: React.FC<{ at: number }> = ({ at }) => {
   const u = useU();
+  const frame = useCurrentFrame();
+  const fim = useMola(at + 12 + SUBSTITUI.length * 9, 13);
   return (
-    <div style={{ position: "absolute", top: 1240 * u, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+    <div style={{ position: "absolute", top: 1180 * u, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
       <div
         style={{
           rotate: "-2deg",
-          padding: `${40 * u}px ${70 * u}px`,
+          width: 900 * u,
+          padding: `${44 * u}px ${56 * u}px`,
           borderRadius: 48 * u,
           background: "white",
           boxShadow: "0 40px 80px -20px rgba(0,0,0,0.6)",
-          textAlign: "center",
           border: `${6 * u}px solid ${AMBER}`,
         }}
       >
-        <div style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 40 * u, color: "#6b7280" }}>Plano único</div>
-        <div style={{ fontFamily: "Manrope", fontWeight: 800, color: NAVY, lineHeight: 1, letterSpacing: "-0.04em" }}>
-          <span style={{ fontSize: 90 * u, verticalAlign: "top" }}>R$</span>
-          <span style={{ fontSize: 230 * u }}>25</span>
-          <span style={{ fontSize: 70 * u, color: "#6b7280" }}>/mês</span>
+        {SUBSTITUI.map((t, i) => {
+          const risca = interpolate(frame, [at + 6 + i * 9, at + 14 + i * 9], [0, 1], clamp);
+          return (
+            <div key={t} style={{ display: "flex", alignItems: "center", gap: 24 * u, padding: `${10 * u}px 0` }}>
+              <div
+                style={{
+                  width: 54 * u,
+                  height: 54 * u,
+                  borderRadius: "50%",
+                  background: risca > 0.5 ? RED : "#e5e7eb",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <X style={{ width: 34 * u, height: 34 * u, opacity: risca }} strokeWidth={3.2} />
+              </div>
+              <span style={{ position: "relative", fontFamily: "Inter", fontWeight: 600, fontSize: 46 * u, color: risca > 0.5 ? "#9ca3af" : NAVY }}>
+                {t}
+                <span style={{ position: "absolute", left: 0, top: "52%", height: 5 * u, width: `${risca * 100}%`, background: RED, borderRadius: 3 * u }} />
+              </span>
+            </div>
+          );
+        })}
+        <div
+          style={{
+            marginTop: 26 * u,
+            paddingTop: 30 * u,
+            borderTop: `${3 * u}px dashed #e5e7eb`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 24 * u,
+            opacity: fim,
+            scale: String(0.85 + 0.15 * fim),
+          }}
+        >
+          <Img src={staticFile("logo-van360-3.png")} style={{ height: 96 * u }} />
+          <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 64 * u, color: NAVY, letterSpacing: "-0.03em" }}>
+            Tudo num <span style={{ color: "#d97706" }}>app só</span>
+          </span>
         </div>
-        <div style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 40 * u, color: GREEN }}>Teste 15 dias grátis</div>
       </div>
     </div>
   );
@@ -202,7 +243,7 @@ export const DepoimentoFlavio: React.FC = () => {
       <Fundo />
       <Audio src={staticFile("depoimentos/flavio.mp3")} />
 
-      <Sequence from={0} durationInFrames={120} name="Gancho: não fico sem">
+      <Sequence from={0} durationInFrames={125} name="Gancho: não fico sem">
         <CenaGancho />
       </Sequence>
 
@@ -224,8 +265,8 @@ export const DepoimentoFlavio: React.FC = () => {
 
       <Celulares />
 
-      <Surge at={T.custoBeneficio} ate={T.rotina + 4}>
-        <CartaoPreco />
+      <Surge at={T.custoBeneficio - 14} ate={T.rotina + 50}>
+        <CartaoTudoNumApp at={T.custoBeneficio - 14} />
       </Surge>
       <Surge at={T.custo} ate={T.aluno - 12}>
         <Destaque x={40} y={1330} rot={-3} cor={RED} icone={Fuel} titulo="Custos da van" texto="Gastos e lucro do mês" />
@@ -278,7 +319,7 @@ const MapaRegiao: React.FC = () => {
       sub="Interior de São Paulo"
       chipZoom={
         <>
-          Mais de <span style={{ color: AMBER }}>270 usuários</span> em SP
+          <span style={{ color: AMBER }}>Centenas de usuários</span> em SP
         </>
       }
     />

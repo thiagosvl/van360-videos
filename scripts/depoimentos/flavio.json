@@ -4,9 +4,9 @@
   "saida": "public/depoimentos/flavio.mp3",
   "ts": "src/depoimentos/flavio-falas.ts",
   "filtros": "afftdn=nf=-28",
-  "trechos": [[45.9, 49.8], [1.19, 4.62], [5.05, 10.75], [11.15, 19.3], [19.6, 30.36], [30.36, 35.7], [35.8, 45.62], [54.0, 59.7]],
+  "trechos": [[45.9, 49.97], [1.19, 4.62], [5.05, 10.75], [11.15, 19.3], [19.6, 30.36], [30.36, 35.7], [35.8, 45.62], [54.0, 59.7]],
   "falas": [
-    ["Hoje, eu mesmo **não fico mais sem** a plataforma Van360.", 46.1, 49.62],
+    ["Hoje, eu mesmo **não fico mais sem** a plataforma Van360.", 46.1, 49.92],
     ["Sou o Flávio, aqui da cidade de **Americana**, interior de São Paulo.", 1.2, 4.6],
     ["Sou cliente do **Van360**, um excelente aplicativo.", 5.1, 10.58],
     ["Faz dois meses que eu estou utilizando.", 11.24, 13.0],
