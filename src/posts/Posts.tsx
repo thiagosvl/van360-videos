@@ -85,13 +85,13 @@ const cobranca: Slide[] = [
   () => (
     <Post pagina={[4, 5]} brilhoY={1100}>
       <Texto
-        top={150}
+        top={220}
         tamanho={100}
         titulo={"E se o lembrete chegasse **sozinho?**"}
         sub="O Van360 avisa o pai no WhatsApp no dia do vencimento. Você não digita nada."
       />
-      <Rotulo x={420} y={640} texto="Celular do pai" cor="verde" />
-      <Ampliado x={190} y={730} largura={340} escala={2.6} rot={-2}>
+      <Rotulo x={645} y={700} texto="Celular do pai" cor="verde" />
+      <Ampliado x={254} y={790} largura={340} escala={2.3}>
         <BolhaLembrete />
       </Ampliado>
     </Post>
