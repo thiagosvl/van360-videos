@@ -6,6 +6,7 @@ import { PhoneScreen } from "../components/PhoneScreen";
 import { FiltrosAlunosSheet } from "../components/FiltrosAlunosSheet";
 import { BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { ESCOLAS, PASSAGEIROS } from "../mocks/data";
 
 /**
@@ -16,13 +17,15 @@ import { ESCOLAS, PASSAGEIROS } from "../mocks/data";
  * as ações da tela (toques, busca, filtro) seguem os mesmos tempos.
  */
 export const BEATS: Beat[] = [
-  { text: "Chega de procurar dados de aluno no **papel** ou no WhatsApp.", from: 0, duration: 150 },
-  { text: "Aqui ficam todos os seus **alunos**, com responsável, escola e turma.", from: 150, duration: 180 },
-  { text: "Precisa achar alguém? É só **buscar** pelo nome.", from: 330, duration: 180 },
-  { text: "Quer ver só os alunos de uma escola? Use os **filtros**.", from: 510, duration: 210 },
-  { text: "Aluno saiu da van? **Desative** e o histórico continua guardado.", from: 720, duration: 180 },
-  { text: "Tudo organizado, direto no seu **celular**.", from: 900, duration: 150 },
-];
+  { text: "Chega de procurar dados de aluno no **papel** ou no WhatsApp.", from: 0, duration: 120 },
+  { text: "Aqui ficam todos os seus **alunos**, com responsável, escola e turma.", from: 120, duration: 170 },
+  { text: "Precisa achar alguém? É só **buscar** pelo nome.", from: 290, duration: 95 },
+  { text: "O aluno aparece **na hora**, sem rolar a lista.", from: 385, duration: 95 },
+  { text: "Quer ver só os alunos de uma escola? Use os **filtros**.", from: 480, duration: 130 },
+  { text: "Pronto: a lista mostra **só quem estuda lá**.", from: 610, duration: 100 },
+  { text: "Aluno saiu da van? **Desative** e o histórico continua guardado.", from: 710, duration: 150 },
+  { text: "Tudo organizado, direto no seu **celular**.", from: 860, duration: 120 },
+]
 export const TUTORIAL_ALUNOS_LISTA_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -42,6 +45,37 @@ const ESCOLAS_LISTA = Object.values(ESCOLAS);
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
+/* tempos das ações (usados pela tela e pelos efeitos sonoros) */
+const T = {
+  tocaBusca: B[3] + 26,
+  typeStart: B[3] + 40,
+  limpaBusca: B[3] + 150,
+  abreGaveta: B[5] + 28,
+  escolhe: B[5] + 90,
+  aplica: B[5] + 132,
+  desativa: B[7] + 60,
+};
+
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  // busca
+  { at: T.tocaBusca, sfx: "tap" },
+  ...Array.from(BUSCA, (_, i): SfxEvent => ({ at: T.typeStart + i * 5, sfx: "select", volume: 0.35 })),
+  { at: T.limpaBusca, sfx: "tap" },
+  // filtros
+  { at: T.abreGaveta - 4, sfx: "tap" },
+  { at: T.abreGaveta, sfx: "open", volume: 0.6 },
+  { at: T.escolhe - 8, sfx: "tap" },
+  { at: T.escolhe - 4, sfx: "select", volume: 0.6 },
+  { at: T.aplica, sfx: "tap" },
+  { at: T.aplica + 4, sfx: "close", volume: 0.5 },
+  { at: T.aplica + 8, sfx: "pop", volume: 0.55 },
+  // aluno desativado
+  { at: T.desativa, sfx: "close", volume: 0.55 },
+  // logo
+  { at: B[8] + 30, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialAlunosLista: React.FC = () => {
   const frame = useCurrentFrame();
   const rise = usePhoneRise(4);
@@ -49,26 +83,26 @@ export const TutorialAlunosLista: React.FC = () => {
   /* ---------- estado da tela por frame ---------- */
 
   // 1. lista carregando card a card
-  const visiveis = Math.max(0, Math.min(PASSAGEIROS.length, Math.floor((frame - 22) / 3)));
+  const visiveis = Math.max(0, Math.min(PASSAGEIROS.length, frame - 12)); // um card por quadro (rápido e fluido)
 
   // 3. busca digitada
-  const typeStart = B[3] + 40;
+  const typeStart = T.typeStart;
   const chars = Math.floor((frame - typeStart) / 5) + 1;
   const busca = frame >= typeStart && frame < B[3] + 165 ? BUSCA.slice(0, Math.min(BUSCA.length, chars)) : "";
 
   // 4. gaveta de filtros
-  const abreGaveta = B[4] + 28;
-  const escolhe = B[4] + 90;
-  const aplica = B[4] + 132;
+  const abreGaveta = T.abreGaveta;
+  const escolhe = T.escolhe;
+  const aplica = T.aplica;
   const gaveta =
     frame < aplica + 4
       ? interpolate(frame, [abreGaveta, abreGaveta + 16], [0, 1], { ...clamp, easing: ease })
       : interpolate(frame, [aplica + 4, aplica + 20], [1, 0], { ...clamp, easing: ease });
   const escolaGaveta = frame >= escolhe ? ESCOLAS.aurora.id : "todas";
-  const filtroAtivo = frame >= aplica + 6 && frame < B[5];
+  const filtroAtivo = frame >= aplica + 6 && frame < B[7];
 
   // 5. um aluno desativado (o card fica esmaecido, como no app)
-  const desativa = B[5] + 60;
+  const desativa = T.desativa;
 
   const lista = PASSAGEIROS.slice(0, visiveis)
     .map((p) => (p.id === "p2" && frame >= desativa ? ({ ...p, ativo: false } as typeof p) : p))
@@ -83,13 +117,15 @@ export const TutorialAlunosLista: React.FC = () => {
     frame < B[2] + 140
       ? interpolate(frame, [B[2] + 15, B[2] + 45], [1, 1.28], { ...clamp, easing: ease })
       : interpolate(frame, [B[2] + 140, B[2] + 170], [1.28, 1], { ...clamp, easing: ease });
-  const zoomFinal = interpolate(frame, [B[6], B[6] + 40], [1, 0.9], { ...clamp, easing: ease });
+  const zoomFinal = interpolate(frame, [B[8], B[8] + 40], [1, 0.9], { ...clamp, easing: ease });
 
-  const logoIn = interpolate(frame, [B[6] + 30, B[6] + 50], [0, 1], clamp);
+  const logoIn = interpolate(frame, [B[8] + 30, B[8] + 50], [0, 1], clamp);
 
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="alunos-lista" beats={BEATS} />
+      <Sfx events={SFX} />
 
       <AbsoluteFill style={{ alignItems: "center", top: 470 }}>
         <div
@@ -123,10 +159,10 @@ export const TutorialAlunosLista: React.FC = () => {
                 />
                 {/* filtros */}
                 <Finger
-                  showFrom={B[4] + 6}
+                  showFrom={B[5] + 6}
                   hideAt={aplica + 10}
                   steps={[
-                    { at: B[4] + 6, ...P.filtros },
+                    { at: B[5] + 6, ...P.filtros },
                     { at: abreGaveta - 4, ...P.filtros, tap: true },
                     { at: escolhe - 8, ...P.selectEscola, tap: true },
                     { at: aplica, ...P.aplicar, tap: true },

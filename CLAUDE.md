@@ -96,11 +96,11 @@ código do app para o vídeo funcionar.
 - Depois de "Salvar", nunca deixar o celular vazio: manter a tela e mostrar o toast real do app.
 
 ## Status dos tutoriais (out/2026)
-Com narração (voz Thiago), efeitos e capa: TutorialRotas (entregar RotasFinal).
+Com narração (voz Thiago), efeitos e capa: TutorialRotas (RotasFinal), TutorialAlunosLista (AlunosListaFinal).
 Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
-TutorialIndicacao, TutorialAlunosLista, TutorialAlunosSolicitacoes, TutorialCarteirinha,
+TutorialIndicacao, TutorialAlunosSolicitacoes, TutorialCarteirinha,
 TutorialContratos, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.
-- AlunosLista e Carteirinha: código já corrigido, ainda não renderizados.
+- Carteirinha: código já corrigido, ainda não renderizado.
 - Relatórios: o Thiago quer mudar o texto ("de relance" complexo; falar de controle e organização; período > van).
 - Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
 
