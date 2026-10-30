@@ -70,11 +70,21 @@ código do app para o vídeo funcionar.
 - Geração pelo conector ElevenLabs (`creative_generate_speech`, modelo `eleven_v4`, 1 geração por fala).
   Voz clonada do Thiago: "Thiago (Eu)" `iMAOSIdjlzAHq5LIP44Z`. Alternativa de locutor: "Gabriel"
   `WPgqgCVa3mD38JuyODU6`. Baixar o MP3 (storage.googleapis.com liberado) para `public/narracao/<video>/`.
+- No tutorial: `<Narracao pasta="<video>" beats={BEATS} />` (fala N começa 6 frames depois do beat N).
 - A Apresentação (`ApresentacaoApp`) já tem narração na voz do Thiago (`public/narracao/fala-*.mp3`).
 
+## Efeitos sonoros
+- Biblioteca em `public/sfx` (Kenney CC0 + sintetizados), gerada por `scripts/build_sfx.py`.
+- No tutorial: lista `SFX: SfxEvent[]` derivada dos mesmos tempos das ações (toques, aberturas,
+  notificações, trocas de celular) + `<Sfx events={SFX} />`. Ver TutorialRotas como modelo.
+- Todo toque do dedo tem "tap"; toda troca de celular tem "whoosh"; notificação = "vibra" + "notif".
+- Depois do render, normalizar: `ffmpeg -i in.mp4 -c:v copy -af "alimiter=limit=0.89:level=false,loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k out.mp4`.
+- Depois de "Salvar", nunca deixar o celular vazio: manter a tela e mostrar o toast real do app.
+
 ## Status dos tutoriais (out/2026)
+Com narração (voz Thiago) e efeitos: TutorialRotas.
 Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
-TutorialRotas, TutorialIndicacao, TutorialAlunosLista, TutorialAlunosSolicitacoes, TutorialCarteirinha,
+TutorialIndicacao, TutorialAlunosLista, TutorialAlunosSolicitacoes, TutorialCarteirinha,
 TutorialContratos, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.
 - AlunosLista e Carteirinha: código já corrigido, ainda não renderizados.
 - Relatórios: o Thiago quer mudar o texto ("de relance" complexo; falar de controle e organização; período > van).

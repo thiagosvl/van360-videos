@@ -1,0 +1,2 @@
+Sons tap/open/close/success/scroll/pop/select: Kenney Interface Sounds (www.kenney.nl), licença CC0.
+Demais sons: sintetizados por scripts/build_sfx.py.

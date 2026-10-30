@@ -11,6 +11,7 @@ import { AcoesNaTela } from "../components/AcoesNaTela";
 import { TelaBloqueio, Notificacao } from "../components/TelaBloqueio";
 import { BRAND, BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { usarLarguraDeCelular } from "../viewport";
 import { VideoStateProvider } from "../mocks/videoState";
 import { ESCOLAS_CHAMADA, execucaoIda } from "../mocks/rotas";
@@ -42,14 +43,17 @@ const SLIDE = 18;
 /* ------------------------------------------------------------------ */
 /* trechos: cada um é "um celular" em cena                             */
 /* ------------------------------------------------------------------ */
+/* celular do pai: toca na data e salva (relativo a B[7]); a troca de celular vem logo depois do Salvar */
+const T3 = { tocaData: 24, tocaSalvar: 84, fim: 98 };
+
 type Segment = { id: string; from: number; to: number; label: string };
 const SEGMENTS: Segment[] = [
   { id: "rotas", from: 0, to: B[3] + 70, label: "Seu celular" },
   { id: "aviso-inicio", from: B[3] + 70, to: B[4], label: "Celular do pai" },
   { id: "execucao", from: B[4], to: B[6], label: "Seu celular" },
   { id: "aviso-embarque", from: B[6], to: B[7], label: "Celular do pai" },
-  { id: "falta-pai", from: B[7], to: B[7] + 120, label: "Celular do pai" },
-  { id: "falta-rota", from: B[7] + 120, to: TUTORIAL_ROTAS_DURATION, label: "Seu celular" },
+  { id: "falta-pai", from: B[7], to: B[7] + T3.fim, label: "Celular do pai" },
+  { id: "falta-rota", from: B[7] + T3.fim, to: TUTORIAL_ROTAS_DURATION, label: "Seu celular" },
 ];
 
 const SegmentShell: React.FC<{ seg: Segment; first: boolean; last: boolean; children: React.ReactNode }> = ({ seg, first, last, children }) => {
@@ -249,10 +253,43 @@ const TelaExecucao: React.FC = () => {
 /* ------------------------------------------------------------------ */
 /* Celular do pai: registra a falta                                     */
 /* ------------------------------------------------------------------ */
-const T3 = { tocaData: 24, tocaSalvar: 84 };
+/** Aviso do app depois de salvar (mesmo texto do toast real). */
+const ToastSucesso: React.FC<{ desde: number; texto: string }> = ({ desde, texto }) => {
+  const frame = useCurrentFrame();
+  if (frame < desde) return null;
+  const s = interpolate(frame, [desde, desde + 8], [0, 1], { ...clamp, easing: ease });
+  return (
+    <div style={{ position: "absolute", top: 46, left: 16, right: 16, zIndex: 80, opacity: s, translate: `0px ${(1 - s) * -24}px` }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "14px 16px",
+          borderRadius: 12,
+          background: "#fff",
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 8px 24px rgba(11,26,46,0.16)",
+          fontFamily: "Inter",
+          fontSize: 14,
+          fontWeight: 600,
+          color: "#0b1a2e",
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="10" fill="#16a34a" />
+          <path d="M5.5 10.3l3 3 6-6.3" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        {texto}
+      </div>
+    </div>
+  );
+};
+
 const TelaFaltaPai: React.FC = () => {
   const frame = useCurrentFrame(); // relativo a B[7]
-  const aberto = frame < T3.tocaSalvar + 6;
+  // o diálogo continua na tela até o celular sair (sem tela vazia depois do Salvar)
+  const aberto = true;
   // o toque no campo já escolhe a data (hoje), sem mostrar o calendário
   const dataAusencia = frame >= T3.tocaData + 2 ? "2026-03-12" : undefined;
   return (
@@ -270,6 +307,7 @@ const TelaFaltaPai: React.FC = () => {
           />
         </VideoStateProvider>
       )}
+      <ToastSucesso desde={T3.tocaSalvar + 3} texto="Ausência registrada com sucesso!" />
       <div className="absolute inset-0 z-[70]">
         <Finger
           showFrom={8}
@@ -291,7 +329,7 @@ const TelaFaltaRota: React.FC = () => (
     route="/rotas/executar/r1"
     pageTitle="Ida Manhã"
     scale={SCALE}
-    overlay={<Circulo x={100} y={333} w={196} h={58} desde={30} ate={TUTORIAL_ROTAS_DURATION - B[7] - 120 - 8} />}
+    overlay={<Circulo x={100} y={333} w={196} h={58} desde={30} ate={TUTORIAL_ROTAS_DURATION - B[7] - T3.fim - 8} />}
   >
     <Routes>
       <Route path="/rotas/executar/r1" element={<TelaRota estado={execucaoIda({ ausentes: ["p4"] })} />} />
@@ -310,6 +348,55 @@ const TELAS: Record<string, React.FC> = {
 
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Efeitos sonoros (frames absolutos, derivados dos mesmos tempos)     */
+/* ------------------------------------------------------------------ */
+const notifs = (inicio: number, avisos: Notificacao[]): SfxEvent[] =>
+  avisos.flatMap((n) => [
+    { at: inicio + n.chegaEm, sfx: "vibra", volume: 0.45 },
+    { at: inicio + n.chegaEm + 2, sfx: "notif", volume: 0.8 },
+  ]);
+const E4 = B[4];
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  // rotas e itinerário
+  { at: T1.tocaIda, sfx: "tap" },
+  { at: T1.abreRota, sfx: "open", volume: 0.5 },
+  { at: B[2] + 12, sfx: "scroll", volume: 0.45 },
+  { at: B[2] + 77, sfx: "scroll", volume: 0.45 },
+  { at: T1.tocaEndereco, sfx: "tap" },
+  { at: T1.abreEndereco, sfx: "open", volume: 0.6 },
+  { at: T1.tocaFechar, sfx: "tap" },
+  { at: T1.fechaEndereco, sfx: "close", volume: 0.5 },
+  { at: T1.tocaIniciar, sfx: "tap" },
+  { at: T1.iniciada, sfx: "success", volume: 0.7 },
+  // trocas de celular
+  ...SEGMENTS.slice(0, -1).map((s): SfxEvent => ({ at: s.to, sfx: "whoosh", volume: 0.55 })),
+  // pais avisados
+  ...notifs(B[3] + 70, AVISO_INICIO),
+  // parada por parada
+  { at: E4 + T2.tocaContinuar1, sfx: "tap" },
+  { at: E4 + T2.tocaContinuar1 + 4, sfx: "pop", volume: 0.6 },
+  { at: E4 + T2.tocaContinuar2, sfx: "tap" },
+  { at: E4 + T2.tocaContinuar2 + 4, sfx: "pop", volume: 0.6 },
+  // chamada de embarque
+  { at: E4 + T2.abreChamada, sfx: "open", volume: 0.6 },
+  { at: E4 + T2.passosChamada[0] - 2, sfx: "tap" },
+  { at: E4 + T2.passosChamada[0], sfx: "select", volume: 0.7 },
+  { at: E4 + T2.tocaSalvar, sfx: "tap" },
+  { at: E4 + T2.tocaSalvar + 6, sfx: "success", volume: 0.7 },
+  // pai acompanha
+  ...notifs(B[6], AVISO_EMBARQUE),
+  // pai avisa a falta
+  { at: B[7] + T3.tocaData, sfx: "tap" },
+  { at: B[7] + T3.tocaSalvar, sfx: "tap" },
+  { at: B[7] + T3.tocaSalvar + 3, sfx: "success", volume: 0.7 },
+  // a falta aparece na rota
+  { at: B[7] + T3.fim + 30, sfx: "pop", volume: 0.7 },
+  // logo
+  { at: B[8] + 20, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialRotas: React.FC = () => {
   usarLarguraDeCelular();
   const frame = useCurrentFrame();
@@ -317,6 +404,8 @@ export const TutorialRotas: React.FC = () => {
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="rotas" beats={BEATS} />
+      <Sfx events={SFX} />
       {SEGMENTS.map((seg, i) => {
         const Tela = TELAS[seg.id];
         const last = i === SEGMENTS.length - 1;
