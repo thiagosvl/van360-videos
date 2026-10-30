@@ -37,3 +37,13 @@ export const useDeleteGasto = mutation;
 export const useCreateGasto = mutation;
 export const useUpdateGasto = mutation;
 export const useCreateGastoCategoria = mutation;
+
+// configurações do motorista (avisos aos pais ligados, como no vídeo de Rotas)
+export const useConfiguracoes = () => ({
+  configuracoes: { notificar_inicio_rota: true, notificar_proxima_parada: true, notificar_conclusao_parada: true } as any,
+  isLoading: false,
+  salvar: noop,
+  atualizar: noop,
+  mutate: noop,
+  isSaving: false,
+});

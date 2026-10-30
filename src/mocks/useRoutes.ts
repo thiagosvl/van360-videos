@@ -10,8 +10,8 @@ const rota = (id: string, nome: string, periodo: string, n: number) => ({
   created_at: "2026-02-01T08:00:00", updated_at: "2026-03-01T08:00:00",
 });
 export const ROTAS_VIDEO = [
-  rota("r1", "Ida Manhã", "manha", 12),
-  rota("r2", "Volta Manhã", "manha", 12),
+  rota("r1", "Ida Manhã", "manha", 5),
+  rota("r2", "Volta Manhã", "manha", 5),
   rota("r3", "Ida Tarde", "tarde", 9),
   rota("r4", "Volta Tarde", "tarde", 9),
 ];
