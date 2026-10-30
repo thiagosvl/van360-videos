@@ -362,8 +362,6 @@ const SFX: SfxEvent[] = [
   // rotas e itinerário
   { at: T1.tocaIda, sfx: "tap" },
   { at: T1.abreRota, sfx: "open", volume: 0.5 },
-  { at: B[2] + 12, sfx: "scroll", volume: 0.45 },
-  { at: B[2] + 77, sfx: "scroll", volume: 0.45 },
   { at: T1.tocaEndereco, sfx: "tap" },
   { at: T1.abreEndereco, sfx: "open", volume: 0.6 },
   { at: T1.tocaFechar, sfx: "tap" },

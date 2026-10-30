@@ -17,6 +17,15 @@ Leia antes de criar ou mudar qualquer vídeo deste projeto.
 - **Venda/anúncio**: gancho nos 2 primeiros segundos, 3 ou 4 benefícios gerais
   (sem detalhar a tela), fechamento com slogan "Você dirige. A gente organiza." e CTA.
 
+## Capa (obrigatória em todo vídeo)
+- Todo vídeo novo ou refeito sai com capa (miniatura do WhatsApp/Instagram), entregue junto com o MP4.
+- Componente `CapaVideo` (src/components/CapaVideo.tsx). Tudo é configurável e muda a cada vídeo:
+  `quadro` (qual tela do vídeo aparece no celular), `titulo` (`**palavra**` em azul),
+  `botao` (texto, padrão "Veja como funciona"), `icone` (padrão ▶; null tira) e `subtitulo` (ex.: "Em 46 segundos").
+- Registrar no Root, pasta "Capas", com uma linha `capa("Capa<Video>", DURACAO, { Video, quadro, titulo, botao, icone, subtitulo })`.
+- Quadro: uma tela real cheia e bonita do próprio vídeo. Título vende benefício (até ~6 palavras).
+- Gerar: `npx remotion still Capa<Video> out/capa-<video>.png`. Conferir o PNG antes de entregar.
+
 ## Áreas seguras (player de stories do app)
 - Topo (até ~200px): barra de progresso, título e botões. Nada importante.
 - Faixa inferior (~440px): gradiente escuro com o botão do player. Nada importante.
@@ -78,6 +87,7 @@ código do app para o vídeo funcionar.
 - No tutorial: lista `SFX: SfxEvent[]` derivada dos mesmos tempos das ações (toques, aberturas,
   notificações, trocas de celular) + `<Sfx events={SFX} />`. Ver TutorialRotas como modelo.
 - Todo toque do dedo tem "tap"; toda troca de celular tem "whoosh"; notificação = "vibra" + "notif".
+- Rolagem de tela não tem som (o Thiago não gostou).
 - Depois do render, normalizar: `ffmpeg -i in.mp4 -c:v copy -af "alimiter=limit=0.89:level=false,loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k out.mp4`.
 - Depois de "Salvar", nunca deixar o celular vazio: manter a tela e mostrar o toast real do app.
 
