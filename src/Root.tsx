@@ -21,12 +21,16 @@ import { TutorialRenovacao, TUTORIAL_RENOVACAO_DURATION } from "./tutoriais/Tuto
 import { TutorialIndicacao, TUTORIAL_INDICACAO_DURATION } from "./tutoriais/TutorialIndicacao";
 import { ApresentacaoApp, APRESENTACAO_DURATION } from "./apresentacao/ApresentacaoApp";
 import { TutorialContratos, TUTORIAL_CONTRATOS_DURATION } from "./tutoriais/TutorialContratos";
+import { DepoimentoVerinha, DEPOIMENTO_VERINHA_DURATION } from "./depoimentos/DepoimentoVerinha";
 
 const V = { width: 1080, height: 1920, fps: 30 };
 
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="Teaser" component={Teaser} durationInFrames={TEASER_DURATION} {...V} />
+    <Folder name="Depoimentos">
+      <Composition id="DepoimentoVerinha" component={DepoimentoVerinha} durationInFrames={DEPOIMENTO_VERINHA_DURATION} {...V} />
+    </Folder>
     <Folder name="Tutoriais">
       <Composition
         id="TutorialAlunosLista"

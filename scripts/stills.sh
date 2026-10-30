@@ -6,5 +6,5 @@ comp=$1; shift
 npx remotion bundle --out-dir out/.bundle >/dev/null 2>&1
 mkdir -p out/st
 for f in "$@"; do
-  npx remotion still out/.bundle "$comp" "out/st/$comp-$f.png" --frame="$f" >/dev/null 2>&1 && echo "out/st/$comp-$f.png"
+  npx remotion still out/.bundle ${REMOTION_BROWSER:+--browser-executable=$REMOTION_BROWSER} "$comp" "out/st/$comp-$f.png" --frame="$f" >/dev/null 2>&1 && echo "out/st/$comp-$f.png"
 done
