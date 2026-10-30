@@ -28,7 +28,6 @@ Leia antes de criar ou mudar qualquer vídeo deste projeto.
 - Quadro: uma tela real cheia e bonita do próprio vídeo. Título vende benefício (até ~6 palavras).
 - Gerar: `npx remotion still Capa<Nome> out/capa-<nome>.png` e `npx remotion render <Nome>Final out/<nome>.mp4 ...`
   (+ normalizar o áudio). Conferir o PNG antes de entregar.
-- Narração sem buracos: se a tela continua e a voz acabou (>1s de silêncio), encurtar o beat ou acrescentar fala.
 
 ## Áreas seguras (player de stories do app)
 - Topo (até ~200px): barra de progresso, título e botões. Nada importante.
@@ -84,6 +83,12 @@ código do app para o vídeo funcionar.
   Voz clonada do Thiago: "Thiago (Eu)" `iMAOSIdjlzAHq5LIP44Z`. Alternativa de locutor: "Gabriel"
   `WPgqgCVa3mD38JuyODU6`. Baixar o MP3 (storage.googleapis.com liberado) para `public/narracao/<video>/`.
 - No tutorial: `<Narracao pasta="<video>" beats={BEATS} />` (fala N começa 6 frames depois do beat N).
+- **SEM BURACOS DE VOZ (regra do Thiago):** nunca deixar 1s ou mais de silêncio entre as falas.
+  - Ao montar, `duration` de cada beat = 6 + duração da fala em quadros + no máximo ~12 quadros.
+  - Se a tela precisa de mais tempo (digitação, formulário, animação), NÃO esticar o beat calado:
+    alongar a fala com o que aparece na tela ou acrescentar uma frase curta (beat extra).
+  - Antes de entregar, rodar `bash scripts/checa-silencio.sh out/<video>.mp4` (falha com pausa >= 0,9s;
+    só o fim com o logo é livre). Corrigir e renderizar de novo até passar.
 - A Apresentação (`ApresentacaoApp`) já tem narração na voz do Thiago (`public/narracao/fala-*.mp3`).
 
 ## Efeitos sonoros
