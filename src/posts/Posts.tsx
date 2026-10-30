@@ -21,7 +21,7 @@ const CTA_SUB = "Lembrete automático no WhatsApp, parcelas, recibos e muito mai
 const SEM_CARTAO = "Sem cartão, sem compromisso, sem fidelidade.";
 
 /** Último slide padrão dos carrosséis. */
-const fechamento = (n: number): Slide => () => {
+export const fechamento = (n: number): Slide => () => {
   const u = useU();
   return (
     <Post pagina={[n, n]} brilhoY={1000}>
@@ -116,7 +116,15 @@ const quemPagou: Slide[] = [
 
 /* ============ 3. Carrossel educativo: pai atrasado ============ */
 
-const dica = (n: number, total: number, titulo: string, sub: string, icone: React.ElementType, cor: string): Slide => () => {
+export const dica = (
+  n: number,
+  total: number,
+  titulo: string,
+  sub: string,
+  icone: React.ElementType,
+  cor: string,
+  rotulo = "DICA",
+): Slide => () => {
   const u = useU();
   const I = icone;
   return (
@@ -143,7 +151,7 @@ const dica = (n: number, total: number, titulo: string, sub: string, icone: Reac
         claro
         top={560}
         tamanho={124}
-        etiqueta={<Etiqueta texto={`DICA ${n - 1}`} />}
+        etiqueta={<Etiqueta texto={`${rotulo} ${n - 1}`} />}
         titulo={titulo}
         sub={sub}
       />

@@ -5,6 +5,7 @@ import { Composition, Folder, Still } from "remotion";
 import { SLIDES_LOJA } from "./loja/Loja";
 import { POSTS } from "./posts/Posts";
 import { POSTS_LOTE2 } from "./posts/Lote2";
+import { POSTS_LOTE3 } from "./posts/Lote3";
 import { Teaser, TEASER_DURATION } from "./Teaser";
 import { HookScene } from "./scenes/HookScene";
 import { AlunosScene } from "./scenes/AlunosScene";
@@ -109,7 +110,7 @@ export const RemotionRoot: React.FC = () => (
       />
     </Folder>
     <Folder name="Posts">
-      {[...POSTS, ...POSTS_LOTE2].flatMap((p) =>
+      {[...POSTS, ...POSTS_LOTE2, ...POSTS_LOTE3].flatMap((p) =>
         p.slides.map((S, i) => (
           <Still key={`${p.id}-${i + 1}`} id={`post-${p.id}-${i + 1}`} component={S} width={1080} height={1350} />
         )),
