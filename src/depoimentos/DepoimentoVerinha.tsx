@@ -1,13 +1,14 @@
 import React from "react";
-import { AbsoluteFill, Audio, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, Img, Sequence, interpolate, interpolateColors, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Routes, Route } from "react-router-dom";
-import { AlertCircle, Check, MapPin, MessageCircle, Play, Sparkles } from "lucide-react";
+import { AlertCircle, Check, MapPin, MessageCircle, Mic, Play, Sparkles } from "lucide-react";
 import Home from "@/pages/Home";
 import { PhoneScreen } from "../components/PhoneScreen";
 import { VideoStateProvider } from "../mocks/videoState";
 import { usarLarguraDeCelular } from "../viewport";
 import { AMBER, Ampliado, Celular, Destaque, Fundo, GREEN, NAVY, Rotulo, SeloTeste, Titulo, WHATS, useU } from "../loja/base";
 import { BolhaLembrete, TelaParcelas, TelaWhatsAppPai } from "../loja/telas";
+import { ESTADOS } from "./brasil-mapa";
 
 /**
  * Depoimento da Tia Verinha (Gravataí, RS), para Reels e remarketing.
@@ -20,7 +21,7 @@ import { BolhaLembrete, TelaParcelas, TelaWhatsAppPai } from "../loja/telas";
  */
 type Fala = { text: string; from: number; to: number };
 export const FALAS: Fala[] = [
-  { text: "Trabalho há mais de **30 anos** com transporte escolar", from: 0, to: 79 },
+  { text: "Trabalho há mais de 30 anos com **transporte escolar**", from: 0, to: 79 },
   { text: "e sempre foi na base do **caderninho**, da planilha de Excel e da agenda.", from: 93, to: 216 },
   { text: "Eu sou a **Tia Verinha**,", from: 223, to: 260 },
   { text: "sou de **Gravataí**, Rio Grande do Sul,", from: 264, to: 319 },
@@ -74,10 +75,10 @@ const Legenda: React.FC = () => {
     <div
       style={{
         position: "absolute",
-        top: 190 * u,
+        top: 150 * u,
         left: 80 * u,
         right: 80 * u,
-        height: 400 * u,
+        height: 380 * u,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -260,48 +261,70 @@ const Agenda: React.FC = () => {
   );
 };
 
+/** A faixa amarela obrigatória das vans escolares: o motorista se reconhece sem ler. */
+const FaixaEscolar: React.FC = () => {
+  const u = useU();
+  return (
+    <div
+      style={{
+        width: 1120 * u,
+        height: 250 * u,
+        background: "#FFCC00",
+        borderTop: `${18 * u}px solid #111`,
+        borderBottom: `${18 * u}px solid #111`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "Manrope",
+        fontWeight: 800,
+        fontSize: 190 * u,
+        letterSpacing: "0.1em",
+        color: "#111",
+        paddingLeft: 0.1 * 190 * u,
+        boxShadow: "0 30px 60px -15px rgba(0,0,0,0.55)",
+      }}
+    >
+      ESCOLAR
+    </div>
+  );
+};
+
 const CenaAntes: React.FC = () => {
   const frame = useCurrentFrame();
   const u = useU();
-  const n = useMola(0, 12);
-  const saiNumero = interpolate(frame, [112, 128], [1, 0], clamp);
-  const conta = Math.round(interpolate(frame, [0, 45], [0, 30], clamp));
+  // a faixa já está na tela no primeiro quadro (capa do TikTok/Reels) e "assenta" com um leve tranco
+  const assenta = useMola(0, 9);
+  const sub = useMola(14, 14);
+  const sai = interpolate(frame, [112, 128], [1, 0], clamp);
   return (
     <AbsoluteFill>
-      {/* selo de depoimento real, já no primeiro quadro */}
-      <div style={{ position: "absolute", top: 640 * u, left: 0, right: 0, display: "flex", justifyContent: "center", opacity: saiNumero }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 * u, padding: `${16 * u}px ${34 * u}px`, borderRadius: 999, background: "rgba(37,211,102,0.16)", color: "#4ade80", fontFamily: "Inter", fontWeight: 700, fontSize: 40 * u }}>
-          <Play style={{ width: 34 * u, height: 34 * u }} fill="#4ade80" />
-          Depoimento real de cliente
+      <div style={{ position: "absolute", top: 1000 * u, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", opacity: sai }}>
+        <div style={{ rotate: "-4deg", scale: String(1.06 - 0.06 * assenta) }}>
+          <FaixaEscolar />
         </div>
-      </div>
-      {/* 30 anos */}
-      <div
-        style={{
-          position: "absolute",
-          top: 860 * u,
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          opacity: Math.min(n, saiNumero),
-          scale: String(0.7 + 0.3 * n),
-        }}
-      >
-        <div style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 420 * u, lineHeight: 1, color: AMBER, letterSpacing: "-0.05em" }}>
-          {conta}+
-        </div>
-        <div style={{ fontFamily: "Inter", fontWeight: 600, fontSize: 58 * u, color: "rgba(226,234,246,0.9)", marginTop: 10 * u }}>
-          anos de transporte escolar
+        <div
+          style={{
+            marginTop: 90 * u,
+            fontFamily: "Manrope",
+            fontWeight: 800,
+            fontSize: 76 * u,
+            color: "white",
+            letterSpacing: "-0.02em",
+            opacity: sub,
+            translate: `0px ${(1 - sub) * 30 * u}px`,
+          }}
+        >
+          <span style={{ color: AMBER }}>30 anos</span> na estrada
         </div>
       </div>
       {/* o papel de sempre */}
-      <Papel at={124} x={80} y={760} rot={-7}>
+      <Papel at={124} x={80} y={900} rot={-7}>
         <Caderno />
       </Papel>
-      <Papel at={158} x={620} y={1010} rot={6}>
+      <Papel at={158} x={620} y={1150} rot={6}>
         <Planilha />
       </Papel>
-      <Papel at={190} x={140} y={1420} rot={-3}>
+      <Papel at={190} x={140} y={1560} rot={-3}>
         <Agenda />
       </Papel>
     </AbsoluteFill>
@@ -309,89 +332,246 @@ const CenaAntes: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* Cena 2: quem está falando                                           */
+/* Balão de áudio fixo (modelo do WhatsApp), o vídeo inteiro           */
 /* ------------------------------------------------------------------ */
-const ONDA = Array.from({ length: 34 }, (_, i) => 0.25 + 0.75 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.6)));
+const ONDA = Array.from({ length: 38 }, (_, i) => 0.22 + 0.78 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.6)));
+const AZUL_AUDIO = "#4fb3e8";
+const DURACAO_AUDIO = 39; // segundos de public/depoimentos/verinha.mp3
 
-const CartaoVerinha: React.FC<{ inicio: number; fim: number; compacto?: boolean }> = ({ inicio, fim, compacto = false }) => {
+const BalaoAudio: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
   const u = useU();
-  const s = useMola(inicio, 14);
-  const sai = useSaida(fim - 12, fim);
-  const cidade = useMola(compacto ? inicio : 262, 14);
-  const progresso = interpolate(frame, [inicio, fim], [0, 1], clamp);
+  const entra = 1; // já na tela no primeiro quadro
+  const sai = useSaida(FIM_AUDIO + 4, FIM_AUDIO + 16);
+  const p = interpolate(frame, [0, FIM_AUDIO], [0, 1], clamp);
+  const seg = Math.min(DURACAO_AUDIO, Math.floor(frame / fps));
+  const tempo = `0:${String(seg).padStart(2, "0")}`;
+  const tocando = frame < FIM_AUDIO;
+  const W = 1010; // largura do balão em u
+  const ondaW = 560;
   return (
     <div
       style={{
-        width: 1080 * u,
-        borderRadius: 64 * u,
+        position: "absolute",
+        top: 560 * u,
+        left: (1290 - W) / 2 * u,
+        width: W * u,
+        opacity: Math.min(entra, sai),
+        translate: `0px ${(1 - entra) * -30 * u}px`,
         background: "white",
-        padding: `${52 * u}px ${56 * u}px ${48 * u}px`,
-        boxShadow: "0 40px 80px -20px rgba(0,0,0,0.55)",
-        opacity: Math.min(s, sai),
-        scale: String(0.85 + 0.15 * s),
-        translate: `0px ${(1 - s) * 80 * u}px`,
+        borderRadius: 34 * u,
+        borderTopLeftRadius: 8 * u,
+        padding: `${22 * u}px ${30 * u}px ${18 * u}px ${36 * u}px`,
+        boxShadow: "0 24px 50px -16px rgba(0,0,0,0.55)",
+        fontFamily: "Inter",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 40 * u }}>
-        <div
-          style={{
-            width: 190 * u,
-            height: 190 * u,
-            borderRadius: "50%",
-            background: AMBER,
-            color: NAVY,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontFamily: "Manrope",
-            fontWeight: 800,
-            fontSize: 100 * u,
-            flexShrink: 0,
-          }}
-        >
-          V
+      {/* remetente, como num grupo */}
+      <div style={{ display: "flex", alignItems: "baseline", gap: 16 * u, marginBottom: 6 * u }}>
+        <span style={{ fontWeight: 700, fontSize: 40 * u, color: "#c2410c" }}>Tia Verinha</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 6 * u, fontWeight: 500, fontSize: 34 * u, color: "#667781" }}>
+          <MapPin style={{ width: 30 * u, height: 30 * u, color: "#ef4444" }} strokeWidth={2.6} />
+          Gravataí, RS · motorista escolar
+        </span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 30 * u }}>
+        {/* pausa / play */}
+        <div style={{ width: 60 * u, display: "flex", justifyContent: "center", gap: 12 * u, flexShrink: 0 }}>
+          {tocando ? (
+            <>
+              <div style={{ width: 13 * u, height: 50 * u, borderRadius: 4 * u, background: "#54656f" }} />
+              <div style={{ width: 13 * u, height: 50 * u, borderRadius: 4 * u, background: "#54656f" }} />
+            </>
+          ) : (
+            <Play style={{ width: 54 * u, height: 54 * u, color: "#54656f" }} fill="#54656f" />
+          )}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 * u }}>
-          <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 84 * u, color: NAVY, letterSpacing: "-0.03em", lineHeight: 1 }}>Tia Verinha</span>
-          <span style={{ fontFamily: "Inter", fontWeight: 500, fontSize: 40 * u, color: "#6b7280" }}>Motorista escolar há 30+ anos</span>
-          <span
+        <div style={{ flex: 1 }}>
+          {/* onda + bolinha de progresso */}
+          <div style={{ position: "relative", width: ondaW * u, height: 84 * u, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            {ONDA.map((h, i) => (
+              <div key={i} style={{ width: 8 * u, height: h * 70 * u, borderRadius: 8 * u, background: i / ONDA.length <= p ? AZUL_AUDIO : "#c5ccd2" }} />
+            ))}
+            <div
+              style={{
+                position: "absolute",
+                left: p * ondaW * u,
+                top: "50%",
+                width: 36 * u,
+                height: 36 * u,
+                translate: "-50% -50%",
+                borderRadius: "50%",
+                background: AZUL_AUDIO,
+                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 30 * u, color: "#667781", marginTop: 4 * u }}>
+            <span>{tempo}</span>
+            <span>07:30</span>
+          </div>
+        </div>
+        {/* foto com o microfone */}
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          <div
             style={{
+              width: 150 * u,
+              height: 150 * u,
+              borderRadius: "50%",
+              background: AMBER,
+              color: NAVY,
               display: "flex",
               alignItems: "center",
-              gap: 10 * u,
-              fontFamily: "Inter",
-              fontWeight: 700,
-              fontSize: 40 * u,
-              color: NAVY,
-              opacity: cidade,
-              translate: `${(1 - cidade) * 30 * u}px 0px`,
+              justifyContent: "center",
+              fontFamily: "Manrope",
+              fontWeight: 800,
+              fontSize: 78 * u,
             }}
           >
-            <MapPin style={{ width: 42 * u, height: 42 * u, color: "#ef4444" }} strokeWidth={2.6} />
-            Gravataí, RS
-          </span>
-        </div>
-      </div>
-      {!compacto && (
-        <div style={{ marginTop: 44 * u, display: "flex", alignItems: "center", gap: 28 * u, background: "#f0f2f5", borderRadius: 999, padding: `${22 * u}px ${34 * u}px` }}>
-          <div style={{ width: 76 * u, height: 76 * u, borderRadius: "50%", background: WHATS, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <Play style={{ width: 36 * u, height: 36 * u, color: "white", marginLeft: 5 * u }} fill="white" />
+            V
           </div>
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", height: 80 * u }}>
-            {ONDA.map((h, i) => {
-              const tocado = i / ONDA.length < progresso;
-              const pulsa = tocado ? 0.85 + 0.15 * Math.abs(Math.sin((frame + i * 3) / 4)) : 1;
-              return <div key={i} style={{ width: 9 * u, height: h * 80 * u * pulsa, borderRadius: 9 * u, background: tocado ? WHATS : "#b8c2cc" }} />;
-            })}
-          </div>
+          <Mic
+            style={{ position: "absolute", left: -10 * u, bottom: -2 * u, width: 50 * u, height: 50 * u, color: AZUL_AUDIO }}
+            strokeWidth={2.4}
+            fill={AZUL_AUDIO}
+          />
         </div>
-      )}
-      <div style={{ marginTop: 34 * u, display: "flex", alignItems: "center", gap: 14 * u, fontFamily: "Inter", fontWeight: 700, fontSize: 36 * u, color: GREEN }}>
-        <Check style={{ width: 40 * u, height: 40 * u }} strokeWidth={3} />
-        Cliente Van360 · depoimento real
       </div>
     </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Cena 2: Van360 em todo o Brasil, e o close em Gravataí              */
+/* ------------------------------------------------------------------ */
+// lon/lat -> coordenadas do mapa (calibrado pelo contorno do RS; bom o bastante para pontos)
+const ponto = (lon: number, lat: number) => [255.9 + (lon + 57.65) * 15.5, 518.5 + (-27.08 - lat) * 18] as const;
+const CIDADES: Array<[number, number]> = [
+  [-46.63, -23.55], [-47.06, -22.9], [-47.33, -22.74], [-43.2, -22.9], [-43.94, -19.92], [-47.93, -15.78], [-48.11, -15.88],
+  [-49.27, -25.43], [-48.55, -27.6], [-51.23, -30.03], [-38.5, -12.97], [-34.88, -8.05], [-38.54, -3.72], [-60.02, -3.1],
+  [-48.5, -1.45], [-49.25, -16.68], [-54.62, -20.47], [-56.1, -15.6], [-44.3, -2.53], [-42.8, -5.09], [-40.3, -20.3],
+  [-35.2, -5.8], [-37.07, -10.91], [-63.9, -8.76], [-51.06, 0.03], [-48.33, -10.18], [-52.4, -31.77], [-49.07, -26.92],
+  [-46.33, -23.96], [-47.8, -21.17], [-51.16, -23.31], [-41.92, -22.88], [-39.27, -14.8], [-36.6, -9.66],
+];
+const GRAVATAI = ponto(-50.99, -29.94);
+
+const CenaMapa: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const u = useU();
+  const INI = 222;
+  const ZOOM = 266; // "sou de Gravataí"
+  const entra = useMola(INI, 16);
+  const sai = useSaida(366, 380);
+  const z = spring({ frame: frame - ZOOM, fps, config: { damping: 20, mass: 1 } });
+  // enquadramento: Brasil inteiro -> RS com Gravataí no centro
+  const escala = interpolate(z, [0, 1], [1, 3.4]);
+  const cx = interpolate(z, [0, 1], [306, GRAVATAI[0] - 25]);
+  const cy = interpolate(z, [0, 1], [320, GRAVATAI[1]]);
+  const MAPA = 1150; // largura do mapa na tela, em u (escala 1)
+  const k = MAPA / 613;
+  const titulo = useMola(INI + 8, 15);
+  const pin = useMola(ZOOM + 14, 11);
+  const rotulo = useMola(ZOOM + 22, 14);
+  return (
+    <AbsoluteFill style={{ opacity: Math.min(entra, sai) }}>
+      {/* janela do mapa */}
+      <div style={{ position: "absolute", top: 830 * u, left: 0, width: 1290 * u, height: 1200 * u, overflow: "hidden" }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 645 * u,
+            top: 600 * u,
+            width: 613 * k * u,
+            height: 639 * k * u,
+            transformOrigin: "0 0",
+            translate: `${-cx * k * escala * u}px ${-cy * k * escala * u}px`,
+            scale: String(escala),
+          }}
+        >
+          <svg viewBox="0 0 613 639" style={{ width: "100%", height: "100%", overflow: "visible" }}>
+            {Object.entries(ESTADOS).map(([uf, d]) => (
+              <path
+                key={uf}
+                d={d}
+                fill={uf === "RS" ? interpolateColors(z, [0, 1], ["#1e3a6e", "#2563eb"]) : "#1e3a6e"}
+                stroke="#5b7bb5"
+                strokeWidth={1.1 / escala}
+                strokeLinejoin="round"
+              />
+            ))}
+            {/* motoristas pelo país */}
+            {CIDADES.map(([lon, lat], i) => {
+              const [x, y] = ponto(lon, lat);
+              const ordem = (i * 13) % CIDADES.length; // espalha o acendimento pelo país
+              const a = spring({ frame: frame - (INI + 4 + ordem * 0.7), fps, config: { damping: 12 } });
+              const brilho = 0.55 + 0.45 * Math.abs(Math.sin((frame + i * 7) / 9));
+              return (
+                <circle key={i} cx={x} cy={y} r={(5.5 * a) / Math.sqrt(escala)} fill={AMBER} opacity={(1 - z * 0.75) * brilho} />
+              );
+            })}
+            {/* Gravataí */}
+            <circle cx={GRAVATAI[0]} cy={GRAVATAI[1]} r={(7 + 10 * Math.abs(Math.sin(frame / 8))) / escala} fill="none" stroke={AMBER} strokeWidth={2.4 / escala} opacity={pin} />
+            <circle cx={GRAVATAI[0]} cy={GRAVATAI[1]} r={6.5 / escala} fill={AMBER} stroke="white" strokeWidth={2 / escala} opacity={Math.max(pin, 1 - z)} />
+          </svg>
+        </div>
+        {/* etiqueta da cidade, presa ao pin */}
+        <div
+          style={{
+            position: "absolute",
+            left: 645 * u + 25 * k * escala * u + 40 * u,
+            top: 600 * u - 50 * u,
+            opacity: rotulo,
+            translate: `${(1 - rotulo) * 30 * u}px 0px`,
+            padding: `${18 * u}px ${34 * u}px`,
+            borderRadius: 26 * u,
+            background: "white",
+            boxShadow: "0 20px 40px -12px rgba(0,0,0,0.5)",
+            fontFamily: "Manrope",
+            fontWeight: 800,
+            fontSize: 54 * u,
+            color: NAVY,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Gravataí, RS
+          <div style={{ fontFamily: "Inter", fontWeight: 500, fontSize: 34 * u, color: "#6b7280" }}>Região de Porto Alegre</div>
+        </div>
+      </div>
+      {/* Van360 em todo o Brasil */}
+      <div
+        style={{
+          position: "absolute",
+          top: 1980 * u,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+          opacity: titulo,
+          translate: `0px ${(1 - titulo) * 30 * u}px`,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 18 * u,
+            padding: `${20 * u}px ${42 * u}px`,
+            borderRadius: 999,
+            background: "rgba(255,179,0,0.14)",
+            border: `${2 * u}px solid rgba(255,179,0,0.5)`,
+            fontFamily: "Manrope",
+            fontWeight: 800,
+            fontSize: 50 * u,
+            color: "white",
+          }}
+        >
+          <span style={{ width: 22 * u, height: 22 * u, borderRadius: "50%", background: AMBER }} />
+          Van360 em <span style={{ color: AMBER }}>todo o Brasil</span>
+        </div>
+      </div>
+    </AbsoluteFill>
   );
 };
 
@@ -425,7 +605,7 @@ const CelularDepoimento: React.FC = () => {
   const scroll = interpolate(frame, [770, 835], [0, 330], { ...clamp });
   return (
     <div style={{ opacity: sai, translate: `0px ${(1 - sobe) * 1100}px` }}>
-      <Celular top={720} escala={2.05}>
+      <Celular top={880} escala={2.05}>
         <div style={{ position: "relative", width: 414, height: 868 }}>
           {TELAS.map(({ de, ate, tela: T }, i) => {
             if (frame < de || frame >= ate) return null;
@@ -505,10 +685,8 @@ export const DepoimentoVerinha: React.FC = () => {
         <CenaAntes />
       </Sequence>
 
-      <Sequence from={0} durationInFrames={400} name="Quem fala" layout="none">
-        <AbsoluteFill style={{ alignItems: "center", top: 820 * u }}>
-          <CartaoVerinha inicio={221} fim={392} />
-        </AbsoluteFill>
+      <Sequence from={0} durationInFrames={400} name="Mapa" layout="none">
+        <CenaMapa />
       </Sequence>
 
       <Sequence from={0} durationInFrames={FIM_AUDIO + 20} name="Celular" layout="none">
@@ -517,41 +695,35 @@ export const DepoimentoVerinha: React.FC = () => {
 
       {/* quem já pagou / quem falta (dados do mock de março: 19 pagas, 5 a receber, 2 atrasadas) */}
       <Surge at={663} ate={850}>
-        <Destaque x={40} y={1180} rot={-3} cor={GREEN} icone={Check} titulo="19 já pagaram" texto="R$ 5.320 recebido" />
+        <Destaque x={40} y={1330} rot={-3} cor={GREEN} icone={Check} titulo="19 já pagaram" texto="R$ 5.320 recebido" />
       </Surge>
       <Surge at={721} ate={850}>
-        <Destaque x={560} y={1640} rot={3} cor={AMBER} icone={AlertCircle} titulo="5 pendentes" texto="Você vê na hora" />
+        <Destaque x={560} y={1760} rot={3} cor={AMBER} icone={AlertCircle} titulo="5 pendentes" texto="Você vê na hora" />
       </Surge>
 
       {/* evita esquecimentos: o lembrete chega sozinho no WhatsApp do pai */}
       <Surge at={856} ate={962}>
-        <Rotulo x={645} y={620} texto="Celular do pai" cor="verde" />
+        <Rotulo x={645} y={808} texto="Celular do pai" cor="verde" />
       </Surge>
       <Surge at={872} ate={962}>
-        <Ampliado x={150} y={1150} largura={340} escala={2.9} rot={-2}>
+        <Ampliado x={150} y={1290} largura={340} escala={2.9} rot={-2}>
           <BolhaLembrete />
         </Ampliado>
       </Surge>
       <Surge at={902} ate={962}>
-        <Destaque x={520} y={1880} rot={3} cor={WHATS} icone={MessageCircle} titulo="Lembrete automático" texto="Ninguém esquece" />
+        <Destaque x={520} y={1790} rot={3} cor={WHATS} icone={MessageCircle} titulo="Lembrete automático" texto="Ninguém esquece" />
       </Surge>
 
       {/* segurança: pagou, o recibo sai pronto */}
       <Surge at={968} ate={1036}>
-        <Destaque x={40} y={1180} rot={-3} cor={AMBER} icone={Sparkles} titulo="Recibo pronto" texto="Para mandar pro pai" />
+        <Destaque x={40} y={1330} rot={-3} cor={AMBER} icone={Sparkles} titulo="Recibo pronto" texto="Para mandar pro pai" />
       </Surge>
-
-      {/* fechamento da fala: ela de novo, por cima do celular */}
-      <Sequence from={1034} durationInFrames={FIM_AUDIO - 1034 + 12} layout="none">
-        <AbsoluteFill style={{ alignItems: "center", top: 1560 * u }}>
-          <CartaoVerinha inicio={1034 - 1034 + 4} fim={FIM_AUDIO - 1034 + 12} compacto />
-        </AbsoluteFill>
-      </Sequence>
 
       <Sequence from={FIM_AUDIO} name="Fechamento">
         <Fechamento />
       </Sequence>
 
+      <BalaoAudio />
       <Legenda />
     </AbsoluteFill>
   );
