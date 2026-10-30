@@ -101,6 +101,9 @@ export const Finger: React.FC<{ steps: FingerStep[]; showFrom: number; hideAt: n
 /* Legendas                                                            */
 /* ------------------------------------------------------------------ */
 
+/** Trechos de tutoriais reaproveitados em outro vídeo: as legendas originais somem. */
+export const SemLegenda = React.createContext(false);
+
 export type Beat = {
   /** texto da fala; **palavra** fica azul */
   text: string;
@@ -114,6 +117,7 @@ export type Beat = {
  */
 export const Caption: React.FC<{ beats: Beat[]; top?: number }> = ({ beats, top = 230 }) => {
   const frame = useCurrentFrame();
+  if (React.useContext(SemLegenda)) return null;
   const beat = beats.find((b) => frame >= b.from && frame < b.from + b.duration);
   if (!beat) return null;
 

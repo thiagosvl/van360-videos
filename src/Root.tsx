@@ -19,6 +19,7 @@ import { TutorialGastos, TUTORIAL_GASTOS_DURATION } from "./tutoriais/TutorialGa
 import { TutorialRelatorios, TUTORIAL_RELATORIOS_DURATION } from "./tutoriais/TutorialRelatorios";
 import { TutorialRenovacao, TUTORIAL_RENOVACAO_DURATION } from "./tutoriais/TutorialRenovacao";
 import { TutorialIndicacao, TUTORIAL_INDICACAO_DURATION } from "./tutoriais/TutorialIndicacao";
+import { ApresentacaoApp, APRESENTACAO_DURATION } from "./apresentacao/ApresentacaoApp";
 import { TutorialContratos, TUTORIAL_CONTRATOS_DURATION } from "./tutoriais/TutorialContratos";
 
 const V = { width: 1080, height: 1920, fps: 30 };
@@ -79,6 +80,12 @@ export const RemotionRoot: React.FC = () => (
         id="TutorialIndicacao"
         component={TutorialIndicacao}
         durationInFrames={TUTORIAL_INDICACAO_DURATION}
+        {...V}
+      />
+      <Composition
+        id="ApresentacaoApp"
+        component={ApresentacaoApp}
+        durationInFrames={APRESENTACAO_DURATION}
         {...V}
       />
     </Folder>

@@ -32,7 +32,8 @@ function executa(base: HTMLElement, a: Acao) {
   } else if ("tocarTexto" in a) {
     // fora de diálogos, e o elemento mais interno com esse texto (o clique sobe até quem trata)
     const todos = Array.from(base.querySelectorAll<HTMLElement>("*")).filter(
-      (el) => el.textContent?.trim() === a.tocarTexto && !el.closest('[role="dialog"]'),
+      // fora de diálogos, a não ser que a busca já seja dentro de um diálogo
+      (el) => el.textContent?.trim() === a.tocarTexto && (!el.closest('[role="dialog"]') || !!base.closest('[role="dialog"]') || base.getAttribute("role") === "dialog"),
     );
     todos.find((el) => !Array.from(el.children).some((c) => c.textContent?.trim() === a.tocarTexto))?.click();
   } else if ("tocarSeletor" in a) {
