@@ -6,9 +6,9 @@ import Home from "@/pages/Home";
 import { PhoneScreen } from "../components/PhoneScreen";
 import { VideoStateProvider } from "../mocks/videoState";
 import { usarLarguraDeCelular } from "../viewport";
-import { AMBER, Ampliado, Celular, Destaque, Fundo, GREEN, NAVY, Rotulo, SeloTeste, Titulo, WHATS, useU } from "../loja/base";
+import { AMBER, Ampliado, Celular, Destaque, Fundo, GREEN, NAVY, SeloTeste, Titulo, WHATS, useU } from "../loja/base";
 import { BolhaLembrete, TelaParcelas, TelaWhatsAppPai } from "../loja/telas";
-import { ESTADOS } from "./brasil-mapa";
+import { ESTADOS, PONTOS } from "./brasil-mapa";
 
 /**
  * Depoimento da Tia Verinha (Gravataí, RS), para Reels e remarketing.
@@ -414,23 +414,10 @@ const BalaoAudio: React.FC = () => {
         </div>
         {/* foto com o microfone */}
         <div style={{ position: "relative", flexShrink: 0 }}>
-          <div
-            style={{
-              width: 150 * u,
-              height: 150 * u,
-              borderRadius: "50%",
-              background: AMBER,
-              color: NAVY,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "Manrope",
-              fontWeight: 800,
-              fontSize: 78 * u,
-            }}
-          >
-            V
-          </div>
+          <Img
+            src={staticFile("depoimentos/verinha-avatar.png")}
+            style={{ width: 150 * u, height: 150 * u, borderRadius: "50%", objectFit: "cover", display: "block", border: `${2 * u}px solid #e5e7eb` }}
+          />
           <Mic
             style={{ position: "absolute", left: -10 * u, bottom: -2 * u, width: 50 * u, height: 50 * u, color: AZUL_AUDIO }}
             strokeWidth={2.4}
@@ -447,13 +434,6 @@ const BalaoAudio: React.FC = () => {
 /* ------------------------------------------------------------------ */
 // lon/lat -> coordenadas do mapa (calibrado pelo contorno do RS; bom o bastante para pontos)
 const ponto = (lon: number, lat: number) => [255.9 + (lon + 57.65) * 15.5, 518.5 + (-27.08 - lat) * 18] as const;
-const CIDADES: Array<[number, number]> = [
-  [-46.63, -23.55], [-47.06, -22.9], [-47.33, -22.74], [-43.2, -22.9], [-43.94, -19.92], [-47.93, -15.78], [-48.11, -15.88],
-  [-49.27, -25.43], [-48.55, -27.6], [-51.23, -30.03], [-38.5, -12.97], [-34.88, -8.05], [-38.54, -3.72], [-60.02, -3.1],
-  [-48.5, -1.45], [-49.25, -16.68], [-54.62, -20.47], [-56.1, -15.6], [-44.3, -2.53], [-42.8, -5.09], [-40.3, -20.3],
-  [-35.2, -5.8], [-37.07, -10.91], [-63.9, -8.76], [-51.06, 0.03], [-48.33, -10.18], [-52.4, -31.77], [-49.07, -26.92],
-  [-46.33, -23.96], [-47.8, -21.17], [-51.16, -23.31], [-41.92, -22.88], [-39.27, -14.8], [-36.6, -9.66],
-];
 const GRAVATAI = ponto(-50.99, -29.94);
 
 const CenaMapa: React.FC = () => {
@@ -495,17 +475,16 @@ const CenaMapa: React.FC = () => {
               <path
                 key={uf}
                 d={d}
-                fill={uf === "RS" ? interpolateColors(z, [0, 1], ["#1e3a6e", "#2563eb"]) : "#1e3a6e"}
+                fill={uf === "RS" ? interpolateColors(z, [0, 1], ["#24467f", "#2563eb"]) : "#24467f"}
                 stroke="#5b7bb5"
                 strokeWidth={1.1 / escala}
                 strokeLinejoin="round"
               />
             ))}
             {/* motoristas pelo país */}
-            {CIDADES.map(([lon, lat], i) => {
-              const [x, y] = ponto(lon, lat);
-              const ordem = (i * 13) % CIDADES.length; // espalha o acendimento pelo país
-              const a = spring({ frame: frame - (INI + 4 + ordem * 0.7), fps, config: { damping: 12 } });
+            {PONTOS.map(([, x, y], i) => {
+              const ordem = (i * 37) % PONTOS.length; // espalha o acendimento pelo país
+              const a = spring({ frame: frame - (INI + 4 + ordem * 0.4), fps, config: { damping: 12 } });
               const brilho = 0.55 + 0.45 * Math.abs(Math.sin((frame + i * 7) / 9));
               return (
                 <circle key={i} cx={x} cy={y} r={(5.5 * a) / Math.sqrt(escala)} fill={AMBER} opacity={(1 - z * 0.75) * brilho} />
@@ -702,9 +681,6 @@ export const DepoimentoVerinha: React.FC = () => {
       </Surge>
 
       {/* evita esquecimentos: o lembrete chega sozinho no WhatsApp do pai */}
-      <Surge at={856} ate={962}>
-        <Rotulo x={645} y={808} texto="Celular do pai" cor="verde" />
-      </Surge>
       <Surge at={872} ate={962}>
         <Ampliado x={150} y={1290} largura={340} escala={2.9} rot={-2}>
           <BolhaLembrete />
