@@ -1,0 +1,30 @@
+{
+  "nome": "ricardo",
+  "origem": "/mnt/user-data/attachments/0ac5ca90-9e26-505e-92e4-9cca1cd599f1/7cd4117e-audio-ricardo.mp3",
+  "saida": "public/depoimentos/ricardo.mp3",
+  "ts": "src/depoimentos/ricardo-falas.ts",
+  "trechos": [[41.45, 42.19], [43.25, 47.0], [1.45, 4.17], [5.3, 10.64], [11.15, 13.3], [13.7, 17.65], [18.05, 23.1], [23.4, 34.05], [40.12, 41.21], [47.08, 52.3], [56.95, 63.66], [64.15, 69.62], [70.25, 72.0]],
+  "falas": [
+    ["Para mim, o fim da **papelada** com o contrato é o melhor.", 41.6, 46.98],
+    ["Sou o Ricardo, de **Santa Maria, DF**.", 1.52, 4.1],
+    ["Utilizo o aplicativo **Van360** todos os dias,", 5.3, 8.98],
+    ["**facilitou muito** meu dia a dia.", 9.04, 10.6],
+    ["Eu faço a **rota** dentro do app,", 11.2, 13.28],
+    ["faço as **chamadas** antes do embarque dos alunos no próprio aplicativo.", 13.72, 17.6],
+    ["Os pais estão **encantados**", 18.1, 19.4],
+    ["por receber as **notificações de embarque** e desembarque do aluno.", 19.42, 23.05],
+    ["O financeiro está muito mais **fácil e organizado**.", 23.4, 26.15],
+    ["O controle das **parcelas pagas**,", 26.18, 28.95],
+    ["parcelas **em atraso**,", 29.0, 30.65],
+    ["os **recibos de pagamento** que são enviados para os pais.", 31.16, 34.0],
+    ["E não é tudo!", 40.15, 41.2],
+    ["Já migrei **todos os meus contratos** para o aplicativo,", 47.14, 50.75],
+    ["com a **assinatura digital** dos pais.", 50.86, 52.3],
+    ["E ansioso pelas novas melhorias:", 56.97, 59.9],
+    ["**rastreamento**,", 59.96, 61.05],
+    ["**renovação de contrato** para o próximo ano.", 61.1, 63.62],
+    ["Enfim, é um **aplicativo completo**.", 64.2, 66.5],
+    ["Estou gostando demais e já estou passando", 66.62, 69.62],
+    ["para **alguns colegas** meus também.", 70.25, 71.98]
+  ]
+}

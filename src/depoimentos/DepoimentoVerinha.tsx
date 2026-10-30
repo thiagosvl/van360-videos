@@ -654,7 +654,6 @@ const Fechamento: React.FC = () => {
 
 export const DepoimentoVerinha: React.FC = () => {
   usarLarguraDeCelular();
-  const u = useU();
   return (
     <AbsoluteFill>
       <Fundo />

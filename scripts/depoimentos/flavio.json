@@ -1,0 +1,24 @@
+{
+  "nome": "flavio",
+  "origem": "/mnt/user-data/attachments/0ac5ca90-9e26-505e-92e4-9cca1cd599f1/f44e3b39-audio-flavio.mp3",
+  "saida": "public/depoimentos/flavio.mp3",
+  "ts": "src/depoimentos/flavio-falas.ts",
+  "filtros": "afftdn=nf=-28",
+  "trechos": [[45.9, 49.8], [1.19, 4.62], [5.05, 10.75], [11.15, 19.3], [19.6, 30.36], [30.36, 35.7], [35.8, 45.62], [54.0, 59.7]],
+  "falas": [
+    ["Hoje, eu mesmo **não fico mais sem** a plataforma Van360.", 46.1, 49.62],
+    ["Sou o Flávio, aqui da cidade de **Americana**, interior de São Paulo.", 1.2, 4.6],
+    ["Sou cliente do **Van360**, um excelente aplicativo.", 5.1, 10.58],
+    ["Faz dois meses que eu estou utilizando.", 11.24, 13.0],
+    ["É uma plataforma **sensacional**, muito fácil, prática,", 13.05, 16.76],
+    ["e tem um **custo-benefício maravilhoso** também.", 16.8, 19.1],
+    ["E ajuda nós, transportadores escolares, **100%** na nossa rotina,", 19.76, 25.16],
+    ["tanto na parte de **custo** quanto na parte de **aluno**.", 25.16, 30.28],
+    ["E é bom para **os dois lados** também,", 30.42, 32.58],
+    ["tanto para o **pai** como para nós, **condutores**.", 32.78, 35.56],
+    ["Emite uma **segurança maior** para os nossos clientes", 35.96, 39.52],
+    ["e também fica mais prático para a gente", 39.52, 41.96],
+    ["controlar o nosso **fluxo de entrada e saída** de aluno.", 41.96, 45.56],
+    ["Tanto é que aqui na região **muita gente** já está aderindo à plataforma do Van360.", 54.05, 59.38]
+  ]
+}
