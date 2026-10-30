@@ -8,6 +8,8 @@ import { POSTS_LOTE2 } from "./posts/Lote2";
 import { POSTS_LOTE3 } from "./posts/Lote3";
 import { POSTS_LOTE4 } from "./posts/Lote4";
 import { POSTS_LOTE5 } from "./posts/Lote5";
+import { POSTS_LOTE6 } from "./posts/Lote6";
+import { CapaDestaque, DESTAQUES } from "./posts/Destaques";
 import { Teaser, TEASER_DURATION } from "./Teaser";
 import { HookScene } from "./scenes/HookScene";
 import { AlunosScene } from "./scenes/AlunosScene";
@@ -111,8 +113,22 @@ export const RemotionRoot: React.FC = () => (
         defaultProps={{ tab: "parcelas", ano: "2026", scrolls: [0, 700, 1400, 2100] }}
       />
     </Folder>
+    <Folder name="Destaques">
+      {DESTAQUES.flatMap((d) =>
+        (["navy", "ambar"] as const).map((v) => (
+          <Still
+            key={`${d.id}-${v}`}
+            id={`destaque-${v}-${d.id}`}
+            component={CapaDestaque}
+            defaultProps={{ id: d.id, variante: v }}
+            width={1080}
+            height={1920}
+          />
+        )),
+      )}
+    </Folder>
     <Folder name="Posts">
-      {[...POSTS, ...POSTS_LOTE2, ...POSTS_LOTE3, ...POSTS_LOTE4, ...POSTS_LOTE5].flatMap((p) =>
+      {[...POSTS, ...POSTS_LOTE2, ...POSTS_LOTE3, ...POSTS_LOTE4, ...POSTS_LOTE5, ...POSTS_LOTE6].flatMap((p) =>
         p.slides.map((S, i) => (
           <Still key={`${p.id}-${i + 1}`} id={`post-${p.id}-${i + 1}`} component={S} width={1080} height={1350} />
         )),
