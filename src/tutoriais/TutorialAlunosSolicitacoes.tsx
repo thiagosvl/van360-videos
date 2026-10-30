@@ -15,6 +15,7 @@ import { PhoneScreen } from "../components/PhoneScreen";
 import { WhatsAppChat } from "../components/WhatsAppChat";
 import { BRAND, BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { VideoStateProvider } from "../mocks/videoState";
 import { MOCK_PROFILE } from "../mocks/useProfile";
 import { LINK_DOMINIO, MOTORISTA, NOVO_ALUNO, PASSAGEIROS, PEDRO_ID, PRE_PASSAGEIRO } from "../mocks/data";
@@ -25,14 +26,14 @@ import { LINK_DOMINIO, MOTORISTA, NOVO_ALUNO, PASSAGEIROS, PEDRO_ID, PRE_PASSAGE
  */
 export const BEATS: Beat[] = [
   { text: "Cadastrar aluno por aluno toma tempo. Deixe que os **pais** façam isso.", from: 0, duration: 150 },
-  { text: "Envie o **link** de cadastro pelo WhatsApp.", from: 150, duration: 150 },
-  { text: "O pai preenche os dados do filho pelo **celular** dele.", from: 300, duration: 180 },
-  { text: "O pedido chega na hora no seu aplicativo.", from: 480, duration: 150 },
-  { text: "Você confere e **aprova**. Só isso.", from: 630, duration: 180 },
-  { text: "A **carteirinha digital** sai na hora. E o pai acessa pelo app.", from: 810, duration: 180 },
-  { text: "As **parcelas** já aparecem. Contrato e rotas, a um toque.", from: 990, duration: 180 },
-  { text: "Menos tempo com cadastro, mais tempo para **você**.", from: 1170, duration: 120 },
-];
+  { text: "Envie o **link** de cadastro pelo WhatsApp.", from: 150, duration: 100 },
+  { text: "O pai preenche os dados do filho pelo **celular** dele, sem você digitar nada.", from: 250, duration: 165 },
+  { text: "O pedido chega na hora no seu aplicativo.", from: 415, duration: 120 },
+  { text: "Você confere, coloca o valor e o vencimento, e **aprova**. Só isso.", from: 535, duration: 150 },
+  { text: "A **carteirinha digital** sai na hora. E o pai acessa pelo app.", from: 685, duration: 150 },
+  { text: "As **parcelas** já aparecem. Contrato e rotas, a um toque.", from: 835, duration: 150 },
+  { text: "Menos tempo com cadastro, mais tempo para **você**.", from: 985, duration: 130 },
+]
 export const TUTORIAL_ALUNOS_SOLICITACOES_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -104,6 +105,19 @@ const SegmentShell: React.FC<{ seg: Segment; first: boolean; last: boolean; chil
   );
 };
 
+/* tempos das ações (usados pelas telas e pelos efeitos sonoros) */
+const T = {
+  tocaLink: 100, // relativo ao início
+  enviaWhats: 24, // relativo a B[2]
+  form: { nome: 22, data: 68, escola: 92, periodo: 104, turma: 114 }, // relativo a B[3]
+  cardChega: 20, // relativo a B[4]
+  abreDialogo: 118, // relativo a B[4]
+  valor: 30, // relativo a B[5]
+  vencimento: 70, // relativo a B[5]
+  confirma: 120, // relativo a B[5]
+  trocaAba: 12, // relativo a B[7]
+};
+
 /* ------------------------------------------------------------------ */
 /* telas                                                               */
 /* ------------------------------------------------------------------ */
@@ -132,7 +146,7 @@ const TelaLink: React.FC = () => {
       route="/alunos"
       pageTitle="Alunos"
       scale={SCALE}
-      overlay={<Finger showFrom={70} hideAt={125} steps={[{ at: 70, x: 195, y: 275 }, { at: 100, x: 195, y: 275, tap: true }]} />}
+      overlay={<Finger showFrom={70} hideAt={125} steps={[{ at: 70, x: 195, y: 275 }, { at: T.tocaLink, x: 195, y: 275, tap: true }]} />}
     >
       <AlunosTabs tab="alunos" badge={0}>
         <div className="space-y-4">
@@ -174,7 +188,7 @@ const TelaWhatsApp: React.FC = () => {
   const mensagem = buildPrePassageiroShareMessage(`${LINK_DOMINIO}/cadastro-passageiro/${MOTORISTA.id}`);
   return (
     <PhoneScreen route="/alunos" scale={SCALE} showChrome={false} contentClassName="">
-      <WhatsAppChat contato="Carla (mãe do Pedro)" mensagem={mensagem} enviaEm={24} />
+      <WhatsAppChat contato="Carla (mãe do Pedro)" mensagem={mensagem} enviaEm={T.enviaWhats} />
     </PhoneScreen>
   );
 };
@@ -186,11 +200,11 @@ const TelaFormPai: React.FC = () => {
     frame < inicio ? "" : texto.slice(0, Math.min(texto.length, Math.floor((frame - inicio) / porLetra) + 1));
 
   const values = {
-    nome: digita(NOVO_ALUNO.nome, 22),
-    data_nascimento: digita(NOVO_ALUNO.dataNascimento, 68),
-    escola_id: frame >= 92 ? NOVO_ALUNO.escola.id : "",
-    periodo: frame >= 104 ? NOVO_ALUNO.periodo : "",
-    turma: digita(NOVO_ALUNO.turma, 114),
+    nome: digita(NOVO_ALUNO.nome, T.form.nome),
+    data_nascimento: digita(NOVO_ALUNO.dataNascimento, T.form.data),
+    escola_id: frame >= T.form.escola ? NOVO_ALUNO.escola.id : "",
+    periodo: frame >= T.form.periodo ? NOVO_ALUNO.periodo : "",
+    turma: digita(NOVO_ALUNO.turma, T.form.turma),
   };
   const scroll = interpolate(frame, [12, 40, 120, 160], [0, 330, 330, 640], { ...clamp, easing: ease });
 
@@ -206,17 +220,17 @@ const TelaFormPai: React.FC = () => {
 /** Solicitações + aprovação (diálogo real abrindo dentro do celular). */
 const TelaSolicitacoes: React.FC = () => {
   const frame = useCurrentFrame(); // relativo a B[4]
-  const abreDialogo = 118; // toque no card
+  const abreDialogo = T.abreDialogo; // toque no card
   const dialogo = frame >= abreDialogo + 8;
   const local = frame - (B[5] - B[4]); // relativo ao beat 5
 
   const digita = (texto: string, inicio: number) =>
     local < inicio ? "" : texto.slice(0, Math.min(texto.length, Math.floor((local - inicio) / 3) + 1));
   const revisar = {
-    valor_cobranca: digita(NOVO_ALUNO.valor, 30),
-    dia_vencimento: local >= 70 ? NOVO_ALUNO.vencimento : "",
+    valor_cobranca: digita(NOVO_ALUNO.valor, T.valor),
+    dia_vencimento: local >= T.vencimento ? NOVO_ALUNO.vencimento : "",
   };
-  const confirma = B[5] - B[4] + 120;
+  const confirma = B[5] - B[4] + T.confirma;
 
   return (
     <VideoStateProvider value={{ revisar }}>
@@ -260,7 +274,7 @@ const TelaSolicitacoes: React.FC = () => {
 /** Seu celular: a carteirinha REAL do aluno recém-aprovado (visão do motorista). */
 const TelaCarteirinha: React.FC = () => {
   const frame = useCurrentFrame(); // relativo a B[6]
-  const tab = frame >= B[7] - B[6] + 12 ? "contrato" : "parcelas";
+  const tab = frame >= B[7] - B[6] + T.trocaAba ? "contrato" : "parcelas";
   const route = `/alunos/${PEDRO_ID}?tab=${tab}&ano=2026`;
   // na aba Parcelas, desce um pouco para mostrar as parcelas já geradas
   const scroll = tab === "parcelas" ? interpolate(frame, [70, 130], [0, 300], { ...clamp, easing: ease }) : 0;
@@ -283,6 +297,42 @@ const TELAS: Record<string, React.FC> = {
 
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Efeitos sonoros                                                      */
+/* ------------------------------------------------------------------ */
+/** um "tec" a cada 2 letras digitadas */
+const teclas = (inicio: number, texto: string, porLetra: number): SfxEvent[] =>
+  Array.from({ length: Math.ceil(texto.length / 2) }, (_, i) => ({ at: inicio + i * 2 * porLetra, sfx: "select", volume: 0.3 }));
+
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  { at: T.tocaLink, sfx: "tap" },
+  // trocas de celular
+  ...SEGMENTS.slice(0, -1).map((s): SfxEvent => ({ at: s.to, sfx: "whoosh", volume: 0.55 })),
+  // mensagem enviada no WhatsApp
+  { at: B[2] + T.enviaWhats, sfx: "pop", volume: 0.6 },
+  // o pai preenche
+  ...teclas(B[3] + T.form.nome, NOVO_ALUNO.nome, 2),
+  ...teclas(B[3] + T.form.data, NOVO_ALUNO.dataNascimento, 2),
+  { at: B[3] + T.form.escola, sfx: "select", volume: 0.6 },
+  { at: B[3] + T.form.periodo, sfx: "select", volume: 0.6 },
+  ...teclas(B[3] + T.form.turma, NOVO_ALUNO.turma, 2),
+  // o pedido chega
+  { at: B[4] + T.cardChega, sfx: "vibra", volume: 0.45 },
+  { at: B[4] + T.cardChega + 2, sfx: "notif", volume: 0.8 },
+  // revisar e aprovar
+  { at: B[4] + T.abreDialogo, sfx: "tap" },
+  { at: B[4] + T.abreDialogo + 8, sfx: "open", volume: 0.6 },
+  ...teclas(B[5] + T.valor, NOVO_ALUNO.valor, 3),
+  { at: B[5] + T.vencimento, sfx: "select", volume: 0.6 },
+  { at: B[5] + T.confirma, sfx: "tap" },
+  { at: B[5] + T.confirma + 6, sfx: "success", volume: 0.7 },
+  // carteirinha: troca de aba
+  { at: B[7] + T.trocaAba, sfx: "select", volume: 0.6 },
+  // logo
+  { at: B[8] + 20, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialAlunosSolicitacoes: React.FC = () => {
   const frame = useCurrentFrame();
   const logoIn = interpolate(frame, [B[8] + 20, B[8] + 40], [0, 1], clamp);
@@ -290,6 +340,8 @@ export const TutorialAlunosSolicitacoes: React.FC = () => {
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="solicitacoes" beats={BEATS} />
+      <Sfx events={SFX} />
       {SEGMENTS.map((seg, i) => {
         const Tela = TELAS[seg.id];
         const last = i === SEGMENTS.length - 1;
