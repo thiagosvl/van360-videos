@@ -69,7 +69,7 @@ export const RemotionRoot: React.FC = () => (
           titulo: "O pai cadastra, **você só aprova**",
           botao: "Veja como funciona",
           icone: "▶",
-          subtitulo: "Em 38 segundos",
+          subtitulo: "Em 37 segundos",
         }),
       ].flat()}
     </Folder>

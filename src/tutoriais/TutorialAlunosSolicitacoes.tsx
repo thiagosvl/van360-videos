@@ -28,11 +28,11 @@ export const BEATS: Beat[] = [
   { text: "Cadastrar aluno por aluno toma tempo. Deixe que os **pais** façam isso.", from: 0, duration: 150 },
   { text: "Envie o **link** de cadastro pelo WhatsApp.", from: 150, duration: 100 },
   { text: "O pai preenche os dados do filho pelo **celular** dele, sem você digitar nada.", from: 250, duration: 165 },
-  { text: "O pedido chega na hora no seu aplicativo.", from: 415, duration: 120 },
-  { text: "Você confere, coloca o valor e o vencimento, e **aprova**. Só isso.", from: 535, duration: 150 },
-  { text: "A **carteirinha digital** sai na hora. E o pai acessa pelo app.", from: 685, duration: 150 },
-  { text: "As **parcelas** já aparecem. Contrato e rotas, a um toque.", from: 835, duration: 150 },
-  { text: "Menos tempo com cadastro, mais tempo para **você**.", from: 985, duration: 130 },
+  { text: "O pedido chega na hora no seu aplicativo.", from: 415, duration: 105 },
+  { text: "Você confere, coloca o valor e o vencimento, e **aprova**. Só isso.", from: 520, duration: 150 },
+  { text: "A **carteirinha digital** sai na hora. E o pai acessa pelo app.", from: 670, duration: 140 },
+  { text: "As **parcelas** já aparecem. Contrato e rotas, a um toque.", from: 810, duration: 140 },
+  { text: "Menos tempo com cadastro, mais tempo para **você**.", from: 950, duration: 130 },
 ]
 export const TUTORIAL_ALUNOS_SOLICITACOES_DURATION = beatsDuration(BEATS);
 
