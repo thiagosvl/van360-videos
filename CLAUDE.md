@@ -99,14 +99,14 @@ código do app para o vídeo funcionar.
 - Rolagem de tela não tem som (o Thiago não gostou).
 - Depois do render, normalizar: `ffmpeg -i in.mp4 -c:v copy -af "alimiter=limit=0.89:level=false,loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k out.mp4`.
 - Depois de "Salvar", nunca deixar o celular vazio: manter a tela e mostrar o toast real do app.
+- Navegação fluida: diálogo/recibo só fecha com o dedo indo até o X (ou botão) e tocando; toque em aba sempre no CENTRO do rótulo (conferir com still no quadro do toque).
 
 ## Status dos tutoriais (out/2026)
 Com narração (voz Thiago), efeitos e capa: TutorialRotas (RotasFinal), TutorialAlunosLista (AlunosListaFinal),
-TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal).
+TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal), TutorialCarteirinha (CarteirinhaFinal).
 Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
-TutorialIndicacao, TutorialCarteirinha,
+TutorialIndicacao,
 TutorialContratos, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.
-- Carteirinha: código já corrigido, ainda não renderizado.
 - Relatórios: o Thiago quer mudar o texto ("de relance" complexo; falar de controle e organização; período > van).
 - Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
 
