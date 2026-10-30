@@ -67,6 +67,18 @@ código do app para o vídeo funcionar.
 - Roteiro com uma fala por cena, ~2,5 palavras por segundo.
 - O vídeo se ajusta ao áudio: com o áudio em mãos, ajustar `from/duration` dos beats
   e adicionar `<Audio>`.
+- Geração pelo conector ElevenLabs (`creative_generate_speech`, modelo `eleven_v4`, 1 geração por fala).
+  Voz clonada do Thiago: "Thiago (Eu)" `iMAOSIdjlzAHq5LIP44Z`. Alternativa de locutor: "Gabriel"
+  `WPgqgCVa3mD38JuyODU6`. Baixar o MP3 (storage.googleapis.com liberado) para `public/narracao/<video>/`.
+- A Apresentação (`ApresentacaoApp`) já tem narração na voz do Thiago (`public/narracao/fala-*.mp3`).
+
+## Status dos tutoriais (out/2026)
+Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
+TutorialRotas, TutorialIndicacao, TutorialAlunosLista, TutorialAlunosSolicitacoes, TutorialCarteirinha,
+TutorialContratos, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.
+- AlunosLista e Carteirinha: código já corrigido, ainda não renderizados.
+- Relatórios: o Thiago quer mudar o texto ("de relance" complexo; falar de controle e organização; período > van).
+- Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
 
 ## Contratos
 - PDF do contrato gerado com o código real do back-end (`node scripts/gerar-contrato.mjs`):
