@@ -50,17 +50,69 @@ export const fechamento = (n: number): Slide => () => {
 
 /* ============ 1. Carrossel: cobrar pai por pai ============ */
 
-const cobranca: Slide[] = [
-  () => (
-    <Post arrasta brilhoY={1300}>
-      <Texto
-        top={430}
-        tamanho={140}
-        titulo={"Dia 10 chegou.\nE lá vai você cobrar **pai por pai.**"}
-        sub="Se você tem van escolar, conhece essa rotina."
-      />
+/** Mensagem enviada pelo motorista (manual, não é modelo automático). */
+const BalaoEnviado: React.FC<{ para: string; texto: string; x: number; rot: number }> = ({ para, texto, x, rot }) => {
+  const u = useU();
+  return (
+    <div
+      style={{
+        alignSelf: "center",
+        translate: `${x * u}px 0`,
+        rotate: `${rot}deg`,
+        width: 700 * u,
+        background: "#d9fdd3",
+        borderRadius: `${34 * u}px ${8 * u}px ${34 * u}px ${34 * u}px`,
+        padding: `${20 * u}px ${30 * u}px ${16 * u}px`,
+        boxShadow: "0 24px 44px -18px rgba(0,0,0,0.65)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 4 * u,
+      }}
+    >
+      <span style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 30 * u, color: "#1f9d55" }}>Para: {para}</span>
+      <span style={{ fontFamily: "Inter", fontWeight: 500, fontSize: 38 * u, lineHeight: 1.3, color: "#111b21" }}>{texto}</span>
+      <span style={{ alignSelf: "flex-end", fontFamily: "Inter", fontSize: 26 * u, color: "#53bdeb" }}>✓✓</span>
+    </div>
+  );
+};
+
+/** Capa pensada para a grade do perfil (miniatura 3:4): tudo centralizado e longe das bordas. */
+const CapaCobranca: Slide = () => {
+  const u = useU();
+  return (
+    <Post arrasta brilhoY={1250}>
+      <div style={{ position: "absolute", top: 150 * u, left: 0, right: 0, textAlign: "center" }}>
+        <Etiqueta texto="COBRANÇA" />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: 260 * u,
+          left: 110 * u,
+          right: 110 * u,
+          textAlign: "center",
+          fontFamily: "Manrope",
+          fontWeight: 800,
+          fontSize: 112 * u,
+          lineHeight: 1.05,
+          letterSpacing: "-0.035em",
+          color: "white",
+          whiteSpace: "pre-line",
+        }}
+      >
+        <Destacado texto={"Dia 10 chegou.\nE lá vai você cobrar\n**pai por pai.**"} />
+      </div>
+      <div style={{ position: "absolute", top: 700 * u, left: 0, right: 0, display: "flex", flexDirection: "column", gap: 22 * u }}>
+        <BalaoEnviado para="Mãe da Ana" texto="Oi! Lembrando da mensalidade 🙏" x={-40} rot={-2} />
+        <BalaoEnviado para="Pai do Davi" texto="Oi! A mensalidade venceu hoje 🙏" x={40} rot={1.5} />
+        <BalaoEnviado para="Mãe do Miguel" texto="Oi! Conseguiu ver o Pix? 🙏" x={-20} rot={-1} />
+      </div>
     </Post>
-  ),
+  );
+};
+
+const cobranca: Slide[] = [
+  CapaCobranca,
   () => (
     <Post pagina={[2, 5]}>
       <Texto top={250} tamanho={112} titulo={"Todo mês é a\nmesma **novela**"} />
