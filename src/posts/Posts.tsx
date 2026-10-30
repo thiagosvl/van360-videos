@@ -155,13 +155,15 @@ const cobranca: Slide[] = [
 
 const quemPagou: Slide[] = [
   () => (
-    <Post brilhoY={1200}>
+    <Post
+      brilhoY={1200}
+      sobre={<Destaque x={600} y={1290} rot={3} cor={RED} icone={AlertCircle} titulo="2 em atraso" texto="O Van360 já avisou o pai" />}
+    >
       <Texto top={110} centro tamanho={108} titulo={"Quem já pagou?\nQuem tá **devendo?**"} sub="Todas as mensalidades do mês numa tela só." />
       <Celular top={560} escala={1.95}>
         <TelaParcelas />
       </Celular>
       <Destaque x={40} y={860} rot={-3} cor={GREEN} icone={Check} titulo="19 já pagaram" texto="R$ 5.320 recebido" />
-      <Destaque x={640} y={1180} rot={3} cor={RED} icone={AlertCircle} titulo="2 em atraso" texto="Você vê antes de cobrar" />
     </Post>
   ),
 ];

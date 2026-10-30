@@ -80,7 +80,9 @@ export const Post: React.FC<{
   claro?: boolean;
   brilhoY?: number;
   arrasta?: boolean;
-}> = ({ children, pagina, claro = false, brilhoY, arrasta = false }) => {
+  /** elementos desenhados por cima do esmaecido do rodapé (ex.: cartão Destaque perto do fim) */
+  sobre?: React.ReactNode;
+}> = ({ children, pagina, claro = false, brilhoY, arrasta = false, sobre }) => {
   const u = useU();
   const corTexto = claro ? "#64748b" : "rgba(226,234,246,0.7)";
   return (
@@ -100,6 +102,7 @@ export const Post: React.FC<{
             : "linear-gradient(to bottom, rgba(11,26,46,0), #0b1a2e 70%)",
         }}
       />
+      {sobre}
       <div
         style={{
           position: "absolute",
