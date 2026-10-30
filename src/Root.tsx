@@ -3,6 +3,7 @@ import "./video.css";
 import React from "react";
 import { Composition, Folder, Still } from "remotion";
 import { SLIDES_LOJA } from "./loja/Loja";
+import { POSTS } from "./posts/Posts";
 import { Teaser, TEASER_DURATION } from "./Teaser";
 import { HookScene } from "./scenes/HookScene";
 import { AlunosScene } from "./scenes/AlunosScene";
@@ -105,6 +106,13 @@ export const RemotionRoot: React.FC = () => (
         fps={30}
         defaultProps={{ tab: "parcelas", ano: "2026", scrolls: [0, 700, 1400, 2100] }}
       />
+    </Folder>
+    <Folder name="Posts">
+      {POSTS.flatMap((p) =>
+        p.slides.map((S, i) => (
+          <Still key={`${p.id}-${i + 1}`} id={`post-${p.id}-${i + 1}`} component={S} width={1080} height={1350} />
+        )),
+      )}
     </Folder>
     <Folder name="Loja-AppStore">
       {SLIDES_LOJA.map((s) => (
