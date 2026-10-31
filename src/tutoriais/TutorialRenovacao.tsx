@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { AbsoluteFill, Img, Sequence, continueRender, delayRender, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import React from "react";
+import { AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Routes, Route } from "react-router-dom";
 import Renovacoes from "@/pages/Renovacoes";
 import PublicRenovacaoPage from "@/pages/PublicRenovacaoPage";
@@ -30,17 +30,17 @@ import { BotaoLink, WabaMessage, WABA_MODELOS } from "../components/WabaMessage"
  */
 export const BEATS: Beat[] = [
   { text: "Ano novo, aluno renovado, **sem correria**.", from: 0, duration: 118 },
-  { text: "Você define uma vez **quando começam e terminam** as parcelas de 2027.", from: 118, duration: 168 },
-  { text: "E deixa o **contrato digital** ligado para o novo ano.", from: 286, duration: 110 },
-  { text: "Vai ter aumento? Marca todos, escolhe o percentual e aplica **10% de uma vez**.", from: 396, duration: 192 },
-  { text: "Já sabe quem fica? Abre o aluno e **você mesmo** confirma a vaga.", from: 588, duration: 140 },
-  { text: "Para os outros, marca os pendentes e a renovação vai **pelo WhatsApp**, de uma vez.", from: 728, duration: 165 },
-  { text: "O pai recebe o link **no celular** e toca para confirmar.", from: 893, duration: 112 },
-  { text: "Confere o novo valor, já com o reajuste, e **confirma a vaga**.", from: 1005, duration: 132 },
-  { text: "E já **assina o contrato** de 2027 com o dedo, ali mesmo na tela.", from: 1137, duration: 145 },
-  { text: "Confirmou? A **carteirinha de 2027** já fica pronta.", from: 1282, duration: 135 },
-  { text: "Você vê quem **confirmou**, quem falta e quem **sai**.", from: 1417, duration: 120 },
-  { text: "Renovação feita, **vaga garantida**.", from: 1537, duration: 110 },
+  { text: "Você define uma vez **quando começam e terminam** as parcelas do próximo ano.", from: 118, duration: 155 },
+  { text: "Já ativa o **contrato** do próximo ano, e o pai assina assim que confirmar a vaga.", from: 273, duration: 155 },
+  { text: "Vai ter aumento? Marca todos, escolhe percentual ou valor e **aplica de uma vez**.", from: 428, duration: 179 },
+  { text: "Já sabe quem fica? Abre o aluno e **você mesmo** confirma a vaga.", from: 607, duration: 140 },
+  { text: "Para os outros, marca os pendentes e a renovação vai **pelo WhatsApp**, de uma vez.", from: 747, duration: 165 },
+  { text: "O pai recebe o link **no celular** e toca para confirmar.", from: 912, duration: 112 },
+  { text: "Confere o novo valor, já com o reajuste, e **confirma a vaga**.", from: 1024, duration: 132 },
+  { text: "E já **assina o contrato** do próximo ano com o dedo, ali mesmo na tela.", from: 1156, duration: 138 },
+  { text: "Confirmou? A **carteirinha nova** já fica pronta.", from: 1294, duration: 107 },
+  { text: "Você vê quem **confirmou**, quem falta e quem **sai**.", from: 1401, duration: 120 },
+  { text: "Renovação feita, **vaga garantida**.", from: 1521, duration: 110 },
 ]
 export const TUTORIAL_RENOVACAO_DURATION = beatsDuration(BEATS);
 
@@ -128,15 +128,15 @@ const T = {
   tocaConfigurar: B[1] + 105,
   abreConfig: B[1] + 112,
   passosConfig: [B[2] + 15, B[2] + 30, B[2] + 45, B[2] + 60],
-  tocaSalvar: B[2] + 150,
-  periodo: B[2] + 158,
+  tocaSalvar: B[2] + 140,
+  periodo: B[2] + 148,
   // no ritmo da fala: "marca todos", "escolhe o percentual", "e aplica"
-  tocaMarcarTodos: B[4] + 50,
-  tocaReajustar: B[4] + 70,
-  abreReajuste: B[4] + 76,
-  passosReajuste: [B[4] + 92, B[4] + 108, B[4] + 124],
-  tocaAplicar: B[4] + 160,
-  reajustado: B[4] + 167,
+  tocaMarcarTodos: B[4] + 48,
+  tocaReajustar: B[4] + 68,
+  abreReajuste: B[4] + 74,
+  passosReajuste: [B[4] + 88, B[4] + 104, B[4] + 120],
+  tocaAplicar: B[4] + 150,
+  reajustado: B[4] + 157,
   // "abre o aluno" e "confirma a vaga"
   tocaAna: B[5] + 44,
   tocaConfirmarAna: B[5] + 74,
@@ -165,40 +165,6 @@ const PASSOS_REAJUSTE: Acao[] = [
 
 const passoAte = (frame: number, tempos: number[]) => tempos.filter((t) => frame >= t).length;
 
-/**
- * Mantém o card de um aluno aberto em TODOS os quadros. O card guarda o "aberto" em estado interno e
- * a lista às vezes o recria (fechado): por isso confere a cada quadro e só toca se estiver fechado.
- * (Antes um único toque deixava o card abrir e fechar num piscar de olhos.)
- */
-const MantemCardAberto: React.FC<{ nome: string }> = ({ nome }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handle = delayRender("Abrindo o card");
-    let raf = 0;
-    const confere = (tentativa: number): void => {
-      const tela = ref.current?.closest<HTMLElement>(".phone-screen");
-      const alvo = Array.from(tela?.querySelectorAll<HTMLElement>("h3, span, p, div") ?? []).find(
-        (el) => el.textContent?.trim() === nome && el.children.length === 0 && !el.closest('[role="dialog"]'),
-      );
-      const card = alvo?.closest<HTMLElement>('[class*="rounded-[20px]"]'); // o card do aluno
-      const aberto = !!card && card.children.length > 1;
-      // um toque só por vez: o React precisa de um quadro para mostrar o card aberto
-      if (alvo && !aberto && tentativa === 0) {
-        alvo.click();
-        raf = requestAnimationFrame(() => requestAnimationFrame(() => confere(1)));
-        return;
-      }
-      if (!alvo && tentativa < 10) raf = requestAnimationFrame(() => confere(tentativa + 1));
-      else continueRender(handle);
-    };
-    raf = requestAnimationFrame(() => confere(0));
-    return () => {
-      cancelAnimationFrame(raf);
-      continueRender(handle);
-    };
-  });
-  return <div ref={ref} />;
-};
 
 const TelaApp: React.FC = () => {
   const frame = useCurrentFrame();
@@ -235,7 +201,7 @@ const TelaApp: React.FC = () => {
   const disparoLista = dadosRenovacao(estado).passageiros.filter((p) => estado.selecionados?.includes(p.passageiro_id));
 
   return (
-    <VideoStateProvider value={{ renovacao: estado }}>
+    <VideoStateProvider value={{ renovacao: estado, cardAberto: frame >= T.tocaAna + 3 && frame < B[6] + 8 ? "Ana Beatriz Souza" : undefined }}>
       <PhoneScreen
         route={`/renovacoes?ano=${ANO_DESTINO}`}
         pageTitle="Renovação"
@@ -275,7 +241,6 @@ const TelaApp: React.FC = () => {
               />
             )}
             {/* o card da Ana abre (estado interno do card): toca nele uma vez, em qualquer aba do render */}
-            {frame >= T.tocaAna + 4 && frame < T.anaConfirmada && <MantemCardAberto nome="Ana Beatriz Souza" />}
             {/* barra de ações dos alunos marcados (a da página fica presa ao fim da página no vídeo) */}
             {(estado.selecionados?.length ?? 0) > 0 && !reajusteAberto && !disparoAberto && (
               <RenovacaoStickyBar

@@ -28,6 +28,8 @@ export type VideoState = {
   gastoForm?: Record<string, unknown>;
   /** estado da renovação (ver mocks/renovacao.ts) */
   renovacao?: import("./renovacao").EstadoRenovacao;
+  /** nome do aluno com o card aberto na Renovação (os outros ficam fechados) */
+  cardAberto?: string;
   /** indicações concluídas (Indique e Ganhe) */
   indicacoes?: number;
   /** perfil com o resumo do mês (tela Início com números) */
