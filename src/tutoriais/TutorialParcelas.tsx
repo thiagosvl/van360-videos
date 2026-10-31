@@ -8,6 +8,7 @@ import { PhoneScreen } from "../components/PhoneScreen";
 import { WabaMessage, WABA_MODELOS } from "../components/WabaMessage";
 import { BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration, useImagensProntas } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { VideoStateProvider } from "../mocks/videoState";
 import {
   ALUNO_PAGAMENTO,
@@ -24,16 +25,16 @@ import {
  * Falas = roteiro. Para encaixar narração, ajuste `from`/`duration`.
  */
 export const BEATS: Beat[] = [
-  { text: "Chega de anotar quem pagou e quem está **devendo**.", from: 0, duration: 150 },
-  { text: "Aqui você vê o mês inteiro: quanto vai **receber**, quanto já entrou e o que está atrasado.", from: 150, duration: 180 },
-  { text: "Cada parcela tem sua **cor**: pago, a vencer e atrasado.", from: 330, duration: 150 },
-  { text: "Recebeu? Busque o aluno e marque como **pago**.", from: 480, duration: 240 },
-  { text: "Pronto: ela vai pra **Recebidas** e o painel atualiza.", from: 720, duration: 120 },
-  { text: "Toque no aluno e o **recibo** já está pronto para enviar.", from: 840, duration: 180 },
-  { text: "E os meses anteriores ficam **guardados**, é só voltar.", from: 1020, duration: 150 },
-  { text: "E o melhor: o pai recebe lembretes e cobranças no **WhatsApp**, automaticamente.", from: 1170, duration: 240 },
-  { text: "Você cuida da van. O Van360 cuida das **parcelas**.", from: 1410, duration: 120 },
-];
+  { text: "Chega de anotar quem pagou e quem está **devendo**.", from: 0, duration: 104 },
+  { text: "Aqui você vê o mês inteiro: quanto vai **receber**, quanto já entrou e o que está atrasado.", from: 104, duration: 186 },
+  { text: "Cada parcela tem sua **cor**: pago, a vencer e atrasado.", from: 290, duration: 148 },
+  { text: "Recebeu? Busque o aluno e marque como **pago**: escolhe a forma de pagamento e confirma.", from: 438, duration: 190 },
+  { text: "Pronto: ela vai pra **Recebidas** e o painel atualiza.", from: 628, duration: 115 },
+  { text: "Toque no aluno e o **recibo** já está pronto para enviar.", from: 743, duration: 112 },
+  { text: "E os meses anteriores ficam **guardados**, é só voltar.", from: 855, duration: 112 },
+  { text: "E o melhor: o pai recebe lembretes e cobranças no **WhatsApp**, automaticamente.", from: 967, duration: 170 },
+  { text: "Você cuida da van. O Van360 cuida das **parcelas**.", from: 1137, duration: 150 },
+]
 export const TUTORIAL_PARCELAS_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -43,30 +44,33 @@ const BUSCA = "Davi";
 
 // momentos-chave (frames absolutos)
 const T = {
-  digita: B[4] + 34,
-  tocaCard: B[4] + 70,
-  tocaRegistrar: B[4] + 110,
-  escolhePix: B[4] + 150,
-  confirma: B[4] + 200,
-  pago: B[4] + 206, // o pagamento "acontece"
+  // no ritmo da fala: "busque o aluno" (digita), "marque como pago" (card, registrar), "escolhe a forma" (Pix), "e confirma"
+  tocaBusca: B[4] + 24,
+  digita: B[4] + 30,
+  tocaCard: B[4] + 62,
+  tocaRegistrar: B[4] + 98,
+  escolhePix: B[4] + 134,
+  confirma: B[4] + 176,
+  pago: B[4] + 182, // o pagamento "acontece"
   tocaRecebidas: B[5] + 50,
-  tocaCardRecebido: B[6] + 24,
-  tocaVerRecibo: B[6] + 64,
-  fechaRecibo: B[7] - 4,
+  tocaCardRecebido: B[6] + 22,
+  tocaVerRecibo: B[6] + 52,
+  fechaRecibo: B[6] + 96, // toque no X do recibo
   tocaMesAnterior: B[7] + 40,
-  segundaMensagem: B[8] + 110, // relativo ao início do vídeo
+  segundaMensagem: B[8] + 80, // relativo ao início do vídeo
 };
 
 // pontos de toque (px do celular 390x844) — conferidos em stills
 const P = {
   busca: { x: 190, y: 243 },
   card: { x: 190, y: 341 },
-  registrar: { x: 170, y: 572 },
+  registrar: { x: 170, y: 511 }, // "Registrar Pagamento" (572 era "Enviar Cobrança")
   pix: { x: 195, y: 510 },
   confirmar: { x: 283, y: 752 },
-  abaRecebidas: { x: 270, y: 186 },
+  abaRecebidas: { x: 270, y: 386 }, // lista já no topo depois do pagamento
   mesAnterior: { x: 150, y: 137 },
-  cardRecebido: { x: 190, y: 341 },
+  cardRecebido: { x: 190, y: 551 },
+  xRecibo: { x: 340, y: 166 },
   verRecibo: { x: 170, y: 633 },
 };
 
@@ -125,15 +129,16 @@ const TelaParcelas: React.FC = () => {
     frame < B[2] + 150
       ? interpolate(frame, [B[2] + 10, B[2] + 40], [1, 1.25], { ...clamp, easing: ease })
       : interpolate(frame, [B[2] + 150, B[2] + 178], [1.25, 1], { ...clamp, easing: ease });
+  // depois do pagamento a lista volta ao topo: o painel aparece inteiro atualizando
   const scroll =
-    frame < B[7]
+    frame < T.pago
       ? interpolate(frame, [B[3] + 6, B[3] + 30], [0, 200], { ...clamp, easing: ease })
-      : interpolate(frame, [B[7], B[7] + 24], [200, 0], { ...clamp, easing: ease });
+      : interpolate(frame, [T.pago, T.pago + 14], [200, 0], { ...clamp, easing: ease });
 
   const sheetOpen = frame >= T.tocaCard + 6 && frame < T.tocaRegistrar + 6;
   const dialogOpen = frame >= T.tocaRegistrar + 6 && frame < T.confirma + 6;
   const sheetRecebidoOpen = frame >= T.tocaCardRecebido + 6 && frame < T.tocaVerRecibo + 6;
-  const reciboOpen = frame >= T.tocaVerRecibo + 6 && frame < T.fechaRecibo;
+  const reciboOpen = frame >= T.tocaVerRecibo + 6 && frame < T.fechaRecibo + 4;
   useImagensProntas(reciboOpen);
   // barra de meses: só anda quando o vídeo troca de mês
   const mesScroll = interpolate(frame, [T.tocaMesAnterior + 2, T.tocaMesAnterior + 16], [3, 2], { ...clamp, easing: ease });
@@ -201,7 +206,7 @@ const TelaParcelas: React.FC = () => {
                   hideAt={T.confirma + 10}
                   steps={[
                     { at: B[4] + 10, ...P.busca },
-                    { at: B[4] + 26, ...P.busca, tap: true },
+                    { at: T.tocaBusca, ...P.busca, tap: true },
                     { at: T.tocaCard, ...P.card, tap: true },
                     { at: T.tocaRegistrar, ...P.registrar, tap: true },
                     { at: T.escolhePix, ...P.pix, tap: true },
@@ -218,11 +223,12 @@ const TelaParcelas: React.FC = () => {
                 />
                 <Finger
                   showFrom={B[6] + 6}
-                  hideAt={T.tocaVerRecibo + 12}
+                  hideAt={T.fechaRecibo + 10}
                   steps={[
                     { at: B[6] + 6, ...P.cardRecebido },
                     { at: T.tocaCardRecebido, ...P.cardRecebido, tap: true },
                     { at: T.tocaVerRecibo, ...P.verRecibo, tap: true },
+                    { at: T.fechaRecibo, ...P.xRecibo, tap: true },
                   ]}
                 />
                 <Finger
@@ -304,6 +310,45 @@ const TelaWhatsApp: React.FC = () => {
 
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Efeitos sonoros                                                      */
+/* ------------------------------------------------------------------ */
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  { at: B[2] + 10, sfx: "whoosh-soft", volume: 0.4 },
+  { at: B[2] + 150, sfx: "whoosh-soft", volume: 0.3 },
+  // registrar o pagamento
+  { at: T.tocaBusca, sfx: "tap" },
+  ...Array.from(BUSCA, (_, i): SfxEvent => ({ at: T.digita + i * 5, sfx: "select", volume: 0.35 })),
+  { at: T.tocaCard, sfx: "tap" },
+  { at: T.tocaCard + 6, sfx: "open", volume: 0.5 },
+  { at: T.tocaRegistrar, sfx: "tap" },
+  { at: T.tocaRegistrar + 6, sfx: "open", volume: 0.5 },
+  { at: T.escolhePix, sfx: "tap" },
+  { at: T.escolhePix + 2, sfx: "select", volume: 0.6 },
+  { at: T.confirma, sfx: "tap" },
+  { at: T.pago, sfx: "success", volume: 0.75 },
+  // Recebidas e recibo
+  { at: T.tocaRecebidas, sfx: "tap" },
+  { at: T.tocaCardRecebido, sfx: "tap" },
+  { at: T.tocaCardRecebido + 6, sfx: "open", volume: 0.5 },
+  { at: T.tocaVerRecibo, sfx: "tap" },
+  { at: T.tocaVerRecibo + 6, sfx: "pop", volume: 0.55 },
+  { at: T.fechaRecibo, sfx: "tap" },
+  { at: T.fechaRecibo + 4, sfx: "close", volume: 0.5 },
+  // mês anterior
+  { at: T.tocaMesAnterior, sfx: "tap" },
+  // WhatsApp do pai
+  { at: B[8], sfx: "whoosh", volume: 0.55 },
+  { at: B[8] + 14, sfx: "vibra", volume: 0.45 },
+  { at: B[8] + 16, sfx: "notif", volume: 0.8 },
+  { at: T.segundaMensagem, sfx: "whoosh", volume: 0.45 },
+  { at: T.segundaMensagem + 4, sfx: "vibra", volume: 0.45 },
+  { at: T.segundaMensagem + 6, sfx: "notif", volume: 0.8 },
+  // logo
+  { at: B[9] + 20, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialParcelas: React.FC = () => {
   const frame = useCurrentFrame();
   const logoIn = interpolate(frame, [B[9] + 20, B[9] + 40], [0, 1], clamp);
@@ -312,6 +357,8 @@ export const TutorialParcelas: React.FC = () => {
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="parcelas" beats={BEATS} />
+      <Sfx events={SFX} />
       <Sequence durationInFrames={B[8] + 20} name="Parcelas">
         <AbsoluteFill style={{ translate: `${sai}px 0px` }}>
           <TelaParcelas />

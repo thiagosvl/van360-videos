@@ -100,14 +100,16 @@ código do app para o vídeo funcionar.
 - Depois do render, normalizar: `ffmpeg -i in.mp4 -c:v copy -af "alimiter=limit=0.89:level=false,loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k out.mp4`.
 - Depois de "Salvar", nunca deixar o celular vazio: manter a tela e mostrar o toast real do app.
 - Close/destaque: tela com muitos campos ganha zoom de câmera no bloco principal (ver ZOOM em TutorialContratos: recorte abaixo da legenda, entra e sai em 12 quadros, whoosh-soft).
+- Depois de uma ação que muda números (pagar, salvar), voltar a lista ao topo para o painel aparecer inteiro atualizando.
 - Navegação fluida: diálogo/recibo só fecha com o dedo indo até o X (ou botão) e tocando; toque em aba sempre no CENTRO do rótulo (conferir com still no quadro do toque).
 
 ## Status dos tutoriais (out/2026)
 Com narração (voz Thiago), efeitos e capa: TutorialRotas (RotasFinal), TutorialAlunosLista (AlunosListaFinal),
 TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal), TutorialCarteirinha (CarteirinhaFinal),
-TutorialContratos (ContratosFinal), TutorialGastos (GastosFinal), TutorialRelatorios (RelatoriosFinal).
+TutorialContratos (ContratosFinal), TutorialGastos (GastosFinal), TutorialRelatorios (RelatoriosFinal),
+TutorialParcelas (ParcelasFinal).
 Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
-TutorialIndicacao, TutorialRenovacao, TutorialParcelas.
+TutorialIndicacao, TutorialRenovacao.
 - Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
 
 ## Contratos
