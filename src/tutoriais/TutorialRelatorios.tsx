@@ -5,6 +5,7 @@ import Relatorios from "@/pages/Relatorios";
 import { PhoneScreen } from "../components/PhoneScreen";
 import { BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { VideoStateProvider } from "../mocks/videoState";
 import { NOVO_GASTO } from "../mocks/financeiro";
 
@@ -13,14 +14,14 @@ import { NOVO_GASTO } from "../mocks/financeiro";
  * Falas = roteiro. Para encaixar narração, ajuste `from`/`duration`.
  */
 export const BEATS: Beat[] = [
-  { text: "O seu negócio inteiro, **num relance**.", from: 0, duration: 150 },
-  { text: "Quanto vai entrar, quanto já entrou e **quanto falta**.", from: 150, duration: 165 },
-  { text: "Como os pais pagam e **em que dia** o dinheiro cai.", from: 315, duration: 150 },
-  { text: "Para onde vai cada real: **gasto por categoria**.", from: 465, duration: 150 },
-  { text: "E quanto custa **cada van**.", from: 615, duration: 120 },
-  { text: "Alunos por escola, por período e **por van**.", from: 735, duration: 165 },
-  { text: "Decisão com **números**, não no achismo.", from: 900, duration: 120 },
-];
+  { text: "Todo o **controle** do seu negócio, organizado num só lugar.", from: 0, duration: 128 },
+  { text: "Quanto vai entrar, quanto já entrou e **quanto falta**.", from: 128, duration: 125 },
+  { text: "Como os pais pagam e **em que dia** o dinheiro cai.", from: 253, duration: 115 },
+  { text: "Para onde vai cada real: **gasto por categoria**.", from: 368, duration: 120 },
+  { text: "E quanto custa **cada van**.", from: 488, duration: 66 },
+  { text: "Alunos por escola e **por período**, tudo organizado.", from: 554, duration: 125 },
+  { text: "Decisão com **números**, não no achismo.", from: 679, duration: 110 },
+]
 export const TUTORIAL_RELATORIOS_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -41,6 +42,15 @@ const T = {
   geral: B[7] + 12,
 };
 
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  { at: T.entradas, sfx: "tap" },
+  { at: T.saidas, sfx: "tap" },
+  { at: T.operacional, sfx: "tap" },
+  { at: T.geral, sfx: "tap" },
+  { at: B[7] + 20, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialRelatorios: React.FC = () => {
   const frame = useCurrentFrame();
   const rise = usePhoneRise(4);
@@ -53,7 +63,7 @@ export const TutorialRelatorios: React.FC = () => {
   // rolagem de cada aba (relativa ao toque que abriu a aba)
   let scroll = 0;
   if (frame < T.entradas) scroll = interpolate(frame, [50, 120], [0, 300], { ...clamp, easing: ease });
-  else if (frame < T.saidas) scroll = interpolate(frame, [B[3] + 10, B[3] + 60, B[3] + 90, B[3] + 140], [0, 420, 420, 560], { ...clamp, easing: ease });
+  else if (frame < T.saidas) scroll = interpolate(frame, [B[3] + 10, B[3] + 55, B[3] + 75, B[3] + 110], [0, 420, 420, 560], { ...clamp, easing: ease });
   else if (frame < T.operacional) scroll = interpolate(frame, [B[5] + 10, B[5] + 60], [0, 820], { ...clamp, easing: ease });
   else if (frame < T.geral) scroll = interpolate(frame, [B[6] + 50, B[6] + 110], [0, 600], { ...clamp, easing: ease });
   else scroll = interpolate(frame, [T.geral + 20, T.geral + 60], [0, 300], { ...clamp, easing: ease });
@@ -69,6 +79,8 @@ export const TutorialRelatorios: React.FC = () => {
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="relatorios" beats={BEATS} />
+      <Sfx events={SFX} />
       <AbsoluteFill style={{ alignItems: "center", top: 540 }}>
         <div style={{ translate: `0px ${rise}px` }}>
           <VideoStateProvider value={{ gastosExtras: [NOVO_GASTO] }}>

@@ -9,6 +9,7 @@ import { PhoneScreen } from "../components/PhoneScreen";
 import { Circulo } from "../components/Circulo";
 import { BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { VideoStateProvider } from "../mocks/videoState";
 import { NOVO_GASTO, VEICULOS } from "../mocks/financeiro";
 
@@ -17,14 +18,15 @@ import { NOVO_GASTO, VEICULOS } from "../mocks/financeiro";
  * Falas = roteiro. Para encaixar narração, ajuste `from`/`duration`.
  */
 export const BEATS: Beat[] = [
-  { text: "Você sabe quanto **sobra de verdade** no fim do mês?", from: 0, duration: 135 },
-  { text: "Anote cada gasto da van: diesel, manutenção, seguro.", from: 135, duration: 165 },
-  { text: "Comprou **parcelado**? Lança uma vez e o app divide nos meses.", from: 300, duration: 255 },
-  { text: "E mostra **onde vai o dinheiro**, categoria por categoria.", from: 555, duration: 135 },
-  { text: "E o app desconta os gastos do que os pais **pagaram**.", from: 690, duration: 165 },
-  { text: "Esse é o seu **lucro real**, sem fazer conta.", from: 855, duration: 135 },
-  { text: "Agora você sabe **quanto sobra**, todo mês.", from: 990, duration: 120 },
-];
+  { text: "Você sabe quanto **sobra de verdade** no fim do mês?", from: 0, duration: 115 },
+  { text: "Anote cada gasto da van: diesel, manutenção, seguro.", from: 115, duration: 158 },
+  { text: "Comprou **parcelado**? Lança uma vez só: o valor, em quantas vezes,", from: 273, duration: 140 },
+  { text: "a categoria e a van. E o app **divide nos meses**.", from: 413, duration: 127 },
+  { text: "E mostra **onde vai o dinheiro**, categoria por categoria.", from: 540, duration: 124 },
+  { text: "E o app desconta os gastos do que os pais **pagaram**.", from: 664, duration: 108 },
+  { text: "Esse é o seu **lucro real**, sem fazer conta.", from: 772, duration: 108 },
+  { text: "Agora você sabe **quanto sobra**, todo mês.", from: 880, duration: 115 },
+]
 export const TUTORIAL_GASTOS_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -84,27 +86,51 @@ const P = {
 };
 
 const T = {
-  tocaNovo: B[3] + 30,
-  abre: B[3] + 36,
-  digitaDe: B[3] + 50,
-  tocaParcelado: B[3] + 92,
-  parcelas4: B[3] + 112,
-  tocaTotal: B[3] + 132,
-  rolaDe: B[3] + 145,
-  categoria: B[3] + 172,
-  data: B[3] + 180,
-  veiculo: B[3] + 190,
-  tocaSalvar: B[3] + 222,
-  salvo: B[3] + 230,
-  relatorios: B[5] + 10,
+  // no ritmo da fala: "o valor" (digita), "em quantas vezes" (parcelado), "a categoria e a van"
+  tocaNovo: B[3] + 24,
+  abre: B[3] + 30,
+  digitaDe: B[3] + 62,
+  tocaParcelado: B[3] + 104,
+  parcelas4: B[3] + 118,
+  tocaTotal: B[3] + 134,
+  rolaDe: B[3] + 146,
+  categoria: B[3] + 165,
+  data: B[3] + 172,
+  veiculo: B[3] + 182,
+  tocaSalvar: B[3] + 220,
+  salvo: B[3] + 228,
+  relatorios: B[6] + 10,
 };
 
 const SCALE = 1.45;
 
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  { at: T.tocaNovo, sfx: "tap" },
+  { at: T.abre, sfx: "open", volume: 0.55 },
+  { at: T.digitaDe - 4, sfx: "tap" },
+  ...Array.from({ length: 6 }, (_, i): SfxEvent => ({ at: T.digitaDe + i * 5, sfx: "select", volume: 0.3 })),
+  { at: T.tocaParcelado, sfx: "tap" },
+  { at: T.parcelas4 - 6, sfx: "tap" },
+  { at: T.tocaTotal, sfx: "tap" },
+  { at: T.categoria, sfx: "select", volume: 0.55 },
+  { at: T.data, sfx: "select", volume: 0.45 },
+  { at: T.veiculo, sfx: "select", volume: 0.55 },
+  ...Array.from({ length: 6 }, (_, i): SfxEvent => ({ at: T.veiculo + 4 + i * 4, sfx: "select", volume: 0.28 })),
+  { at: T.tocaSalvar, sfx: "tap" },
+  { at: T.salvo, sfx: "success", volume: 0.7 },
+  // Relatórios: lucro real
+  { at: T.relatorios, sfx: "whoosh-soft", volume: 0.5 },
+  { at: B[7] - 4, sfx: "whoosh-soft", volume: 0.45 },
+  { at: B[7] + 18, sfx: "pop", volume: 0.6 },
+  { at: B[8] - 16, sfx: "whoosh-soft", volume: 0.3 },
+  { at: B[8] + 20, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialGastos: React.FC = () => {
   const frame = useCurrentFrame();
   const rise = usePhoneRise(4);
-  const logoIn = interpolate(frame, [B[7] + 20, B[7] + 40], [0, 1], clamp);
+  const logoIn = interpolate(frame, [B[8] + 20, B[8] + 40], [0, 1], clamp);
 
   /* ---------- formulário ---------- */
   const formAberto = frame >= T.abre && frame < T.salvo;
@@ -127,22 +153,24 @@ export const TutorialGastos: React.FC = () => {
 
   let scroll = 0;
   if (!naRelatorios) {
-    if (frame < B[3]) scroll = interpolate(frame, [B[2] + 20, B[2] + 90, B[2] + 120, B[2] + 160], [0, 420, 420, 0], { ...clamp, easing: ease });
-    else if (frame >= B[4]) scroll = 0;
+    if (frame < B[3]) scroll = interpolate(frame, [B[2] + 20, B[2] + 80, B[2] + 100, B[2] + 140], [0, 420, 420, 0], { ...clamp, easing: ease });
+    else if (frame >= B[5]) scroll = 0;
   } else {
-    scroll = interpolate(frame, [B[5] + 40, B[5] + 100], [0, 330], { ...clamp, easing: ease });
+    scroll = interpolate(frame, [B[6] + 40, B[6] + 100], [0, 330], { ...clamp, easing: ease });
   }
 
   // "por categoria": a fileira de números desliza até o Maior Gasto
-  const kpiX = !naRelatorios && frame >= B[4] ? interpolate(frame, [B[4] + 20, B[4] + 60], [0, 200], { ...clamp, easing: ease }) : 0;
+  const kpiX = !naRelatorios && frame >= B[5] ? interpolate(frame, [B[5] + 20, B[5] + 60], [0, 200], { ...clamp, easing: ease }) : 0;
   // lucro real: aproxima a câmera na linha "Lucro Atual" e aponta com uma seta
-  const zoom = interpolate(frame, [B[6] - 4, B[6] + 18, B[7] - 16, B[7] + 4], [1, 1.6, 1.6, 1], { ...clamp, easing: ease });
+  const zoom = interpolate(frame, [B[7] - 4, B[7] + 18, B[8] - 16, B[8] + 4], [1, 1.6, 1.6, 1], { ...clamp, easing: ease });
   // ponto da linha "Lucro Atual" no vídeo (celular em x 257, y 557, escala 1.45)
   const FOCO = { x: 257 + 200 * SCALE, y: 557 + 395 * SCALE };
 
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="gastos" beats={BEATS} />
+      <Sfx events={SFX} />
       <AbsoluteFill style={{ top: 470, overflow: "hidden", WebkitMaskImage: "linear-gradient(to bottom, transparent 0px, black 40px)" }}>
       <AbsoluteFill style={{ scale: String(zoom), transformOrigin: `${FOCO.x}px ${FOCO.y - 470}px` }}>
       <AbsoluteFill style={{ alignItems: "center", top: 70 }}>
@@ -159,7 +187,7 @@ export const TutorialGastos: React.FC = () => {
                   {formAberto && <GastoFormDialog isOpen onClose={noop} veiculos={VEICULOS} allowBatchCreation />}
                   {formAberto && <RolaDialogo y={rolaForm} />}
                   {!naRelatorios && <RolaKpis x={kpiX} />}
-                  {naRelatorios && <Circulo x={310} y={386} w={124} h={40} desde={B[6] + 18} ate={B[7] - 6} />}
+                  {naRelatorios && <Circulo x={310} y={386} w={124} h={40} desde={B[7] + 18} ate={B[8] - 6} />}
                   <Finger
                     showFrom={B[3] + 6}
                     hideAt={T.tocaSalvar + 10}

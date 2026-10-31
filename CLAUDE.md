@@ -105,10 +105,9 @@ código do app para o vídeo funcionar.
 ## Status dos tutoriais (out/2026)
 Com narração (voz Thiago), efeitos e capa: TutorialRotas (RotasFinal), TutorialAlunosLista (AlunosListaFinal),
 TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal), TutorialCarteirinha (CarteirinhaFinal),
-TutorialContratos (ContratosFinal).
+TutorialContratos (ContratosFinal), TutorialGastos (GastosFinal), TutorialRelatorios (RelatoriosFinal).
 Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
-TutorialIndicacao, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.
-- Relatórios: o Thiago quer mudar o texto ("de relance" complexo; falar de controle e organização; período > van).
+TutorialIndicacao, TutorialRenovacao, TutorialParcelas.
 - Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
 
 ## Contratos
