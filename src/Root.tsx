@@ -79,6 +79,14 @@ export const RemotionRoot: React.FC = () => (
           icone: "▶",
           subtitulo: "Em 35 segundos",
         }),
+        capa("Contratos", TUTORIAL_CONTRATOS_DURATION, {
+          Video: TutorialContratos,
+          quadro: 1012,
+          titulo: "Contrato assinado **sem papel**",
+          botao: "Veja como funciona",
+          icone: "▶",
+          subtitulo: "Em 47 segundos",
+        }),
       ].flat()}
     </Folder>
     <Composition id="Teaser" component={Teaser} durationInFrames={TEASER_DURATION} {...V} />

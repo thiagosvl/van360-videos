@@ -25,7 +25,7 @@ Leia antes de criar ou mudar qualquer vídeo deste projeto.
   `botao` (texto, padrão "Veja como funciona"), `icone` (padrão ▶; null tira) e `subtitulo` (ex.: "Em 47 segundos").
 - Registrar no Root, pasta "Finais", com `capa("<Nome>", DURACAO, { Video, quadro, titulo, botao, icone, subtitulo })`.
   Isso cria `Capa<Nome>` (PNG) e `<Nome>Final` (vídeo com a capa na frente, = o que se entrega).
-- Quadro: uma tela real cheia e bonita do próprio vídeo. Título vende benefício (até ~6 palavras).
+- Quadro: uma tela real cheia e bonita do próprio vídeo, sem troca de celular nem dedo no meio de um movimento. Título vende benefício (até ~6 palavras).
 - Gerar: `npx remotion still Capa<Nome> out/capa-<nome>.png` e `npx remotion render <Nome>Final out/<nome>.mp4 ...`
   (+ normalizar o áudio). Conferir o PNG antes de entregar.
 
@@ -99,14 +99,15 @@ código do app para o vídeo funcionar.
 - Rolagem de tela não tem som (o Thiago não gostou).
 - Depois do render, normalizar: `ffmpeg -i in.mp4 -c:v copy -af "alimiter=limit=0.89:level=false,loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k out.mp4`.
 - Depois de "Salvar", nunca deixar o celular vazio: manter a tela e mostrar o toast real do app.
+- Close/destaque: tela com muitos campos ganha zoom de câmera no bloco principal (ver ZOOM em TutorialContratos: recorte abaixo da legenda, entra e sai em 12 quadros, whoosh-soft).
 - Navegação fluida: diálogo/recibo só fecha com o dedo indo até o X (ou botão) e tocando; toque em aba sempre no CENTRO do rótulo (conferir com still no quadro do toque).
 
 ## Status dos tutoriais (out/2026)
 Com narração (voz Thiago), efeitos e capa: TutorialRotas (RotasFinal), TutorialAlunosLista (AlunosListaFinal),
-TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal), TutorialCarteirinha (CarteirinhaFinal).
+TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal), TutorialCarteirinha (CarteirinhaFinal),
+TutorialContratos (ContratosFinal).
 Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
-TutorialIndicacao,
-TutorialContratos, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.
+TutorialIndicacao, TutorialRelatorios, TutorialGastos, TutorialRenovacao, TutorialParcelas.
 - Relatórios: o Thiago quer mudar o texto ("de relance" complexo; falar de controle e organização; período > van).
 - Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
 

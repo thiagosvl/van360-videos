@@ -11,6 +11,7 @@ import { ContratoActions } from "../components/ContratoActions";
 import { BotaoLink, WabaMessage, WABA_MODELOS } from "../components/WabaMessage";
 import { BRAND, BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { VideoStateProvider } from "../mocks/videoState";
 import { MOTORISTA, PEDRO_ID, PEDRO_SEM_CONTRATO } from "../mocks/data";
 
@@ -19,16 +20,18 @@ import { MOTORISTA, PEDRO_ID, PEDRO_SEM_CONTRATO } from "../mocks/data";
  * Falas = roteiro. Para encaixar narração, ajuste `from`/`duration`.
  */
 export const BEATS: Beat[] = [
-  { text: "Contrato assinado **sem papel** e sem ir até a casa do pai.", from: 0, duration: 150 },
-  { text: "Você ajusta o modelo **uma vez**: cláusulas, multas e sua assinatura.", from: 150, duration: 195 },
-  { text: "Depois, é só **gerar o contrato** do aluno.", from: 345, duration: 195 },
-  { text: "O pai recebe o link na hora, **no WhatsApp**.", from: 540, duration: 135 },
-  { text: "Lê o contrato pelo próprio **celular**.", from: 675, duration: 120 },
-  { text: "E assina com o **dedo**, ali mesmo na tela.", from: 795, duration: 180 },
-  { text: "Pronto: contrato assinado e com **validade jurídica**.", from: 975, duration: 135 },
-  { text: "E você acompanha tudo na aba **Assinados**.", from: 1110, duration: 135 },
-  { text: "Contrato em dia, **sem papelada**.", from: 1245, duration: 120 },
-];
+  { text: "Contrato assinado **sem papel** e sem ir até a casa do pai.", from: 0, duration: 130 },
+  { text: "Você ajusta o modelo **uma vez**: as cláusulas,", from: 130, duration: 112 },
+  { text: "a **multa e os juros** por atraso,", from: 242, duration: 88 },
+  { text: "e a **sua assinatura**, que entra em todo contrato.", from: 330, duration: 112 },
+  { text: "Depois, é só **gerar o contrato** do aluno: escolhe o aluno, confere os dados e envia pro pai.", from: 442, duration: 192 },
+  { text: "O pai recebe o link na hora, **no WhatsApp**, e toca para abrir.", from: 634, duration: 125 },
+  { text: "Lê o contrato inteiro pelo próprio **celular**, sem precisar imprimir nada.", from: 759, duration: 150 },
+  { text: "E assina com o **dedo**, ali mesmo na tela, do jeito que assina no papel.", from: 909, duration: 140 },
+  { text: "Pronto: contrato assinado e com **validade jurídica**.", from: 1049, duration: 122 },
+  { text: "E você acompanha tudo na aba **Assinados**.", from: 1171, duration: 102 },
+  { text: "Contrato em dia, **sem papelada**.", from: 1273, duration: 110 },
+]
 export const TUTORIAL_CONTRATOS_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -44,10 +47,10 @@ const SLIDE = 18;
 /* ------------------------------------------------------------------ */
 type Segment = { id: string; from: number; to: number; label: string };
 const SEGMENTS: Segment[] = [
-  { id: "app", from: 0, to: B[4], label: "Seu celular" },
-  { id: "whatsapp", from: B[4], to: B[5], label: "Celular do pai" },
-  { id: "assinar", from: B[5], to: B[8], label: "Celular do pai" },
-  { id: "app-fim", from: B[8], to: TUTORIAL_CONTRATOS_DURATION, label: "Seu celular" },
+  { id: "app", from: 0, to: B[6], label: "Seu celular" },
+  { id: "whatsapp", from: B[6], to: B[7], label: "Celular do pai" },
+  { id: "assinar", from: B[7], to: B[10], label: "Celular do pai" },
+  { id: "app-fim", from: B[10], to: TUTORIAL_CONTRATOS_DURATION, label: "Seu celular" },
 ];
 
 const SegmentShell: React.FC<{ seg: Segment; first: boolean; last: boolean; children: React.ReactNode }> = ({ seg, first, last, children }) => {
@@ -112,7 +115,13 @@ const P = {
   assinar: { x: 195, y: 790 },
   tocarParaAssinar: { x: 195, y: 420 },
   confirmar: { x: 293, y: 692 },
+  abaMultas: { x: 194, y: 158 }, // abas do modelo com Cláusulas já rolada
+  abaAssinatura: { x: 286, y: 188 },
+  voltar: { x: 39, y: 134 },
 };
+
+/** Close (zoom de câmera) nos blocos do modelo: y = centro do bloco, em px a partir do topo do celular. */
+const ZOOM = { multa: { y: 677, s: 1.42 }, assinatura: { y: 597, s: 1.38 } };
 
 /* ------------------------------------------------------------------ */
 /* Seu celular: modelo, Contratos e geração                             */
@@ -120,14 +129,17 @@ const P = {
 const T = {
   tocaConfig: B[2] - 14,
   abreModelo: B[2] - 6,
-  abaMultas: B[2] + 70,
-  abaAssinatura: B[2] + 130,
-  volta: B[3],
-  tocaPedro: B[3] + 26,
-  tocaGerar: B[3] + 70,
-  tocaGerarEnviar: B[3] + 130,
-  gerado: B[3] + 138,
-  tocaPendentes: B[3] + 160,
+  abaMultas: B[3], // toque na aba Multas
+  zoomMulta: [B[3] + 10, B[4] - 6] as const,
+  abaAssinatura: B[4], // toque na aba Assinatura
+  zoomAssinatura: [B[4] + 10, B[5] - 18] as const,
+  tocaVoltar: B[5] - 12,
+  volta: B[5],
+  tocaPedro: B[5] + 26,
+  tocaGerar: B[5] + 70,
+  tocaGerarEnviar: B[5] + 130,
+  gerado: B[5] + 138,
+  tocaPendentes: B[5] + 160,
 };
 
 const TelaApp: React.FC = () => {
@@ -142,10 +154,21 @@ const TelaApp: React.FC = () => {
   const dialogOpen = frame >= T.tocaGerar + 6 && frame < T.gerado;
 
   // na aba Cláusulas, desce um pouco para mostrar o modelo pronto
-  const scroll = noModelo && aba === "clauses" ? interpolate(frame, [T.abreModelo + 30, T.abaMultas - 10], [0, 180], { ...clamp, easing: ease }) : 0;
+  const scroll = noModelo && aba === "clauses" ? interpolate(frame, [T.abreModelo + 30, T.abaMultas - 22], [0, 180], { ...clamp, easing: ease }) : 0;
+
+  // close nos blocos de Multa e de Assinatura
+  const zoomDe = (j: readonly [number, number], s: number) =>
+    interpolate(frame, [j[0], j[0] + 12, j[1] - 12, j[1]], [1, s, s, 1], { ...clamp, easing: ease });
+  const zm = zoomDe(T.zoomMulta, ZOOM.multa.s);
+  const za = zoomDe(T.zoomAssinatura, ZOOM.assinatura.s);
+  const zoom = Math.max(zm, za);
+  const origemY = za > 1 ? ZOOM.assinatura.y : ZOOM.multa.y;
 
   return (
     <VideoStateProvider value={{ contratos: { etapa }, abaForcada: noModelo ? aba : undefined }}>
+      {/* recorte: o celular ampliado não invade a legenda */}
+      <div style={{ width: 1080, height: 1450, marginTop: -70, paddingTop: 70, boxSizing: "border-box", overflow: "hidden", display: "flex", justifyContent: "center" }}>
+      <div style={{ scale: String(zoom), transformOrigin: `50% ${origemY}px` }}>
       <PhoneScreen
         key={route}
         route={route.split("#")[0]}
@@ -166,6 +189,9 @@ const TelaApp: React.FC = () => {
               />
             )}
             <Finger showFrom={T.tocaConfig - 30} hideAt={T.tocaConfig + 8} steps={[{ at: T.tocaConfig - 30, ...P.config }, { at: T.tocaConfig, ...P.config, tap: true }]} />
+            <Finger showFrom={T.abaMultas - 20} hideAt={T.abaMultas + 8} steps={[{ at: T.abaMultas - 20, ...P.abaMultas }, { at: T.abaMultas, ...P.abaMultas, tap: true }]} />
+            <Finger showFrom={T.abaAssinatura - 16} hideAt={T.abaAssinatura + 8} steps={[{ at: T.abaAssinatura - 16, ...P.abaAssinatura }, { at: T.abaAssinatura, ...P.abaAssinatura, tap: true }]} />
+            <Finger showFrom={T.tocaVoltar - 14} hideAt={T.tocaVoltar + 8} steps={[{ at: T.tocaVoltar - 14, ...P.voltar }, { at: T.tocaVoltar, ...P.voltar, tap: true }]} />
             <Finger
               showFrom={T.volta + 4}
               hideAt={T.tocaPendentes + 12}
@@ -185,6 +211,8 @@ const TelaApp: React.FC = () => {
           <Route path="/contratos/modelo" element={<ConfigurarModeloContrato />} />
         </Routes>
       </PhoneScreen>
+      </div>
+      </div>
     </VideoStateProvider>
   );
 };
@@ -213,22 +241,22 @@ const TelaWhatsApp: React.FC = () => {
 /* Celular do pai: lê e assina (página pública real)                   */
 /* ------------------------------------------------------------------ */
 const A = {
-  tocaAssinar: B[6] - B[5] + 16,
-  abreDialogo: B[6] - B[5] + 22,
-  tocaQuadro: B[6] - B[5] + 46,
-  desenhaDe: B[6] - B[5] + 56,
-  desenhaAte: B[6] - B[5] + 128,
-  tocaConfirmar: B[6] - B[5] + 150,
-  assinado: B[6] - B[5] + 158,
+  tocaAssinar: B[8] - B[7] + 16,
+  abreDialogo: B[8] - B[7] + 22,
+  tocaQuadro: B[8] - B[7] + 40,
+  desenhaDe: B[8] - B[7] + 48,
+  desenhaAte: B[8] - B[7] + 108,
+  tocaConfirmar: B[8] - B[7] + 122,
+  assinado: B[8] - B[7] + 130,
 };
 
 const TelaAssinar: React.FC = () => {
-  const frame = useCurrentFrame(); // relativo a B[5]
+  const frame = useCurrentFrame(); // relativo a B[7]
   const assinado = frame >= A.assinado;
   const dialogo = frame >= A.abreDialogo && frame < A.assinado;
   const editando = frame >= A.tocaQuadro + 4;
   const progresso = interpolate(frame, [A.desenhaDe, A.desenhaAte], [0, 1], clamp);
-  const local7 = frame - (B[7] - B[5]);
+  const local7 = frame - (B[9] - B[7]);
 
   const y = assinado
     ? interpolate(local7, [20, 80], [0, 1400], { ...clamp, easing: ease })
@@ -301,12 +329,55 @@ const TELAS: Record<string, React.FC> = {
 
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Efeitos sonoros                                                      */
+/* ------------------------------------------------------------------ */
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  // modelo
+  { at: T.tocaConfig, sfx: "tap" },
+  { at: T.abreModelo, sfx: "open", volume: 0.5 },
+  { at: T.abaMultas, sfx: "tap" },
+  { at: T.zoomMulta[0], sfx: "whoosh-soft", volume: 0.45 },
+  { at: T.zoomMulta[1] - 12, sfx: "whoosh-soft", volume: 0.3 },
+  { at: T.abaAssinatura, sfx: "tap" },
+  { at: T.zoomAssinatura[0], sfx: "whoosh-soft", volume: 0.45 },
+  { at: T.zoomAssinatura[1] - 12, sfx: "whoosh-soft", volume: 0.3 },
+  { at: T.tocaVoltar, sfx: "tap" },
+  // gerar
+  { at: T.tocaPedro, sfx: "tap" },
+  { at: T.tocaPedro + 6, sfx: "open", volume: 0.5 },
+  { at: T.tocaGerar, sfx: "tap" },
+  { at: T.tocaGerar + 6, sfx: "open", volume: 0.5 },
+  { at: T.tocaGerarEnviar, sfx: "tap" },
+  { at: T.gerado, sfx: "success", volume: 0.7 },
+  { at: T.tocaPendentes, sfx: "tap" },
+  // trocas de celular
+  ...SEGMENTS.slice(0, -1).map((s): SfxEvent => ({ at: s.to, sfx: "whoosh", volume: 0.55 })),
+  // WhatsApp do pai
+  { at: B[6] + 10, sfx: "vibra", volume: 0.45 },
+  { at: B[6] + 12, sfx: "notif", volume: 0.8 },
+  { at: B[6] + TOQUE_LINK, sfx: "tap" },
+  // assinatura do pai
+  { at: B[7] + A.tocaAssinar, sfx: "tap" },
+  { at: B[7] + A.abreDialogo, sfx: "open", volume: 0.5 },
+  { at: B[7] + A.tocaQuadro, sfx: "tap" },
+  { at: B[7] + A.tocaConfirmar, sfx: "tap" },
+  { at: B[7] + A.assinado, sfx: "success", volume: 0.75 },
+  // Assinados
+  { at: B[10] + TOQUE_ASSINADOS, sfx: "tap" },
+  // logo
+  { at: B[11] + 20, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialContratos: React.FC = () => {
   const frame = useCurrentFrame();
-  const logoIn = interpolate(frame, [B[9] + 20, B[9] + 40], [0, 1], clamp);
+  const logoIn = interpolate(frame, [B[11] + 20, B[11] + 40], [0, 1], clamp);
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="contratos" beats={BEATS} />
+      <Sfx events={SFX} />
       {SEGMENTS.map((seg, i) => {
         const Tela = TELAS[seg.id];
         const last = i === SEGMENTS.length - 1;
