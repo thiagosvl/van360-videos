@@ -107,9 +107,8 @@ código do app para o vídeo funcionar.
 Com narração (voz Thiago), efeitos e capa: TutorialRotas (RotasFinal), TutorialAlunosLista (AlunosListaFinal),
 TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal), TutorialCarteirinha (CarteirinhaFinal),
 TutorialContratos (ContratosFinal), TutorialGastos (GastosFinal), TutorialRelatorios (RelatoriosFinal),
-TutorialParcelas (ParcelasFinal).
-Prontos sem áudio, a refazer um por um COM narração (o Thiago assiste e pede ajustes):
-TutorialIndicacao, TutorialRenovacao.
+TutorialParcelas (ParcelasFinal), TutorialRenovacao (RenovacaoFinal).
+Pronto sem áudio, a refazer COM narração (o Thiago assiste e pede ajustes): TutorialIndicacao.
 - Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
 
 ## Contratos
