@@ -21,7 +21,6 @@ import { TutorialRenovacao, TUTORIAL_RENOVACAO_DURATION } from "./tutoriais/Tuto
 import { TutorialIndicacao, TUTORIAL_INDICACAO_DURATION } from "./tutoriais/TutorialIndicacao";
 import { ApresentacaoApp, APRESENTACAO_DURATION } from "./apresentacao/ApresentacaoApp";
 import { TutorialRotas, TUTORIAL_ROTAS_DURATION } from "./tutoriais/TutorialRotas";
-import { Capa } from "./apresentacao/Capa";
 import { CAPA_QUADROS, CapaVideo, CapaProps, ComCapa } from "./components/CapaVideo";
 import { TutorialContratos, TUTORIAL_CONTRATOS_DURATION } from "./tutoriais/TutorialContratos";
 
@@ -43,10 +42,17 @@ const capa = (nome: string, duracao: number, props: CapaProps) => {
 
 export const RemotionRoot: React.FC = () => (
   <>
-    <Composition id="CapaApresentacao" component={Capa} durationInFrames={TUTORIAL_PARCELAS_DURATION} {...V} />
     <Folder name="Finais">
       {/* um bloco por vídeo: tela (quadro), título, botão, ícone e subtítulo da capa */}
       {[
+        capa("Apresentacao", APRESENTACAO_DURATION, {
+          Video: ApresentacaoApp,
+          quadro: 110,
+          titulo: "Pare de **cobrar pai** no WhatsApp",
+          botao: "Veja como funciona",
+          icone: "▶",
+          subtitulo: "Em menos de 1 minuto",
+        }),
         capa("Rotas", TUTORIAL_ROTAS_DURATION, {
           Video: TutorialRotas,
           quadro: 640,

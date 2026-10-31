@@ -89,7 +89,7 @@ código do app para o vídeo funcionar.
     alongar a fala com o que aparece na tela ou acrescentar uma frase curta (beat extra).
   - Antes de entregar, rodar `bash scripts/checa-silencio.sh out/<video>.mp4` (falha com pausa >= 0,9s;
     só o fim com o logo é livre). Corrigir e renderizar de novo até passar.
-- A Apresentação (`ApresentacaoApp`) já tem narração na voz do Thiago (`public/narracao/fala-*.mp3`).
+- A Apresentação (`ApresentacaoApp`) usa `public/narracao/apresentacao/` (os `fala-0N.mp3` da raiz são da versão antiga).
 
 ## Efeitos sonoros
 - Biblioteca em `public/sfx` (Kenney CC0 + sintetizados), gerada por `scripts/build_sfx.py`.
@@ -110,7 +110,10 @@ TutorialContratos (ContratosFinal), TutorialGastos (GastosFinal), TutorialRelato
 TutorialParcelas (ParcelasFinal), TutorialRenovacao (RenovacaoFinal), TutorialIndicacao (IndicacaoFinal).
 - Falas genéricas no tempo: "próximo ano", "carteirinha nova" (nunca o ano escrito), "percentual ou valor" (nunca um número de reajuste).
 - Estado interno de card/lista que abre e fecha: controlar pelo vídeo com um mock que embrulha o original (ver mocks/RenovacaoPassengerCard.tsx), nunca um clique único (pisca no render em várias abas).
-- Apresentação: a cena de rotas usa ChamadaEscolaDialog; o certo seria a "Chamada de Embarque" (ChamadaRapidaDialog).
+- Apresentação (ApresentacaoApp / ApresentacaoFinal, ~57s, narração em public/narracao/apresentacao): gancho (WhatsApp lotando)
+  -> problemas em cartões -> virada (logo + "+500 motoristas") -> soluções com trechos curtos dos tutoriais
+  (sem a narração deles: SemLegenda) -> lista do que resolve -> 15 dias grátis e slogan. Vender o que resolve, não o passo a passo.
+  Legenda = MANCHETE curta (2 a 4 palavras) por cena, não a fala inteira. Nunca deixar só logo parado com fala: usar elementos animados.
 
 ## Contratos
 - PDF do contrato gerado com o código real do back-end (`node scripts/gerar-contrato.mjs`):

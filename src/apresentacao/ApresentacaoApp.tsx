@@ -1,97 +1,139 @@
 import React from "react";
-import { AbsoluteFill, Audio, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
-import { Routes, Route } from "react-router-dom";
-import Home from "@/pages/Home";
-import Rotas from "@/pages/Rotas";
-import { ChamadaEscolaDialog } from "@/components/dialogs/ChamadaEscolaDialog";
+import { AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { PhoneScreen } from "../components/PhoneScreen";
-import { AcoesNaTela } from "../components/AcoesNaTela";
 import { BRAND, BrandBackground, ease } from "../components/brand";
-import { Beat, Caption, Finger, SemLegenda, beatsDuration } from "../components/tutorial";
-import { VideoStateProvider } from "../mocks/videoState";
-import { PASSAGEIROS } from "../mocks/data";
+import { Beat, SemLegenda, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { usarLarguraDeCelular } from "../viewport";
 import { TutorialAlunosSolicitacoes } from "../tutoriais/TutorialAlunosSolicitacoes";
+import { TutorialAlunosLista } from "../tutoriais/TutorialAlunosLista";
+import { TutorialCarteirinha } from "../tutoriais/TutorialCarteirinha";
 import { TutorialParcelas } from "../tutoriais/TutorialParcelas";
 import { TutorialContratos } from "../tutoriais/TutorialContratos";
 import { TutorialGastos } from "../tutoriais/TutorialGastos";
 
 /**
- * Apresentação do app (landing page e resposta no WhatsApp), ~90s, narração do Thiago.
- * Reaproveita trechos dos tutoriais (telas reais) e tem cenas próprias no começo e no fim.
+ * Apresentação do app (lead no WhatsApp e landing page), ~57s, narração do Thiago.
+ * Gancho (WhatsApp lotado) -> problemas (cartões) -> virada (logo + 500 motoristas)
+ * -> soluções (trechos curtos dos tutoriais) -> lista do que resolve -> 15 dias grátis.
+ * A legenda é uma MANCHETE curta por cena (não a fala inteira).
  */
-/** Duração de cada fala gravada (public/narracao/fala-NN.mp3), em segundos. */
-const NARRACAO = [6.61, 6.27, 5.33, 8.83, 6.35, 6.92, 10.19, 10.76, 8.6, 7.55, 7.16];
-/** quadros de cada bloco: a fala + um respiro; o 3º bloco segura um pouco mais (duas telas) */
-const dur = (i: number) => Math.max(Math.ceil((NARRACAO[i] + 0.35) * 30), i === 2 ? 210 : 0);
-
-const TEXTOS = [
-  "Cobrar pai no WhatsApp, anotar pagamento no caderno, correr atrás de recibo… **dá para largar isso**.",
-  "Mais de **500 motoristas** já organizam o transporte escolar no celular com o Van360.",
-  "Você manda um link, o pai **preenche o cadastro** do filho e a **carteirinha digital** fica pronta.",
-  "Todo mês, o app avisa o pai **no WhatsApp**, com a sua chave Pix.",
-  "E você vê na hora **quem pagou** e quem está devendo.",
-  "Pagou? O **recibo** sai pronto.",
-  "O contrato, o pai **assina pelo celular**, com validade jurídica. Sem papel.",
-  "Você anota os gastos da van e o app mostra o seu **lucro de verdade**, mês a mês.",
-  "Monta as **rotas** e faz a chamada na saída da escola em poucos toques.",
-  "Menos tempo cobrando e conferindo, **mais tempo para você**.",
-  "Teste **15 dias grátis**, sem cartão.",
-];
-
 export const BEATS: Beat[] = (() => {
+  const lista: Array<[string, number]> = [
+    ["Quanto tempo você perde todo mês cobrando pai no WhatsApp?", 122],
+    ["Pix que não cai, comprovante perdido, pai pedindo recibo, contrato no papel… e no fim do mês você nem sabe quanto sobrou.", 272],
+    ["O Van360 cuida dessa parte pra você. Mais de 500 motoristas já usam.", 186],
+    ["Todo mês, o app avisa os pais no WhatsApp, com o seu Pix. Você não precisa lembrar ninguém.", 190],
+    ["Pagou? Você vê na hora quem pagou e quem falta, e o recibo sai pronto.", 157],
+    ["E os pais ainda te ajudam com o cadastro dos filhos. Você não faz tudo sozinho.", 157],
+    ["O contrato, o pai assina pelo celular. Sem papel, sem correr atrás.", 157],
+    ["Anota os gastos da van e vê quanto sobrou de verdade no mês.", 143],
+    ["Menos tempo cobrando e conferindo. Mais tempo pra você.", 125],
+    ["Teste 15 dias grátis, sem cartão. Você dirige. A gente organiza.", 198],
+  ];
   let t = 0;
-  const lista: Beat[] = TEXTOS.map((text, i) => {
-    const b = { text, from: t, duration: dur(i) };
-    t += dur(i);
+  return lista.map(([text, duration]) => {
+    const b = { text, from: t, duration };
+    t += duration;
     return b;
   });
-  // o slogan fica na tela no fim (a fala dele já está na narração)
-  lista.push({ text: "Você dirige. **A gente organiza.**", from: t, duration: 90 });
-  return lista;
 })();
 export const APRESENTACAO_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
+const LEN = (n: number) => BEATS[n - 1].duration;
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-const noop = () => {};
 const SCALE = 1.45;
 const PHONE_TOP = 540;
-const FADE = 10;
+const FADE = 8;
+const FALA = 6; // a fala começa 6 quadros depois do beat
 
 /* ------------------------------------------------------------------ */
-/* trechos dos tutoriais: [início no vídeo, componente, de, até]       */
+/* Manchete: 2 a 4 palavras por cena, no lugar da legenda              */
 /* ------------------------------------------------------------------ */
-type Trecho = { em: number; Comp: React.FC; de: number; ate: number };
-const LEN = (n: number) => B[n + 1] - B[n];
-const TRECHOS: Trecho[] = [
-  { em: B[3], Comp: TutorialAlunosSolicitacoes, de: 300, ate: 300 + LEN(3) / 2 }, // o pai preenche o cadastro
-  { em: B[3] + LEN(3) / 2, Comp: TutorialAlunosSolicitacoes, de: 828, ate: 828 + LEN(3) / 2 }, // carteirinha pronta
-  { em: B[4], Comp: TutorialParcelas, de: 1426 - LEN(4), ate: 1426 }, // lembretes no WhatsApp do pai
-  { em: B[5], Comp: TutorialParcelas, de: 150, ate: 150 + LEN(5) }, // painel: quem pagou, quem deve
-  { em: B[6], Comp: TutorialParcelas, de: 1018 - LEN(6), ate: 1018 }, // recibo
-  { em: B[7], Comp: TutorialContratos, de: 795, ate: 795 + LEN(7) }, // assinatura do pai
-  { em: B[8], Comp: TutorialGastos, de: 1000 - LEN(8), ate: 1000 }, // lucro real
+const MANCHETES: Array<[number, string]> = [
+  [1, "Cobrando pai no **WhatsApp**?"],
+  [4, "Cobrança **automática**"],
+  [5, "Quem pagou, **na hora**"],
+  [6, "Os pais **te ajudam**"],
+  [7, "Contrato **sem papel**"],
+  [8, "Seu **lucro de verdade**"],
 ];
 
-/** Um trecho de tutorial, sem a legenda dele, com fade curto na entrada e na saída. */
-const TrechoTutorial: React.FC<{ t: Trecho }> = ({ t }) => {
-  const frame = useCurrentFrame(); // relativo ao início do trecho
-  const len = t.ate - t.de;
-  const opacity = interpolate(frame, [0, FADE, len - FADE, len], [0, 1, 1, 0], clamp);
+const Destaque: React.FC<{ text: string }> = ({ text }) => (
+  <>
+    {text.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
+      p.startsWith("**") ? (
+        <span key={i} style={{ color: BRAND.blue }}>
+          {p.slice(2, -2)}
+        </span>
+      ) : (
+        <React.Fragment key={i}>{p}</React.Fragment>
+      ),
+    )}
+  </>
+);
+
+const Manchete: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const atual = MANCHETES.find(([n]) => frame >= B[n] && frame < B[n] + LEN(n));
+  if (!atual) return null;
+  const [n, text] = atual;
+  const local = frame - B[n];
+  const s = spring({ frame: local - 2, fps, config: { damping: 13, mass: 0.6 } });
+  const sai = interpolate(local, [LEN(n) - 8, LEN(n)], [1, 0], clamp);
   return (
-    <AbsoluteFill style={{ opacity }}>
-      <SemLegenda.Provider value>
-        <Sequence from={-t.de} layout="none">
-          <t.Comp />
-        </Sequence>
-      </SemLegenda.Provider>
-    </AbsoluteFill>
+    <div
+      style={{
+        position: "absolute",
+        top: 250,
+        left: 60,
+        right: 60,
+        height: 170,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        fontFamily: "Manrope",
+        fontWeight: 800,
+        fontSize: 76,
+        lineHeight: 1.05,
+        letterSpacing: "-0.03em",
+        color: BRAND.navy,
+        opacity: Math.min(s, sai),
+        scale: String(0.85 + 0.15 * s),
+      }}
+    >
+      <span>
+        <Destaque text={text} />
+      </span>
+    </div>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* Gancho: a bagunça no WhatsApp                                       */
+/* Cena com fade/slide na entrada e na saída                           */
+/* ------------------------------------------------------------------ */
+const Cena: React.FC<{ len: number; children: React.ReactNode; slide?: boolean }> = ({ len, children, slide = true }) => {
+  const frame = useCurrentFrame();
+  const entra = interpolate(frame, [0, FADE], [0, 1], { ...clamp, easing: ease });
+  const sai = interpolate(frame, [len - FADE, len], [1, 0], clamp);
+  return (
+    <AbsoluteFill style={{ opacity: Math.min(entra, sai), translate: slide ? `${(1 - entra) * 140}px 0px` : undefined }}>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+const Rotulo: React.FC<{ texto: string }> = ({ texto }) => (
+  <div style={{ position: "absolute", top: PHONE_TOP - 74, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+    <div style={{ padding: "10px 26px", borderRadius: 999, background: "#eef3ff", color: BRAND.blue, fontFamily: "Inter", fontWeight: 700, fontSize: 30 }}>{texto}</div>
+  </div>
+);
+
+/* ------------------------------------------------------------------ */
+/* 1. Gancho: o WhatsApp lotando de pai cobrando/perguntando            */
 /* ------------------------------------------------------------------ */
 const CONVERSAS = [
   { nome: "Mãe do Miguel", msg: "Tio, esse mês vou atrasar um pouquinho 🙏", hora: "07:12", n: 3 },
@@ -101,32 +143,37 @@ const CONVERSAS = [
   { nome: "Pai do Lucas", msg: "Esqueci de pagar, faço amanhã", hora: "09:02", n: 2 },
   { nome: "Mãe do Davi", msg: "Me passa o Pix de novo?", hora: "09:18", n: 1 },
   { nome: "Mãe da Laura", msg: "Já mandei o comprovante ontem", hora: "10:07", n: 5 },
+  { nome: "Pai do Pedro", msg: "Tio, o Pix deu erro aqui", hora: "10:22", n: 2 },
+  { nome: "Mãe da Alice", msg: "Pode me mandar o valor de novo?", hora: "10:40", n: 3 },
 ];
+/** quadro em que cada conversa chega (a mais nova entra no topo) */
+const CHEGA = CONVERSAS.map((_, i) => 4 + i * 10);
 
 const TelaConversas: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const chegaram = CONVERSAS.map((c, i) => ({ c, i })).filter(({ i }) => frame >= CHEGA[i]).reverse();
+  const naoLidas = chegaram.reduce((t, { c }) => t + c.n, 0);
   return (
     <PhoneScreen route="/" scale={SCALE} showChrome={false} contentClassName="">
       <div className="absolute inset-0 flex flex-col bg-white" style={{ fontFamily: "Inter" }}>
         <div className="px-4 pb-2.5 bg-white" style={{ paddingTop: 40 }}>
           <div className="flex items-center justify-between">
             <span className="text-[22px] font-bold text-[#111b21]">WhatsApp</span>
-            <span className="text-[#54656f] text-lg">⋮</span>
+            {naoLidas > 0 && (
+              <span className="h-6 px-2.5 rounded-full bg-[#25d366] text-white text-[12px] font-bold flex items-center">{naoLidas} não lidas</span>
+            )}
           </div>
           <div className="mt-3 h-9 rounded-full bg-[#f0f2f5] px-4 flex items-center text-[13px] text-[#667781]">Pesquisar</div>
         </div>
         <div className="flex-1 overflow-hidden">
-          {CONVERSAS.map((c, i) => {
-            // cada conversa chega por cima, empurrando as outras (a mais nova no topo)
-            const chega = 8 + (CONVERSAS.length - 1 - i) * 16;
-            const s = spring({ frame: frame - chega, fps, config: { damping: 16, mass: 0.6 } });
-            if (frame < chega) return null;
+          {chegaram.map(({ c, i }) => {
+            const s = spring({ frame: frame - CHEGA[i], fps, config: { damping: 15, mass: 0.5 } });
             return (
               <div
                 key={c.nome}
                 className="flex items-center gap-3 px-4 py-3 border-b border-[#f0f2f5]"
-                style={{ opacity: s, translate: `0px ${(1 - s) * -24}px` }}
+                style={{ opacity: s, translate: `0px ${(1 - s) * -30}px`, background: frame - CHEGA[i] < 12 ? "#f0fdf4" : "white" }}
               >
                 <div className="h-11 w-11 rounded-full bg-[#dfe5e7] flex items-center justify-center text-[#54656f] font-semibold">{c.nome.split(" ").pop()![0]}</div>
                 <div className="flex-1 min-w-0">
@@ -148,139 +195,380 @@ const TelaConversas: React.FC = () => {
   );
 };
 
-/* ------------------------------------------------------------------ */
-/* "Mais de 500 motoristas": a tela Início com os números do mês       */
-/* ------------------------------------------------------------------ */
-const TelaInicio: React.FC = () => (
-  <VideoStateProvider value={{ comResumo: true }}>
-    <PhoneScreen route="/inicio" pageTitle="Início" scale={SCALE}>
-      <Routes>
-        <Route path="/inicio" element={<Home />} />
-      </Routes>
-    </PhoneScreen>
-  </VideoStateProvider>
-);
-
-/* ------------------------------------------------------------------ */
-/* Rotas e chamada na escola                                           */
-/* ------------------------------------------------------------------ */
-const ALUNOS_CHAMADA = PASSAGEIROS.filter((p: any) => p.escola.id === "e1").map((p: any, i) => ({
-  id: `par-${p.id}`,
-  tipo_no: "passageiro",
-  passageiro_id: p.id,
-  nome: p.nome,
-  ordem: i + 1,
-  status: "pendente",
-  passageiro: { ...p, turma: p.turma },
-})) as any[];
-
-const R = { abreChamada: 75, tocaAusente: 125, tocaConfirmar: 190 };
-const TelaRotas: React.FC = () => {
-  const frame = useCurrentFrame(); // relativo a B[9]
-  const chamada = frame >= R.abreChamada && frame < R.tocaConfirmar + 8;
-  const passo = frame >= R.tocaAusente + 2 ? 1 : 0;
+const Gancho: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const sobe = spring({ frame, fps, config: { damping: 16, mass: 0.6 } });
+  // o celular treme a cada mensagem nova
+  const ultima = Math.max(...CHEGA.filter((c) => frame >= c), -99);
+  const treme = frame - ultima < 6 ? Math.sin((frame - ultima) * 2.6) * 7 * (1 - (frame - ultima) / 6) : 0;
   return (
-    <PhoneScreen
-      route="/rotas"
-      pageTitle="Rotas"
-      scale={SCALE}
-      overlay={
-        <>
-          {chamada && (
-            <React.Fragment key={`chamada-${passo}`}>
-              <ChamadaEscolaDialog open onOpenChange={noop} escolaNome="Colégio Aurora" alunos={ALUNOS_CHAMADA} isSubmitting={false} onConfirmChamada={async () => {}} />
-              {/* a Ana faltou hoje: um toque na linha dela */}
-              <AcoesNaTela passos={[{ tocarTexto: "Ana Beatriz Souza" }].slice(0, passo)} />
-            </React.Fragment>
-          )}
-          <Finger
-            showFrom={R.abreChamada + 20}
-            hideAt={R.tocaConfirmar + 8}
-            steps={[
-              { at: R.abreChamada + 20, x: 195, y: 395 },
-              { at: R.tocaAusente, x: 195, y: 395, tap: true },
-              { at: R.tocaConfirmar, x: 283, y: 587, tap: true },
-            ]}
-          />
-        </>
-      }
-    >
-      <Routes>
-        <Route path="/rotas" element={<Rotas />} />
-      </Routes>
-    </PhoneScreen>
+    <>
+      <Rotulo texto="Seu WhatsApp hoje" />
+      <AbsoluteFill style={{ alignItems: "center", top: PHONE_TOP }}>
+        <div style={{ translate: `${treme}px ${(1 - sobe) * 160}px`, rotate: `${treme * 0.15}deg` }}>
+          <TelaConversas />
+        </div>
+      </AbsoluteFill>
+    </>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* Cena própria: rótulo + celular entrando                             */
+/* 2. Problemas: cartões no ritmo da fala                              */
 /* ------------------------------------------------------------------ */
-const Cena: React.FC<{ len: number; rotulo: string; children: React.ReactNode }> = ({ len, rotulo, children }) => {
+// tempos tirados das pausas da fala 2
+const PROBLEMAS = [
+  { at: FALA + 2, icone: "💸", texto: "Pix que não cai", x: -170, y: 470, rot: -4 },
+  { at: FALA + 40, icone: "🧾", texto: "Comprovante perdido", x: 170, y: 690, rot: 3 },
+  { at: FALA + 84, icone: "🙋", texto: "Pai pedindo recibo", x: -170, y: 910, rot: 3 },
+  { at: FALA + 126, icone: "📄", texto: "Contrato no papel", x: 170, y: 1130, rot: -3 },
+];
+const SOBROU = FALA + 176;
+
+const Problemas: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const sobe = spring({ frame, fps, config: { damping: 18, mass: 0.8 } });
-  const opacity = interpolate(frame, [0, FADE, len - FADE, len], [0, 1, 1, 0], clamp);
+  const pergunta = spring({ frame: frame - SOBROU, fps, config: { damping: 10, mass: 0.7 } });
+  const apaga = interpolate(frame, [SOBROU, SOBROU + 10], [1, 0.35], clamp);
   return (
-    <AbsoluteFill style={{ opacity }}>
-      <div style={{ position: "absolute", top: PHONE_TOP - 74, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-        <div style={{ padding: "10px 26px", borderRadius: 999, background: "#eef3ff", color: BRAND.blue, fontFamily: "Inter", fontWeight: 700, fontSize: 30 }}>{rotulo}</div>
+    <AbsoluteFill>
+      <div
+        style={{
+          position: "absolute",
+          top: 270,
+          left: 60,
+          right: 60,
+          textAlign: "center",
+          fontFamily: "Manrope",
+          fontWeight: 800,
+          fontSize: 70,
+          letterSpacing: "-0.03em",
+          color: BRAND.navy,
+          opacity: interpolate(frame, [0, 10], [0, 1], clamp),
+        }}
+      >
+        Todo mês, <span style={{ color: "#dc2626" }}>a mesma dor</span>
       </div>
-      <AbsoluteFill style={{ alignItems: "center", top: PHONE_TOP }}>
-        <div style={{ translate: `0px ${(1 - sobe) * 120}px` }}>{children}</div>
-      </AbsoluteFill>
+      {PROBLEMAS.map((p) => {
+        const s = spring({ frame: frame - p.at, fps, config: { damping: 11, mass: 0.6 } });
+        if (frame < p.at) return null;
+        return (
+          <div
+            key={p.texto}
+            style={{
+              position: "absolute",
+              left: 540 + p.x - 330,
+              top: p.y,
+              width: 660,
+              padding: "34px 40px",
+              borderRadius: 32,
+              background: "white",
+              boxShadow: "0 24px 50px -18px rgba(11,26,46,0.35)",
+              display: "flex",
+              alignItems: "center",
+              gap: 22,
+              fontFamily: "Manrope",
+              fontWeight: 800,
+              fontSize: 54,
+              lineHeight: 1.1,
+              color: BRAND.navy,
+              opacity: s * apaga,
+              scale: String(0.6 + 0.4 * s),
+              rotate: `${p.rot * s}deg`,
+              translate: `0px ${(1 - s) * 60}px`,
+            }}
+          >
+            <span style={{ fontSize: 84 }}>{p.icone}</span>
+            {p.texto}
+          </div>
+        );
+      })}
+      {frame >= SOBROU && (
+        <div
+          style={{
+            position: "absolute",
+            top: 1370,
+            left: 0,
+            right: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            fontFamily: "Manrope",
+            fontWeight: 800,
+            color: "#dc2626",
+            scale: String(0.5 + 0.5 * pergunta),
+            opacity: pergunta,
+          }}
+        >
+          <div style={{ fontSize: 150, lineHeight: 1 }}>R$ ???</div>
+          <div style={{ fontSize: 58, color: BRAND.navy, marginTop: 18 }}>Quanto sobrou?</div>
+        </div>
+      )}
     </AbsoluteFill>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* Fechamento: 15 dias grátis e o slogan                               */
+/* 3. Virada: o logo entra e o contador de motoristas sobe             */
 /* ------------------------------------------------------------------ */
-const Fechamento: React.FC = () => {
-  const frame = useCurrentFrame(); // relativo a B[10]
+const CONTA = FALA + 100; // "Mais de quinhentos motoristas"
+const Virada: React.FC = () => {
+  const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const logo = spring({ frame: frame - 6, fps, config: { damping: 14 } });
-  const selo = spring({ frame: frame - (B[11] - B[10]), fps, config: { damping: 12 } });
-  const slogan = spring({ frame: frame - (B[12] - B[10] - 45), fps, config: { damping: 14 } });
+  const logo = spring({ frame: frame - 2, fps, config: { damping: 11, mass: 0.7 } });
+  const frase = spring({ frame: frame - (FALA + 30), fps, config: { damping: 15 } });
+  const cont = spring({ frame: frame - CONTA, fps, config: { damping: 15 } });
+  const numero = Math.round(interpolate(frame, [CONTA, CONTA + 34], [0, 500], { ...clamp, easing: ease }));
   return (
-    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", top: 120 }}>
-      <Img src={staticFile("logo-van360-horizontal.png")} style={{ width: 560, scale: String(logo), opacity: logo }} />
+    <AbsoluteFill style={{ alignItems: "center" }}>
+      {/* brilho atrás do logo */}
       <div
         style={{
-          marginTop: 70,
-          padding: "22px 44px",
-          borderRadius: 999,
+          position: "absolute",
+          top: 560,
+          width: 900,
+          height: 900,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(37,99,235,0.22) 0%, rgba(37,99,235,0) 65%)",
+          scale: String(logo),
+        }}
+      />
+      <Img src={staticFile("logo-van360-horizontal.png")} style={{ position: "absolute", top: 760, width: 640, scale: String(0.4 + 0.6 * logo), opacity: logo }} />
+      <div
+        style={{
+          position: "absolute",
+          top: 330,
+          left: 60,
+          right: 60,
+          textAlign: "center",
+          fontFamily: "Manrope",
+          fontWeight: 800,
+          fontSize: 76,
+          lineHeight: 1.05,
+          letterSpacing: "-0.03em",
+          color: BRAND.navy,
+          opacity: frase,
+          translate: `0px ${(1 - frase) * 30}px`,
+        }}
+      >
+        <Destaque text="A gente **cuida disso** pra você" />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: 1060,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          fontFamily: "Manrope",
+          fontWeight: 800,
+          opacity: cont,
+          translate: `0px ${(1 - cont) * 40}px`,
+        }}
+      >
+        <div style={{ fontSize: 150, color: BRAND.blue, lineHeight: 1, letterSpacing: "-0.04em" }}>+{numero}</div>
+        <div style={{ fontSize: 50, color: BRAND.navy, marginTop: 10 }}>motoristas já usam 🚐</div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* 4 a 8. Soluções: trechos curtos dos tutoriais (telas reais)          */
+/* ------------------------------------------------------------------ */
+type Trecho = { em: number; Comp: React.FC; de: number; len: number };
+const TRECHOS: Trecho[] = [
+  { em: B[4], Comp: TutorialParcelas, de: 985, len: LEN(4) }, // lembretes no WhatsApp do pai, com o Pix
+  { em: B[5], Comp: TutorialParcelas, de: 662, len: 95 }, // painel: quem pagou, quem falta
+  { em: B[5] + 95, Comp: TutorialParcelas, de: 795, len: LEN(5) - 95 }, // recibo pronto
+  { em: B[6], Comp: TutorialAlunosSolicitacoes, de: 285, len: 62 }, // o pai preenche o cadastro
+  { em: B[6] + 62, Comp: TutorialAlunosLista, de: 150, len: 42 }, // a lista de alunos
+  { em: B[6] + 104, Comp: TutorialCarteirinha, de: 85, len: LEN(6) - 104 }, // a carteirinha
+  { em: B[7], Comp: TutorialContratos, de: 945, len: LEN(7) }, // o pai assina com o dedo
+  { em: B[8], Comp: TutorialGastos, de: 752, len: LEN(8) }, // lucro de verdade
+];
+
+/** Um trecho de tutorial, sem a legenda e sem a narração dele, com fade curto. */
+const TrechoTutorial: React.FC<{ t: Trecho }> = ({ t }) => {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(frame, [0, 6, t.len - 6, t.len], [0, 1, 1, 0], clamp);
+  return (
+    <AbsoluteFill style={{ opacity }}>
+      <SemLegenda.Provider value>
+        <Sequence from={-t.de} layout="none">
+          <t.Comp />
+        </Sequence>
+      </SemLegenda.Provider>
+    </AbsoluteFill>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* 9. O que o Van360 resolve: lista marcando ✓                          */
+/* ------------------------------------------------------------------ */
+const ITENS = ["Cobrança automática", "Recibo pronto", "Cadastro pelos pais", "Contrato sem papel", "Lucro de verdade"];
+const MARCA = ITENS.map((_, i) => 8 + i * 14);
+const MAIS_TEMPO = FALA + 70;
+
+const Resolve: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const titulo = spring({ frame: frame - MAIS_TEMPO, fps, config: { damping: 13 } });
+  return (
+    <AbsoluteFill style={{ alignItems: "center" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 270,
+          left: 60,
+          right: 60,
+          textAlign: "center",
+          fontFamily: "Manrope",
+          fontWeight: 800,
+          fontSize: 76,
+          lineHeight: 1.05,
+          letterSpacing: "-0.03em",
+          color: BRAND.navy,
+          opacity: titulo,
+          scale: String(0.85 + 0.15 * titulo),
+        }}
+      >
+        <Destaque text="Mais tempo **pra você**" />
+      </div>
+      <div style={{ position: "absolute", top: 560, display: "flex", flexDirection: "column", gap: 30 }}>
+        {ITENS.map((item, i) => {
+          const s = spring({ frame: frame - MARCA[i], fps, config: { damping: 12, mass: 0.6 } });
+          return (
+            <div
+              key={item}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 28,
+                padding: "26px 40px 26px 28px",
+                width: 760,
+                borderRadius: 30,
+                background: "white",
+                boxShadow: "0 18px 40px -20px rgba(11,26,46,0.3)",
+                fontFamily: "Manrope",
+                fontWeight: 800,
+                fontSize: 50,
+                color: BRAND.navy,
+                opacity: s,
+                translate: `${(1 - s) * -80}px 0px`,
+              }}
+            >
+              <div
+                style={{
+                  width: 70,
+                  height: 70,
+                  borderRadius: 999,
+                  background: "#16a34a",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 44,
+                  scale: String(s),
+                }}
+              >
+                ✓
+              </div>
+              {item}
+            </div>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* 10. Fechamento: 15 dias grátis e o slogan                            */
+/* ------------------------------------------------------------------ */
+const SELO = FALA + 8;
+const SLOGAN_1 = FALA + 84;
+const SLOGAN_2 = FALA + 116;
+
+const Fechamento: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const logo = spring({ frame: frame - 2, fps, config: { damping: 14 } });
+  const selo = spring({ frame: frame - SELO, fps, config: { damping: 10 } });
+  const s1 = spring({ frame: frame - SLOGAN_1, fps, config: { damping: 14 } });
+  const s2 = spring({ frame: frame - SLOGAN_2, fps, config: { damping: 14 } });
+  const pulsa = 1 + 0.03 * Math.sin(Math.max(0, frame - SELO - 20) / 5);
+  return (
+    <AbsoluteFill style={{ alignItems: "center" }}>
+      <Img src={staticFile("logo-van360-horizontal.png")} style={{ position: "absolute", top: 400, width: 560, scale: String(logo), opacity: logo }} />
+      <div
+        style={{
+          position: "absolute",
+          top: 640,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "40px 70px",
+          borderRadius: 48,
           background: BRAND.blue,
           color: "white",
           fontFamily: "Manrope",
           fontWeight: 800,
-          fontSize: 50,
-          scale: String(selo),
+          scale: String(selo * pulsa),
           opacity: selo,
-          boxShadow: "0 20px 40px -12px rgba(37,99,235,0.5)",
+          boxShadow: "0 30px 60px -20px rgba(37,99,235,0.6)",
         }}
       >
-        15 dias grátis · sem cartão
+        <div style={{ fontSize: 120, lineHeight: 1, letterSpacing: "-0.04em" }}>15 dias</div>
+        <div style={{ fontSize: 58, marginTop: 8 }}>grátis · sem cartão</div>
       </div>
       <div
         style={{
-          marginTop: 80,
+          position: "absolute",
+          top: 1060,
           fontFamily: "Manrope",
           fontWeight: 800,
-          fontSize: 66,
+          fontSize: 76,
           color: BRAND.navy,
           textAlign: "center",
           lineHeight: 1.15,
-          opacity: slogan,
-          translate: `0px ${(1 - slogan) * 30}px`,
         }}
       >
-        Você dirige.
-        <br />
-        <span style={{ color: BRAND.blue }}>A gente organiza.</span>
+        <div style={{ opacity: s1, translate: `0px ${(1 - s1) * 30}px` }}>Você dirige.</div>
+        <div style={{ color: BRAND.blue, opacity: s2, translate: `0px ${(1 - s2) * 30}px` }}>A gente organiza.</div>
       </div>
     </AbsoluteFill>
   );
 };
+
+/* ------------------------------------------------------------------ */
+/* Efeitos sonoros                                                      */
+/* ------------------------------------------------------------------ */
+const SFX: SfxEvent[] = [
+  // gancho: cada mensagem chega com notificação; vibração no começo
+  { at: 0, sfx: "vibra", volume: 0.5 },
+  ...CHEGA.map((c, i): SfxEvent => ({ at: c, sfx: "notif", volume: 0.55 - i * 0.03 })),
+  { at: CHEGA[4], sfx: "vibra", volume: 0.4 },
+  // problemas
+  { at: B[2], sfx: "whoosh", volume: 0.5 },
+  ...PROBLEMAS.map((p): SfxEvent => ({ at: B[2] + p.at, sfx: "pop", volume: 0.7 })),
+  { at: B[2] + SOBROU, sfx: "close", volume: 0.7 },
+  // virada
+  { at: B[3], sfx: "whoosh", volume: 0.7 },
+  { at: B[3] + 4, sfx: "chime", volume: 0.55 },
+  { at: B[3] + CONTA, sfx: "select", volume: 0.5 },
+  { at: B[3] + CONTA + 34, sfx: "success", volume: 0.6 },
+  // soluções: troca de cena
+  ...[4, 5, 6, 7, 8].map((n): SfxEvent => ({ at: B[n], sfx: "whoosh-soft", volume: 0.5 })),
+  // lista do que resolve
+  { at: B[9], sfx: "whoosh", volume: 0.5 },
+  ...MARCA.map((m): SfxEvent => ({ at: B[9] + m, sfx: "select", volume: 0.55 })),
+  // fechamento
+  { at: B[10], sfx: "whoosh", volume: 0.5 },
+  { at: B[10] + SELO, sfx: "pop", volume: 0.7 },
+  { at: B[10] + SLOGAN_2, sfx: "chime", volume: 0.6 },
+];
 
 /* ------------------------------------------------------------------ */
 
@@ -288,37 +576,40 @@ export const ApresentacaoApp: React.FC = () => {
   usarLarguraDeCelular();
   return (
     <BrandBackground>
-      <Sequence from={0} durationInFrames={B[2] + FADE} name="Gancho">
-        <Cena len={B[2] + FADE} rotulo="Seu WhatsApp hoje">
-          <TelaConversas />
+      <Sequence from={0} durationInFrames={B[2]} name="Gancho">
+        <Cena len={B[2]} slide={false}>
+          <Gancho />
         </Cena>
       </Sequence>
-      <Sequence from={B[2]} durationInFrames={B[3] - B[2] + FADE} name="500 motoristas">
-        <Cena len={B[3] - B[2] + FADE} rotulo="Com o Van360">
-          <TelaInicio />
+      <Sequence from={B[2]} durationInFrames={LEN(2)} name="Problemas">
+        <Cena len={LEN(2)}>
+          <Problemas />
+        </Cena>
+      </Sequence>
+      <Sequence from={B[3]} durationInFrames={LEN(3)} name="Virada">
+        <Cena len={LEN(3)} slide={false}>
+          <Virada />
         </Cena>
       </Sequence>
       {TRECHOS.map((t, i) => (
-        <Sequence key={i} from={t.em} durationInFrames={t.ate - t.de} name={`Trecho ${i + 1}`}>
+        <Sequence key={i} from={t.em} durationInFrames={t.len} name={`Trecho ${i + 1}`}>
           <TrechoTutorial t={t} />
         </Sequence>
       ))}
-      <Sequence from={B[9]} durationInFrames={B[10] - B[9] + FADE} name="Rotas">
-        <Cena len={B[10] - B[9] + FADE} rotulo="Seu celular">
-          <TelaRotas />
+      <Sequence from={B[9]} durationInFrames={LEN(9)} name="Resolve">
+        <Cena len={LEN(9)}>
+          <Resolve />
         </Cena>
       </Sequence>
       <Sequence from={B[10]} name="Fechamento">
-        <Fechamento />
+        <Cena len={LEN(10) + 99}>
+          <Fechamento />
+        </Cena>
       </Sequence>
-      {NARRACAO.map((_, i) => (
-        <Sequence key={`fala-${i}`} from={B[i + 1]} name={`Fala ${i + 1}`}>
-          <Audio src={staticFile(`narracao/fala-${String(i + 1).padStart(2, "0")}.mp3`)} />
-        </Sequence>
-      ))}
-      {/* por cima de tudo (os trechos de tutorial trazem o próprio fundo).
-          Nos dois últimos beats o fechamento mostra o texto (selo e slogan). */}
-      <Caption beats={BEATS.slice(0, 10)} />
+      {/* manchete por cima de tudo (os trechos de tutorial trazem o próprio fundo) */}
+      <Manchete />
+      <Narracao pasta="apresentacao" beats={BEATS} />
+      <Sfx events={SFX} />
     </BrandBackground>
   );
 };
