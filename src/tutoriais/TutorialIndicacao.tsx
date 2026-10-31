@@ -13,6 +13,7 @@ import { WhatsAppChat } from "../components/WhatsAppChat";
 import { AcoesNaTela } from "../components/AcoesNaTela";
 import { BRAND, BrandBackground, ease, usePhoneRise } from "../components/brand";
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
+import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { VideoStateProvider } from "../mocks/videoState";
 import { LINK_INDICACAO } from "../mocks/useSubscription";
 
@@ -21,13 +22,13 @@ import { LINK_INDICACAO } from "../mocks/useSubscription";
  * Falas = roteiro. Para encaixar narração, ajuste `from`/`duration`.
  */
 export const BEATS: Beat[] = [
-  { text: "Conhece outro motorista de van? **Indique e ganhe**.", from: 0, duration: 165 },
-  { text: "Cada colega que assinar vale **30 dias grátis** para você.", from: 165, duration: 150 },
-  { text: "E ele ganha **50% de desconto** no primeiro mês.", from: 315, duration: 165 },
-  { text: "É só mandar o seu link **pelo WhatsApp**.", from: 480, duration: 165 },
-  { text: "Quanto mais indicar, **mais meses grátis**.", from: 645, duration: 150 },
-  { text: "Indicou, assinou, **ganhou**.", from: 795, duration: 120 },
-];
+  { text: "Conhece outro motorista de van? No menu, toca em **Indique e Ganhe**.", from: 0, duration: 157 },
+  { text: "Cada colega que assinar pelo seu link vale **30 dias grátis** para você.", from: 157, duration: 150 },
+  { text: "E o seu colega ganha **50% de desconto** no primeiro mês.", from: 307, duration: 138 },
+  { text: "É só mandar o seu link **pelo WhatsApp**. A mensagem já vem pronta, com tudo explicado.", from: 445, duration: 164 },
+  { text: "Colega assinou, os seus **dias grátis** aumentam. Quanto mais indicar, **mais você ganha**.", from: 609, duration: 182 },
+  { text: "Indicou, assinou, **ganhou**.", from: 791, duration: 110 },
+]
 export const TUTORIAL_INDICACAO_DURATION = beatsDuration(BEATS);
 
 const B = Object.fromEntries(BEATS.map((b, i) => [i + 1, b.from])) as Record<number, number>;
@@ -156,7 +157,7 @@ const TelaWhatsApp: React.FC = () => {
   const rolagem = interpolate(frame, [50, 100], [0, 300], { ...clamp, easing: ease });
   return (
     <PhoneScreen route="/menu" scale={SCALE} showChrome={false} contentClassName="">
-      <WhatsAppChat contato="Rogério (Van Escolar)" mensagem={buildReferralShareMessage(LINK_INDICACAO)} enviaEm={20} rolagem={rolagem} />
+      <WhatsAppChat contato="Rogério (Van Escolar)" mensagem={buildReferralShareMessage(LINK_INDICACAO)} enviaEm={ENVIA_WHATS} rolagem={rolagem} />
     </PhoneScreen>
   );
 };
@@ -198,6 +199,28 @@ const TelaFim: React.FC = () => {
 
 const TELAS: Record<string, React.FC> = { app: TelaApp, whatsapp: TelaWhatsApp, "app-fim": TelaFim };
 
+/* efeitos sonoros, nos mesmos tempos das ações */
+const ENVIA_WHATS = 20; // quadro (no segmento do WhatsApp) em que a mensagem sai
+const SFX: SfxEvent[] = [
+  { at: 2, sfx: "whoosh-soft", volume: 0.6 },
+  { at: T.tocaMenu, sfx: "tap" },
+  { at: T.abreMenu + 8, sfx: "whoosh-soft", volume: 0.5 },
+  { at: T.tocaIndique, sfx: "tap" },
+  { at: T.abreDialogo, sfx: "open", volume: 0.55 },
+  { at: T.tocaComoFunciona, sfx: "tap" },
+  { at: T.abreDrawer, sfx: "open", volume: 0.5 },
+  { at: T.tocaEntendi, sfx: "tap" },
+  { at: T.fechaDrawer, sfx: "close", volume: 0.5 },
+  { at: T.tocaWhatsApp, sfx: "tap" },
+  ...SEGMENTS.slice(0, -1).map((s): SfxEvent => ({ at: s.to, sfx: "whoosh", volume: 0.55 })),
+  { at: SEGMENTS[1].from + ENVIA_WHATS, sfx: "pop", volume: 0.6 },
+  // fim: zoom nos números, mais um colega assinou
+  { at: B[5] + 20, sfx: "whoosh-soft", volume: 0.5 },
+  { at: B[5] + 50, sfx: "success", volume: 0.75 },
+  { at: B[5] + 130, sfx: "whoosh-soft", volume: 0.4 },
+  { at: B[6] + 20, sfx: "chime", volume: 0.6 },
+];
+
 export const TutorialIndicacao: React.FC = () => {
   usarLarguraDeCelular();
   const frame = useCurrentFrame();
@@ -205,6 +228,8 @@ export const TutorialIndicacao: React.FC = () => {
   return (
     <BrandBackground>
       <Caption beats={BEATS} />
+      <Narracao pasta="indicacao" beats={BEATS} />
+      <Sfx events={SFX} />
       {SEGMENTS.map((seg, i) => {
         const Tela = TELAS[seg.id];
         const last = i === SEGMENTS.length - 1;
