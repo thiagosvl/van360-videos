@@ -20,6 +20,7 @@ import { TutorialRelatorios, TUTORIAL_RELATORIOS_DURATION } from "./tutoriais/Tu
 import { TutorialRenovacao, TUTORIAL_RENOVACAO_DURATION } from "./tutoriais/TutorialRenovacao";
 import { TutorialIndicacao, TUTORIAL_INDICACAO_DURATION } from "./tutoriais/TutorialIndicacao";
 import { ApresentacaoApp, APRESENTACAO_DURATION } from "./apresentacao/ApresentacaoApp";
+import { CobrancaAutomatica, COBRANCA_DURATION, BEATS as BEATS_COBRANCA } from "./apresentacao/CobrancaAutomatica";
 import { TutorialRotas, TUTORIAL_ROTAS_DURATION } from "./tutoriais/TutorialRotas";
 import { CAPA_QUADROS, CapaVideo, CapaProps, ComCapa } from "./components/CapaVideo";
 import { TutorialContratos, TUTORIAL_CONTRATOS_DURATION } from "./tutoriais/TutorialContratos";
@@ -45,6 +46,14 @@ export const RemotionRoot: React.FC = () => (
     <Folder name="Finais">
       {/* um bloco por vídeo: tela (quadro), título, botão, ícone e subtítulo da capa */}
       {[
+        capa("CobrancaAutomatica", COBRANCA_DURATION, {
+          Video: CobrancaAutomatica,
+          quadro: BEATS_COBRANCA[5].from + 70,
+          titulo: "Cobrança e recibo **no automático**",
+          botao: "Veja como funciona",
+          icone: "▶",
+          subtitulo: "Em menos de 1 minuto",
+        }),
         capa("Apresentacao", APRESENTACAO_DURATION, {
           Video: ApresentacaoApp,
           quadro: 110,
@@ -197,6 +206,7 @@ export const RemotionRoot: React.FC = () => (
         durationInFrames={TUTORIAL_ROTAS_DURATION}
         {...V}
       />
+      <Composition id="CobrancaAutomatica" component={CobrancaAutomatica} durationInFrames={COBRANCA_DURATION} {...V} />
       <Composition
         id="ApresentacaoApp"
         component={ApresentacaoApp}

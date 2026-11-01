@@ -114,6 +114,10 @@ TutorialParcelas (ParcelasFinal), TutorialRenovacao (RenovacaoFinal), TutorialIn
   -> problemas em cartões -> virada (logo + "+500 motoristas") -> soluções com trechos curtos dos tutoriais
   (sem a narração deles: SemLegenda) -> lista do que resolve -> 15 dias grátis e slogan. Vender o que resolve, não o passo a passo.
   Legenda = MANCHETE curta (2 a 4 palavras) por cena, não a fala inteira. Nunca deixar só logo parado com fala: usar elementos animados.
+- Venda "Cobrança automática" (CobrancaAutomatica / CobrancaAutomaticaFinal, ~59s, sem CTA, narração em public/narracao/cobranca):
+  secretário financeiro -> lembrete WABA com "Copiar código Pix" -> baixa sozinha + notificação real (automaticPaymentReceivedDriver)
+  -> dinheiro na hora -> recibo real (public/recibos) com a marca -> multa e juros (exemplo do Thiago: 200, multa 20, juros 2% ao dia)
+  -> banco regulado pelo BC + "+200 motoristas". Nunca citar o valor da taxa nem o nome do banco (Woovi); taxa = "já com a taxa descontada".
 
 ## Contratos
 - PDF do contrato gerado com o código real do back-end (`node scripts/gerar-contrato.mjs`):
