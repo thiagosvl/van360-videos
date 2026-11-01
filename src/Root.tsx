@@ -50,11 +50,11 @@ export const RemotionRoot: React.FC = () => (
       {[
         capa("Fretamentos", TUTORIAL_FRETAMENTOS_DURATION, {
           Video: TutorialFretamentos,
-          quadro: 800,
+          quadro: 777,
           titulo: "Passeios e fretes **organizados**",
           botao: "Veja como funciona",
           icone: "▶",
-          subtitulo: "Em 47 segundos",
+          subtitulo: "Em 46 segundos",
         }),
         capa("CobrancaAutomatica", COBRANCA_DURATION, {
           Video: CobrancaAutomatica,

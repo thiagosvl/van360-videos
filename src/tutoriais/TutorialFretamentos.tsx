@@ -26,14 +26,14 @@ import { usarLarguraDeCelular } from "../viewport";
  * Passeio (criar, mandar o link, o pai confirma, pagamentos) e depois o frete fechado.
  */
 export const BEATS: Beat[] = [
-  { text: "Faz **passeio e frete** além da escola? O Van360 também te ajuda com isso.", from: 0, duration: 183 },
-  { text: "No passeio, você cria a viagem: destino, horário, **valor por pessoa** e quantas vagas tem.", from: 183, duration: 206 },
-  { text: "Depois, é só mandar o link no **grupo de WhatsApp** dos pais, com tudo explicado.", from: 389, duration: 161 },
-  { text: "O pai abre, preenche os dados do filho e **confirma a presença**. E a sua chave Pix já aparece ali.", from: 550, duration: 202 },
-  { text: "As confirmações caem na sua lista, e as **vagas** vão diminuindo sozinhas.", from: 752, duration: 154 },
-  { text: "Pagou? Você registra o pagamento ou o sinal, e vê na hora **quanto falta receber**.", from: 906, duration: 176 },
-  { text: "E o **frete fechado** é ainda mais simples: o valor total e o sinal que você recebeu.", from: 1082, duration: 170 },
-  { text: "Mais um jeito de **ganhar com a sua van**, tudo organizado no app.", from: 1252, duration: 150 },
+  { text: "Também faz **passeio e frete**? Dá pra controlar tudo no Van360.", from: 0, duration: 160 },
+  { text: "No passeio, você cria a viagem: destino, horário, **valor por pessoa** e quantas vagas tem.", from: 160, duration: 206 },
+  { text: "Depois, é só mandar o link no **grupo de WhatsApp** dos pais, com tudo explicado.", from: 366, duration: 161 },
+  { text: "O pai abre, preenche os dados do filho e **confirma a presença**. E a sua chave Pix já aparece ali.", from: 527, duration: 202 },
+  { text: "As confirmações caem na sua lista, e as **vagas** vão diminuindo sozinhas.", from: 729, duration: 154 },
+  { text: "Pagou? Você registra o pagamento ou o sinal, e vê na hora **quanto falta receber**.", from: 883, duration: 176 },
+  { text: "E o **frete fechado** é ainda mais simples: o valor total e o sinal que você recebeu.", from: 1059, duration: 170 },
+  { text: "Mais um jeito de **ganhar com a sua van**, tudo organizado no app.", from: 1229, duration: 150 },
 ];
 export const TUTORIAL_FRETAMENTOS_DURATION = beatsDuration(BEATS);
 
