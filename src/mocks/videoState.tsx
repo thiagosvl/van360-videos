@@ -30,6 +30,11 @@ export type VideoState = {
   renovacao?: import("./renovacao").EstadoRenovacao;
   /** nome do aluno com o card aberto na Renovação (os outros ficam fechados) */
   cardAberto?: string;
+  /** Fretamentos e Passeios: etapa da história (ver mocks/fretamentos.ts) */
+  fretamentos?: { etapa: number };
+  /** valores dos formulários de passeio e de frete */
+  passeioForm?: Record<string, unknown>;
+  freteForm?: Record<string, unknown>;
   /** indicações concluídas (Indique e Ganhe) */
   indicacoes?: number;
   /** perfil com o resumo do mês (tela Início com números) */

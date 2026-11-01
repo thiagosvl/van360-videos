@@ -15,6 +15,8 @@ import { TutorialAlunosSolicitacoes, TUTORIAL_ALUNOS_SOLICITACOES_DURATION } fro
 import { TutorialParcelas, TUTORIAL_PARCELAS_DURATION } from "./tutoriais/TutorialParcelas";
 import { TutorialCarteirinha, TUTORIAL_CARTEIRINHA_DURATION } from "./tutoriais/TutorialCarteirinha";
 import { DebugFinanceiro, ESTADOS_FINANCEIRO } from "./debug/DebugFinanceiro";
+import { DebugFretamentos } from "./debug/DebugFretamentos";
+import { TutorialFretamentos, TUTORIAL_FRETAMENTOS_DURATION } from "./tutoriais/TutorialFretamentos";
 import { TutorialGastos, TUTORIAL_GASTOS_DURATION } from "./tutoriais/TutorialGastos";
 import { TutorialRelatorios, TUTORIAL_RELATORIOS_DURATION } from "./tutoriais/TutorialRelatorios";
 import { TutorialRenovacao, TUTORIAL_RENOVACAO_DURATION } from "./tutoriais/TutorialRenovacao";
@@ -46,6 +48,14 @@ export const RemotionRoot: React.FC = () => (
     <Folder name="Finais">
       {/* um bloco por vídeo: tela (quadro), título, botão, ícone e subtítulo da capa */}
       {[
+        capa("Fretamentos", TUTORIAL_FRETAMENTOS_DURATION, {
+          Video: TutorialFretamentos,
+          quadro: 800,
+          titulo: "Passeios e fretes **organizados**",
+          botao: "Veja como funciona",
+          icone: "▶",
+          subtitulo: "Em 47 segundos",
+        }),
         capa("CobrancaAutomatica", COBRANCA_DURATION, {
           Video: CobrancaAutomatica,
           quadro: BEATS_COBRANCA[5].from + 70,
@@ -206,6 +216,8 @@ export const RemotionRoot: React.FC = () => (
         durationInFrames={TUTORIAL_ROTAS_DURATION}
         {...V}
       />
+      <Composition id="DebugFretamentos" component={DebugFretamentos} durationInFrames={14} {...V} />
+      <Composition id="TutorialFretamentos" component={TutorialFretamentos} durationInFrames={TUTORIAL_FRETAMENTOS_DURATION} {...V} />
       <Composition id="CobrancaAutomatica" component={CobrancaAutomatica} durationInFrames={COBRANCA_DURATION} {...V} />
       <Composition
         id="ApresentacaoApp"

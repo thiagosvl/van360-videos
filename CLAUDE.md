@@ -107,7 +107,9 @@ código do app para o vídeo funcionar.
 Com narração (voz Thiago), efeitos e capa: TutorialRotas (RotasFinal), TutorialAlunosLista (AlunosListaFinal),
 TutorialAlunosSolicitacoes (AlunosSolicitacoesFinal), TutorialCarteirinha (CarteirinhaFinal),
 TutorialContratos (ContratosFinal), TutorialGastos (GastosFinal), TutorialRelatorios (RelatoriosFinal),
-TutorialParcelas (ParcelasFinal), TutorialRenovacao (RenovacaoFinal), TutorialIndicacao (IndicacaoFinal).
+TutorialParcelas (ParcelasFinal), TutorialRenovacao (RenovacaoFinal), TutorialIndicacao (IndicacaoFinal),
+TutorialFretamentos (FretamentosFinal; mocks/fretamentos.ts com a história por VideoState.fretamentos.etapa).
+- Telas com campo de data/hora nativo (datetime-local): renderizar com `LANG=pt_BR.UTF-8 LANGUAGE=pt_BR` no comando, senão a data sai em inglês.
 - Falas genéricas no tempo: "próximo ano", "carteirinha nova" (nunca o ano escrito), "percentual ou valor" (nunca um número de reajuste).
 - Estado interno de card/lista que abre e fecha: controlar pelo vídeo com um mock que embrulha o original (ver mocks/RenovacaoPassengerCard.tsx), nunca um clique único (pisca no render em várias abas).
 - Apresentação (ApresentacaoApp / ApresentacaoFinal, ~57s, narração em public/narracao/apresentacao): gancho (WhatsApp lotando)

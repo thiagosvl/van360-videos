@@ -1,5 +1,6 @@
 // react-hook-form REAL, com um detalhe só para o vídeo: o formulário de gasto
-// (o único com o campo "parcelado") recebe os valores de VideoState.gastoForm a cada quadro,
+// (campo "parcelado"), o de passeio ("valor_por_pessoa") e o de frete ("tem_sinal") recebem os valores de
+// VideoState.gastoForm / passeioForm / freteForm a cada quadro,
 // como se a pessoa estivesse preenchendo.
 import { useLayoutEffect } from "react";
 import { useForm as useFormOriginal } from "react-hook-form-original";
@@ -9,10 +10,14 @@ export * from "react-hook-form-original";
 
 export function useForm(...args: Parameters<typeof useFormOriginal>) {
   const form = useFormOriginal(...args);
-  const valores = (useVideoState() as any).gastoForm as Record<string, unknown> | undefined;
-  const ehGasto = !!args[0]?.defaultValues && "parcelado" in (args[0].defaultValues as object);
+  const vs = useVideoState() as any;
+  const dv = (args[0]?.defaultValues ?? {}) as object;
+  // qual formulário é este (pelos campos): gasto, passeio ou frete
+  const valores = ("parcelado" in dv ? vs.gastoForm : "valor_por_pessoa" in dv ? vs.passeioForm : "tem_sinal" in dv ? vs.freteForm : undefined) as
+    | Record<string, unknown>
+    | undefined;
   useLayoutEffect(() => {
-    if (!ehGasto || !valores) return;
+    if (!valores) return;
     const atuais = form.getValues() as Record<string, unknown>;
     const difere = Object.entries(valores).some(([campo, valor]) => {
       const atual = atuais[campo];
