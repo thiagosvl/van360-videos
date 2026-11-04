@@ -36,7 +36,7 @@ const FECHO = { arquivo: "t6", seg: 7.0, partes: [
   { texto: "segue a gente. Aqui é conteúdo pra quem vive o **transporte escolar.**", ate: 6.96 },
 ] };
 
-const GANCHO = 2.0; // s antes do primeiro áudio
+const GANCHO = 3.1; // s antes do primeiro áudio (voz do Thiago: "Você que é do escolar... já ouviu isso?")
 const ENTRE = 0.45; // s entre áudios
 const f = (s: number) => Math.round(s * FPS);
 
@@ -394,6 +394,12 @@ export const ReelPais: React.FC = () => (
     <Fundo />
     <Topo />
     <Conversa />
+    <Legenda texto="Você que é do escolar... já ouviu isso?" de={4} ate={Math.round(GANCHO * FPS) - 2} />
+    {temAudio("gancho") ? (
+      <Sequence from={5} name="Gancho (Thiago)">
+        <Audio src={staticFile("reel-pais/gancho.mp3")} />
+      </Sequence>
+    ) : null}
     {FALAS.map((fl, i) => (
       <Legenda key={fl.arquivo} texto={fl.texto} de={INICIOS[i]} ate={INICIOS[i] + f(fl.seg) + 6} />
     ))}
