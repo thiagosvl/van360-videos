@@ -25,13 +25,13 @@ const WHATS = "#25d366";
 type Fala = { arquivo: string; nome: string; inicial: string; cor: string; hora: string; texto: string; seg: number };
 
 export const FALAS: Fala[] = [
-  { arquivo: "f1", nome: "Mãe da Ana", inicial: "A", cor: "#e879a7", hora: "06:12", texto: "Oi tio, bom dia! A Ana já embarcou?", seg: 3.52 },
-  { arquivo: "f2", nome: "Pai do Davi", inicial: "D", cor: "#3b82f6", hora: "12:47", texto: "Fala, tio! Já mandei o Pix, confere aí, tá?", seg: 3.04 },
-  { arquivo: "f3", nome: "Mãe do Miguel", inicial: "M", cor: "#a855f7", hora: "18:30", texto: "Ô tio... esqueci de pagar. Posso mandar semana que vem?", seg: 5.04 },
-  { arquivo: "f4", nome: "Vó da Alice", inicial: "V", cor: "#f97316", hora: "21:40", texto: "Oi, tio... me passa a chave de novo? Não tô achando aqui.", seg: 4.4 },
-  { arquivo: "f5", nome: "Pai do Enzo", inicial: "E", cor: "#14b8a6", hora: "23:05", texto: "Tio, desculpa o horário... manda o recibo de março?", seg: 3.84 },
+  { arquivo: "f1", nome: "Mãe da Ana", inicial: "A", cor: "#e879a7", hora: "06:12", texto: "Oi tio, bom dia! A Ana já embarcou?", seg: 3.56 },
+  { arquivo: "f2", nome: "Pai do Davi", inicial: "D", cor: "#3b82f6", hora: "12:47", texto: "Fala, tio! Já mandei o Pix, confere aí, tá?", seg: 3.09 },
+  { arquivo: "f3", nome: "Mãe do Miguel", inicial: "M", cor: "#a855f7", hora: "18:30", texto: "Ô tio... esqueci de pagar. Posso mandar semana que vem?", seg: 5.07 },
+  { arquivo: "f4", nome: "Vó da Alice", inicial: "V", cor: "#f97316", hora: "21:40", texto: "Oi, tio... me passa a chave de novo? Não tô achando aqui.", seg: 4.44 },
+  { arquivo: "f5", nome: "Pai do Enzo", inicial: "E", cor: "#14b8a6", hora: "23:05", texto: "Tio, desculpa o horário... manda o recibo de março?", seg: 3.87 },
 ];
-const FECHO = { arquivo: "t6", seg: 6.96, partes: [
+const FECHO = { arquivo: "t6", seg: 7.0, partes: [
   { texto: "Se você ouviu pelo menos um desses essa semana...", ate: 3.3 },
   { texto: "segue a gente. Aqui é conteúdo pra quem vive o **transporte escolar.**", ate: 6.96 },
 ] };
