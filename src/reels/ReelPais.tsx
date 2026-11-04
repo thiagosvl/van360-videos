@@ -135,8 +135,8 @@ const BalaoAudio: React.FC<{ fl: Fala; inicio: number }> = ({ fl, inicio }) => {
       style={{
         opacity: entra,
         translate: `0 ${(1 - entra) * 60}px`,
-        alignSelf: "flex-start",
-        width: 760,
+        alignSelf: "center",
+        width: 780,
         background: "white",
         borderRadius: "10px 40px 40px 40px",
         padding: "22px 30px 16px 22px",
@@ -200,8 +200,8 @@ const Legenda: React.FC<{ texto: string; de: number; ate: number }> = ({ texto, 
     <div
       style={{
         position: "absolute",
-        left: 80,
-        right: 160,
+        left: 120,
+        right: 120,
         top: 1240,
         opacity: op,
         textAlign: "center",
@@ -229,8 +229,8 @@ const Conversa: React.FC = () => {
     <div
       style={{
         position: "absolute",
-        left: 80,
-        right: 160,
+        left: 120,
+        right: 120,
         bottom: 1920 - 1200,
         display: "flex",
         flexDirection: "column",
@@ -238,7 +238,7 @@ const Conversa: React.FC = () => {
       }}
     >
       {visiveis.map(({ fl, i }) => (
-        <div key={fl.arquivo} style={{ opacity: i === atual ? 1 : i === atual - 1 ? 0.55 : 0.25, transition: "none" }}>
+        <div key={fl.arquivo} style={{ display: "flex", justifyContent: "center", opacity: i === atual ? 1 : 0.55 }}>
           <BalaoAudio fl={fl} inicio={INICIOS[i]} />
         </div>
       ))}
@@ -254,7 +254,7 @@ const Topo: React.FC = () => {
   const tremor = frame < GANCHO * FPS ? Math.sin(frame * 2.2) * 6 * (1 - frame / (GANCHO * FPS)) : 0;
   const chegaram = INICIOS.slice(0, FALAS.length).filter((i) => frame >= i).length;
   return (
-    <div style={{ position: "absolute", top: 250, left: 80, right: 160, textAlign: "center", translate: `${tremor}px 0` }}>
+    <div style={{ position: "absolute", top: 250, left: 120, right: 120, textAlign: "center", translate: `${tremor}px 0` }}>
       <div
         style={{
           display: "inline-flex",
@@ -304,8 +304,9 @@ const Fechamento: React.FC = () => {
   const ini = parte === 0 ? 0 : f(FECHO.partes[0].ate);
   const op = interpolate(frame, [ini, ini + 5], [0, 1], { extrapolateRight: "clamp" }) * (frame < fim + 4 ? 1 : 0);
   return (
-    <AbsoluteFill style={{ background: `rgba(11,26,46,${0.94 * entra})` }}>
-      <div style={{ position: "absolute", top: 330, left: 80, right: 160, textAlign: "center", opacity: entra }}>
+    <AbsoluteFill>
+      <AbsoluteFill style={{ background: NAVY, opacity: Math.min(1, interpolate(frame, [0, 10], [0, 1], { extrapolateRight: "clamp" })) }} />
+      <div style={{ position: "absolute", top: 330, left: 120, right: 120, textAlign: "center", opacity: entra }}>
         <div
           style={{
             display: "inline-block",
@@ -333,7 +334,7 @@ const Fechamento: React.FC = () => {
           <span style={{ color: AMBER }}>essa semana?</span>
         </div>
       </div>
-      <div style={{ position: "absolute", top: 940, left: 0, right: 80, display: "flex", justifyContent: "center" }}>
+      <div style={{ position: "absolute", top: 940, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
         <div
           style={{
             scale: String(Math.max(botao, 0)),
@@ -355,7 +356,7 @@ const Fechamento: React.FC = () => {
           position: "absolute",
           top: 1110,
           left: 0,
-          right: 80,
+          right: 0,
           textAlign: "center",
           fontFamily: "Inter",
           fontWeight: 600,
@@ -369,8 +370,8 @@ const Fechamento: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          left: 80,
-          right: 160,
+          left: 120,
+          right: 120,
           top: 1260,
           opacity: op,
           textAlign: "center",
