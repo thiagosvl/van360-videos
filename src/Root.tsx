@@ -9,6 +9,7 @@ import { POSTS_LOTE3 } from "./posts/Lote3";
 import { POSTS_LOTE4 } from "./posts/Lote4";
 import { POSTS_LOTE5 } from "./posts/Lote5";
 import { POSTS_LOTE6 } from "./posts/Lote6";
+import { CapaReelPais, REEL_PAIS_DURATION, ReelPais } from "./reels/ReelPais";
 import { CapaDestaque, DESTAQUES } from "./posts/Destaques";
 import { Teaser, TEASER_DURATION } from "./Teaser";
 import { HookScene } from "./scenes/HookScene";
@@ -112,6 +113,10 @@ export const RemotionRoot: React.FC = () => (
         fps={30}
         defaultProps={{ tab: "parcelas", ano: "2026", scrolls: [0, 700, 1400, 2100] }}
       />
+    </Folder>
+    <Folder name="Reels">
+      <Composition id="ReelPais" component={ReelPais} durationInFrames={REEL_PAIS_DURATION} {...V} />
+      <Still id="ReelPais-capa" component={CapaReelPais} width={1080} height={1920} />
     </Folder>
     <Folder name="Destaques">
       {DESTAQUES.flatMap((d) =>
