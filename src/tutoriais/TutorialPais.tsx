@@ -12,7 +12,7 @@ import { BRAND, BrandBackground, ease, usePhoneRise } from "../components/brand"
 import { Beat, Caption, Finger, beatsDuration } from "../components/tutorial";
 import { Narracao, Sfx, SfxEvent } from "../components/Sfx";
 import { VideoStateProvider } from "../mocks/videoState";
-import { ANA_ID, MOTORISTA } from "../mocks/data";
+import { ANA_ID } from "../mocks/data";
 import { usarLarguraDeCelular } from "../viewport";
 
 /**
@@ -43,8 +43,8 @@ const SLIDE = 18;
 /* toques (px do celular 390x844), conferidos em stills */
 const P = {
   perfilResponsavel: { x: 187, y: 496 },
-  avancar: { x: 195, y: 555 },
-  criarSenha: { x: 195, y: 565 },
+  avancar: { x: 195, y: 578 },
+  criarSenha: { x: 195, y: 591 },
   cardParcelas: { x: 67, y: 596 },
   marco: { x: 195, y: 385 }, // com a lista rolada em 330
   xRecibo: { x: 341, y: 164 },
@@ -200,9 +200,9 @@ const TelaApp: React.FC = () => {
               />
             )}
             {/* destaques */}
-            <Circulo x={187} y={615} w={290} h={64} desde={B[1] + 50} ate={T.tocaResponsavel - 30} />
-            <Circulo x={195} y={360} w={320} h={74} desde={B[4] + 30} ate={B[5]} />
-            <Circulo x={195} y={640} w={340} h={130} desde={T.abaContrato + 10} ate={B[7]} />
+            <Circulo x={195} y={628} w={310} h={88} desde={B[1] + 50} ate={T.tocaResponsavel - 30} />
+            <Circulo x={195} y={348} w={310} h={74} desde={B[4] + 30} ate={B[5]} />
+            <Circulo x={195} y={672} w={310} h={86} desde={T.abaContrato + 10} ate={B[7]} />
             <Circulo x={110} y={572} w={180} h={60} desde={T.salvo + 10} ate={B[8]} />
             <ToastSucesso desde={T.salvo} ate={T.salvo + 45} texto="Ausência registrada com sucesso!" />
             {grupos.map((g, i) => (
@@ -277,9 +277,8 @@ const Fechamento: React.FC = () => {
           );
         })}
       </div>
-      <div style={{ position: "absolute", top: 1270, display: "flex", alignItems: "center", gap: 22, opacity: selo, scale: String(0.8 + 0.2 * selo) }}>
-        <div style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 40, color: BRAND.navy }}>{MOTORISTA.apelido} usa</div>
-        <Img src={staticFile("logo-van360-horizontal.png")} style={{ height: 70 }} />
+      <div style={{ position: "absolute", top: 1270, display: "flex", alignItems: "center", opacity: selo, scale: String(0.8 + 0.2 * selo) }}>
+        <Img src={staticFile("logo-van360-horizontal.png")} style={{ height: 80 }} />
       </div>
     </AbsoluteFill>
   );
