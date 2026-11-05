@@ -52,7 +52,7 @@ export const RemotionRoot: React.FC = () => (
       {[
         capa("Pais", TUTORIAL_PAIS_DURATION, {
           Video: TutorialPais,
-          quadro: 590,
+          quadro: 627,
           titulo: "Tudo do seu filho **no celular**",
           botao: "Veja como funciona",
           icone: "▶",

@@ -21,15 +21,15 @@ import { usarLarguraDeCelular } from "../viewport";
  * recibos, contrato, ausência e avisos da rota. Fecha valorizando o motorista que usa o Van360.
  */
 export const BEATS: Beat[] = [
-  { text: "Seu filho vai de van com o Van360? Então você acompanha **tudo pelo celular**.", from: 0, duration: 178 },
-  { text: "Baixe o app Van360, escolha **responsável** e entre com o telefone que está no cadastro do seu filho.", from: 178, duration: 219 },
-  { text: "No primeiro acesso, você cria uma **senha de 4 números**. Pronto, já está dentro.", from: 397, duration: 174 },
-  { text: "Aqui está a **carteirinha** do seu filho, com a escola, o horário e os dados do transporte.", from: 571, duration: 170 },
-  { text: "Em Parcelas, você vê o que já foi pago e abre o **recibo** quando quiser.", from: 741, duration: 147 },
-  { text: "O **contrato** assinado fica guardado aqui, pra ver quando precisar.", from: 888, duration: 125 },
-  { text: "Seu filho não vai? Avise a **ausência** pelo app, e o motorista já fica sabendo.", from: 1013, duration: 159 },
-  { text: "E você recebe um **aviso** quando a van sai, quando seu filho embarca e quando ele chega em casa.", from: 1172, duration: 174 },
-  { text: "Seu motorista escolheu o Van360 pra deixar tudo mais **organizado e tranquilo** pra você.", from: 1346, duration: 200 },
+  { text: "O transporte escolar do seu filho usa o **Van360**. E você tem acesso a tudo, **direto no celular**.", from: 0, duration: 215 },
+  { text: "Baixe o app Van360, escolha **responsável** e entre com o telefone que está no cadastro do seu filho.", from: 215, duration: 219 },
+  { text: "No primeiro acesso, você cria uma **senha de 4 números**. Pronto, já está dentro.", from: 434, duration: 174 },
+  { text: "Aqui está a **carteirinha** do seu filho, com a escola, o horário e os dados do transporte.", from: 608, duration: 170 },
+  { text: "Em Parcelas, você vê o que já foi pago e abre o **recibo** quando quiser.", from: 778, duration: 147 },
+  { text: "O **contrato** assinado fica guardado aqui, pra ver quando precisar.", from: 925, duration: 125 },
+  { text: "Seu filho não vai? Avise a **ausência** pelo app, e o motorista já fica sabendo.", from: 1050, duration: 159 },
+  { text: "E você recebe um **aviso** quando a van sai, quando seu filho embarca e quando ele chega em casa.", from: 1209, duration: 174 },
+  { text: "Seu motorista escolheu o Van360 pra deixar tudo mais **organizado e tranquilo** pra você.", from: 1383, duration: 200 },
 ];
 export const TUTORIAL_PAIS_DURATION = beatsDuration(BEATS);
 
