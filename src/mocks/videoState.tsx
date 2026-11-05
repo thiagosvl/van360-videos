@@ -35,6 +35,8 @@ export type VideoState = {
   /** valores dos formulários de passeio e de frete */
   passeioForm?: Record<string, unknown>;
   freteForm?: Record<string, unknown>;
+  /** lado do responsável: login e ausências (ver mocks/responsavel.ts) */
+  responsavel?: import("./responsavel").EstadoResponsavel;
   /** indicações concluídas (Indique e Ganhe) */
   indicacoes?: number;
   /** perfil com o resumo do mês (tela Início com números) */
