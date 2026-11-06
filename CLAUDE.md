@@ -122,6 +122,12 @@ TutorialPais (PaisFinal): tutorial para os PAIS (login por telefone + senha de 4
   secretário financeiro -> lembrete WABA com "Copiar código Pix" -> baixa sozinha + notificação real (automaticPaymentReceivedDriver)
   -> dinheiro na hora -> recibo real (public/recibos) com a marca -> multa e juros (exemplo do Thiago: 200, multa 20, juros 2% ao dia)
   -> banco regulado pelo BC + "+200 motoristas". Nunca citar o valor da taxa nem o nome do banco (Woovi); taxa = "já com a taxa descontada".
+- Venda "Lembrete automático" (LembreteAutomatico / LembreteAutomaticoFinal, ~41s, sem CTA, narração em public/narracao/lembrete):
+  WhatsApp lotando -> logo + "Lembrete automático" -> UMA mensagem venceHoje com chips "No vencimento"/"Se atrasar"
+  -> ganha o botão "Copiar código Pix" (Pix opcional) -> sem custo a mais (faz parte da assinatura) -> a baixa é com você
+  (trechos do TutorialParcelas: registrar pagamento e recibo) -> tabela Lembrete x Cobrança automática (taxa só como detalhe pequeno) -> slogan.
+  O botão do modelo é sempre "Copiar código Pix".
+- `@/hooks` (hooks-barrel.ts) precisa reexportar todo hook que as telas importam do barrel (ex.: useMotoristaFinanceiroApi, usado pela tela de Parcelas).
 
 ## Contratos
 - PDF do contrato gerado com o código real do back-end (`node scripts/gerar-contrato.mjs`):

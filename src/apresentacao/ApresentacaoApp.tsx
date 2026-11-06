@@ -147,7 +147,7 @@ const CONVERSAS = [
   { nome: "Mãe da Alice", msg: "Pode me mandar o valor de novo?", hora: "10:40", n: 3 },
 ];
 /** quadro em que cada conversa chega (a mais nova entra no topo) */
-const CHEGA = CONVERSAS.map((_, i) => 4 + i * 10);
+export const CHEGA = CONVERSAS.map((_, i) => 4 + i * 10);
 
 const TelaConversas: React.FC = () => {
   const frame = useCurrentFrame();
@@ -195,7 +195,7 @@ const TelaConversas: React.FC = () => {
   );
 };
 
-const Gancho: React.FC = () => {
+export const Gancho: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const sobe = spring({ frame, fps, config: { damping: 16, mass: 0.6 } });
@@ -377,7 +377,7 @@ const Virada: React.FC = () => {
 /* ------------------------------------------------------------------ */
 /* 4 a 8. Soluções: trechos curtos dos tutoriais (telas reais)          */
 /* ------------------------------------------------------------------ */
-type Trecho = { em: number; Comp: React.FC; de: number; len: number };
+export type Trecho = { em: number; Comp: React.FC; de: number; len: number };
 const TRECHOS: Trecho[] = [
   { em: B[4], Comp: TutorialParcelas, de: 985, len: LEN(4) }, // lembretes no WhatsApp do pai, com o Pix
   { em: B[5], Comp: TutorialParcelas, de: 662, len: 95 }, // painel: quem pagou, quem falta
@@ -390,7 +390,7 @@ const TRECHOS: Trecho[] = [
 ];
 
 /** Um trecho de tutorial, sem a legenda e sem a narração dele, com fade curto. */
-const TrechoTutorial: React.FC<{ t: Trecho }> = ({ t }) => {
+export const TrechoTutorial: React.FC<{ t: Trecho }> = ({ t }) => {
   const frame = useCurrentFrame();
   const opacity = interpolate(frame, [0, 6, t.len - 6, t.len], [0, 1, 1, 0], clamp);
   return (

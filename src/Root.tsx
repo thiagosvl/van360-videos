@@ -24,6 +24,7 @@ import { TutorialRelatorios, TUTORIAL_RELATORIOS_DURATION } from "./tutoriais/Tu
 import { TutorialRenovacao, TUTORIAL_RENOVACAO_DURATION } from "./tutoriais/TutorialRenovacao";
 import { TutorialIndicacao, TUTORIAL_INDICACAO_DURATION } from "./tutoriais/TutorialIndicacao";
 import { ApresentacaoApp, APRESENTACAO_DURATION } from "./apresentacao/ApresentacaoApp";
+import { LembreteAutomatico, LEMBRETE_DURATION, BEATS as BEATS_LEMBRETE } from "./apresentacao/LembreteAutomatico";
 import { CobrancaAutomatica, COBRANCA_DURATION, BEATS as BEATS_COBRANCA } from "./apresentacao/CobrancaAutomatica";
 import { TutorialRotas, TUTORIAL_ROTAS_DURATION } from "./tutoriais/TutorialRotas";
 import { CAPA_QUADROS, CapaVideo, CapaProps, ComCapa } from "./components/CapaVideo";
@@ -65,6 +66,14 @@ export const RemotionRoot: React.FC = () => (
           botao: "Veja como funciona",
           icone: "▶",
           subtitulo: "Em 46 segundos",
+        }),
+        capa("LembreteAutomatico", LEMBRETE_DURATION, {
+          Video: LembreteAutomatico,
+          quadro: BEATS_LEMBRETE[3].from + 88,
+          titulo: "Lembra **os pais** por você",
+          botao: "Veja como funciona",
+          icone: "▶",
+          subtitulo: "Em 41 segundos",
         }),
         capa("CobrancaAutomatica", COBRANCA_DURATION, {
           Video: CobrancaAutomatica,
@@ -230,6 +239,7 @@ export const RemotionRoot: React.FC = () => (
       <Composition id="DebugFretamentos" component={DebugFretamentos} durationInFrames={14} {...V} />
       <Composition id="TutorialPais" component={TutorialPais} durationInFrames={TUTORIAL_PAIS_DURATION} {...V} />
       <Composition id="TutorialFretamentos" component={TutorialFretamentos} durationInFrames={TUTORIAL_FRETAMENTOS_DURATION} {...V} />
+      <Composition id="LembreteAutomatico" component={LembreteAutomatico} durationInFrames={LEMBRETE_DURATION} {...V} />
       <Composition id="CobrancaAutomatica" component={CobrancaAutomatica} durationInFrames={COBRANCA_DURATION} {...V} />
       <Composition
         id="ApresentacaoApp"

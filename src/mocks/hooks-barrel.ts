@@ -29,3 +29,4 @@ export { useDebounce } from "@/hooks/ui/useDebounce";
 export { useEscolasWithFilters } from "@mocks/financeiro";
 export { useDashboardViewModel } from "@/hooks/ui/useDashboardViewModel";
 export { useConfiguracoes } from "@mocks/noop-hooks";
+export { useMotoristaFinanceiroApi } from "@mocks/useMotoristaFinanceiroApi";

@@ -52,7 +52,7 @@ const VALOR = "R$ 280,00";
 /* ------------------------------------------------------------------ */
 /* peças                                                               */
 /* ------------------------------------------------------------------ */
-const Destaque: React.FC<{ text: string }> = ({ text }) => (
+export const Destaque: React.FC<{ text: string }> = ({ text }) => (
   <>
     {text.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
       p.startsWith("**") ? (
@@ -67,7 +67,7 @@ const Destaque: React.FC<{ text: string }> = ({ text }) => (
 );
 
 /** Manchete curta no topo (faixa 250 a 420). `de`/`ate` relativos à cena. */
-const Manchete: React.FC<{ text: string; de?: number; ate: number; size?: number }> = ({ text, de = 0, ate, size = 76 }) => {
+export const Manchete: React.FC<{ text: string; de?: number; ate: number; size?: number }> = ({ text, de = 0, ate, size = 76 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   if (frame < de || frame >= ate) return null;
@@ -102,27 +102,27 @@ const Manchete: React.FC<{ text: string; de?: number; ate: number; size?: number
   );
 };
 
-const Cena: React.FC<{ len: number; children: React.ReactNode }> = ({ len, children }) => {
+export const Cena: React.FC<{ len: number; children: React.ReactNode }> = ({ len, children }) => {
   const frame = useCurrentFrame();
   const entra = interpolate(frame, [0, FADE], [0, 1], { ...clamp, easing: ease });
   const sai = interpolate(frame, [len - FADE, len], [1, 0], clamp);
   return <AbsoluteFill style={{ opacity: Math.min(entra, sai), translate: `${(1 - entra) * 140}px 0px` }}>{children}</AbsoluteFill>;
 };
 
-const Pilula: React.FC<{ texto: string; top: number; cor?: { bg: string; fg: string } }> = ({ texto, top, cor = { bg: "#eef3ff", fg: BRAND.blue } }) => (
+export const Pilula: React.FC<{ texto: string; top: number; cor?: { bg: string; fg: string } }> = ({ texto, top, cor = { bg: "#eef3ff", fg: BRAND.blue } }) => (
   <div style={{ position: "absolute", top, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
     <div style={{ padding: "10px 28px", borderRadius: 999, background: cor.bg, color: cor.fg, fontFamily: "Inter", fontWeight: 700, fontSize: 32 }}>{texto}</div>
   </div>
 );
 
-const useSpring = (de: number, cfg = { damping: 12, mass: 0.6 }) => {
+export const useSpring = (de: number, cfg = { damping: 12, mass: 0.6 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   return spring({ frame: frame - de, fps, config: cfg });
 };
 
 /** toque do dedo: círculo que encolhe (como o Finger dos tutoriais) */
-const Toque: React.FC<{ em: number; size?: number }> = ({ em, size = 96 }) => {
+export const Toque: React.FC<{ em: number; size?: number }> = ({ em, size = 96 }) => {
   const frame = useCurrentFrame();
   const aparece = interpolate(frame, [em - 14, em - 6], [0, 1], clamp);
   const aperta = interpolate(frame, [em - 2, em, em + 6], [1, 0.75, 1], clamp);
