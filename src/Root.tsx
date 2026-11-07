@@ -24,6 +24,7 @@ import { TutorialRelatorios, TUTORIAL_RELATORIOS_DURATION } from "./tutoriais/Tu
 import { TutorialRenovacao, TUTORIAL_RENOVACAO_DURATION } from "./tutoriais/TutorialRenovacao";
 import { TutorialIndicacao, TUTORIAL_INDICACAO_DURATION } from "./tutoriais/TutorialIndicacao";
 import { ApresentacaoApp, APRESENTACAO_DURATION } from "./apresentacao/ApresentacaoApp";
+import { LembreteVsCobranca, DIFERENCA_DURATION, BEATS as BEATS_DIFERENCA } from "./apresentacao/LembreteVsCobranca";
 import { LembreteAutomatico, LEMBRETE_DURATION, BEATS as BEATS_LEMBRETE } from "./apresentacao/LembreteAutomatico";
 import { CobrancaAutomatica, COBRANCA_DURATION, BEATS as BEATS_COBRANCA } from "./apresentacao/CobrancaAutomatica";
 import { TutorialRotas, TUTORIAL_ROTAS_DURATION } from "./tutoriais/TutorialRotas";
@@ -66,6 +67,14 @@ export const RemotionRoot: React.FC = () => (
           botao: "Veja como funciona",
           icone: "▶",
           subtitulo: "Em 46 segundos",
+        }),
+        capa("LembreteVsCobranca", DIFERENCA_DURATION, {
+          Video: LembreteVsCobranca,
+          quadro: BEATS_DIFERENCA[3].from + 270,
+          titulo: "Lembrete ou **cobrança automática**?",
+          botao: "Entenda a diferença",
+          icone: "▶",
+          subtitulo: "Em 1 minuto",
         }),
         capa("LembreteAutomatico", LEMBRETE_DURATION, {
           Video: LembreteAutomatico,
@@ -239,6 +248,7 @@ export const RemotionRoot: React.FC = () => (
       <Composition id="DebugFretamentos" component={DebugFretamentos} durationInFrames={14} {...V} />
       <Composition id="TutorialPais" component={TutorialPais} durationInFrames={TUTORIAL_PAIS_DURATION} {...V} />
       <Composition id="TutorialFretamentos" component={TutorialFretamentos} durationInFrames={TUTORIAL_FRETAMENTOS_DURATION} {...V} />
+      <Composition id="LembreteVsCobranca" component={LembreteVsCobranca} durationInFrames={DIFERENCA_DURATION} {...V} />
       <Composition id="LembreteAutomatico" component={LembreteAutomatico} durationInFrames={LEMBRETE_DURATION} {...V} />
       <Composition id="CobrancaAutomatica" component={CobrancaAutomatica} durationInFrames={COBRANCA_DURATION} {...V} />
       <Composition

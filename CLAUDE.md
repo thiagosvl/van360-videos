@@ -127,6 +127,12 @@ TutorialPais (PaisFinal): tutorial para os PAIS (login por telefone + senha de 4
   -> ganha o botão "Copiar código Pix" (Pix opcional) -> sem custo a mais (faz parte da assinatura) -> a baixa é com você
   (trechos do TutorialParcelas: registrar pagamento e recibo) -> tabela Lembrete x Cobrança automática (taxa só como detalhe pequeno; fala: "dê baixa sozinho e cuide de tudo", "recibo é enviado pro pai", nunca "até isso") -> slogan.
   O botão do modelo é sempre "Copiar código Pix".
+- Explicativo "Lembrete x Cobrança" (LembreteVsCobranca / LembreteVsCobrancaFinal, ~59s, sem CTA, narração em public/narracao/diferenca,
+  falas aceleradas 1,1x): para mandar no WhatsApp e passar no app. Degraus: lembrete já vem na assinatura (vencimento e 3 dias depois)
+  -> o resto é com o transportador (conferir banco, baixa um por um, recibo) -> cobrança faz tudo (dinheiro na hora, baixa, recibo,
+  aviso real "Recebido: ...") -> multa e juros (só na cobrança) -> opcional, assinatura igual, taxa só quando o pai paga
+  (EXEMPLO 200 - 2,50 = 197,50, com "valores de exemplo") -> troca em Configurações > Pagamentos -> resumo (secretário financeiro) + slogan.
+  Nomes do app: "Lembretes Automáticos no WhatsApp" e "Cobrança & Baixa Automática". Falar "transportador", nunca "tio".
 - `@/hooks` (hooks-barrel.ts) precisa reexportar todo hook que as telas importam do barrel (ex.: useMotoristaFinanceiroApi, usado pela tela de Parcelas).
 
 ## Contratos
