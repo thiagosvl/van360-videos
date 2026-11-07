@@ -13,7 +13,7 @@ import { CHEGA, Gancho as WhatsLotado, Trecho, TrechoTutorial } from "./Apresent
  * Venda: lembrete automático (~41s, narração do Thiago, sem CTA).
  * Cobrar pai cansa -> lembrete automático -> mensagem no vencimento e no atraso (modelo
  * WABA real) -> Pix opcional ("Copiar código Pix") -> sem custo a mais -> a baixa é com
- * você (trechos reais do TutorialParcelas) -> a cobrança automática faz até isso
+ * você (trechos reais do TutorialParcelas) -> a cobrança automática cuida de tudo
  * (comparação, taxa só como detalhe) -> slogan.
  */
 const FALAS: Array<[string, number]> = [
@@ -23,7 +23,7 @@ const FALAS: Array<[string, number]> = [
   ["Se quiser, a mensagem já vai com a sua chave Pix, pronta pra copiar.", 138],
   ["E não tem custo a mais: já faz parte da sua assinatura.", 111],
   ["Como o dinheiro cai direto na sua conta, a baixa é com você: registra o pagamento no app e manda o recibo pro pai.", 207],
-  ["Quer que o app faça até isso? Na cobrança automática, o Pix dá baixa sozinho e o recibo chega na hora.", 204],
+  ["Quer que o app também dê baixa sozinho e cuide de tudo? Com a cobrança automática, o pai paga no Pix, a baixa é automática e o recibo é enviado pro pai na hora.", 299],
   ["Você dirige. A gente organiza.", 115],
 ];
 export const BEATS: Beat[] = (() => {
@@ -141,7 +141,8 @@ const Mensagem: React.FC = () => {
   const msg = useSpring(M.chega, { damping: 14, mass: 0.7 });
   const pix = useSpring(M.pix, { damping: 10, mass: 0.5 });
   const copiado = useSpring(M.copia + 4, { damping: 12, mass: 0.5 });
-  const opcional = useSpring(M.pix + 10, { damping: 12, mass: 0.5 });
+  const opcionalS = useSpring(M.pix + 4, { damping: 12, mass: 0.5 });
+  const opcional = frame >= M.pix ? opcionalS : 0;
   const brilho = interpolate(frame, [M.valor, M.valor + 8, M.valor + 40, M.valor + 50], [0, 1, 1, 0], clamp);
   const comPix = frame >= M.pix;
   const bump = comPix ? 1 + 0.04 * Math.sin(Math.min(1, pix) * Math.PI) : 1;
@@ -149,7 +150,7 @@ const Mensagem: React.FC = () => {
     <AbsoluteFill>
       <Manchete text="O pai é **lembrado sozinho**" ate={L3} size={72} />
       <Manchete text="Pix **pronto pra copiar**" de={L3} ate={L3 + LEN(4)} size={72} />
-      <div style={{ position: "absolute", top: 520, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 24 }}>
+      <div style={{ position: "absolute", top: 520, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 24, opacity: 1 - opcional }}>
         <Chip texto="🔔 No vencimento" em={M.venc} />
         <Chip texto="⏰ Se atrasar" em={M.atraso} />
       </div>
@@ -157,22 +158,25 @@ const Mensagem: React.FC = () => {
         <AbsoluteFill style={{ alignItems: "center", top: 660 }}>
           <div style={{ width: 330, scale: String(2.7 * (0.9 + 0.1 * msg) * bump), opacity: msg, transformOrigin: "50% 0%", position: "relative" }}>
             <WabaMessage motorista={MOTORISTA.apelido} hora="07:00" comPix={comPix}>
-              {WABA_MODELOS.venceHoje({ responsavel: PAI, aluno: ALUNO, valor: VALOR })}
+              {WABA_MODELOS.venceHoje({
+                responsavel: PAI,
+                aluno: ALUNO,
+                // destaque só em cima do valor (o modelo aceita o nó no lugar do texto)
+                valor: (
+                  <span
+                    style={{
+                      borderRadius: 4,
+                      padding: "0 2px",
+                      background: `rgba(37,99,235,${0.16 * brilho})`,
+                      boxShadow: `0 0 0 1.5px rgba(37,99,235,${brilho})`,
+                      fontWeight: brilho > 0.5 ? 700 : undefined,
+                    }}
+                  >
+                    {VALOR}
+                  </span>
+                ) as unknown as string,
+              })}
             </WabaMessage>
-            {/* destaque no valor */}
-            <div
-              style={{
-                position: "absolute",
-                left: 14,
-                right: 14,
-                top: 30,
-                height: 58,
-                borderRadius: 8,
-                border: `2px solid ${BRAND.blue}`,
-                background: "rgba(37,99,235,0.06)",
-                opacity: brilho,
-              }}
-            />
             {comPix && (
               <div style={{ position: "absolute", left: 0, right: 0, bottom: 33, height: 0 }}>
                 <Toque em={M.copia} size={36} />
@@ -181,22 +185,23 @@ const Mensagem: React.FC = () => {
           </div>
         </AbsoluteFill>
       )}
-      {comPix && frame < M.copia + 4 && (
-        <div style={{ position: "absolute", top: 1440, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+      {comPix && (
+        <div style={{ position: "absolute", top: 530, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
           <div
             style={{
-              padding: "14px 30px",
+              padding: "14px 32px",
               borderRadius: 999,
               background: "#eef3ff",
+              border: `3px solid ${BRAND.blue}`,
               color: BRAND.blue,
               fontFamily: "Inter",
               fontWeight: 700,
-              fontSize: 34,
+              fontSize: 36,
               opacity: opcional,
               scale: String(0.7 + 0.3 * opcional),
             }}
           >
-            Opcional: você escolhe
+            Pix opcional: você escolhe
           </div>
         </div>
       )}
@@ -331,14 +336,14 @@ const BaixaComVoce: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* 7. Comparação: a cobrança automática faz até isso                    */
+/* 7. Comparação: a cobrança automática cuida de tudo                    */
 /* ------------------------------------------------------------------ */
-const K = { destaca: F + 58, baixa: F + 108, recibo: F + 150 };
+const K = { destaca: F + 96, baixa: F + 190, recibo: F + 250 };
 const LINHAS: Array<{ txt: string; lembrete: boolean | string; em: number }> = [
   { txt: "Lembra o pai no WhatsApp", lembrete: true, em: 0 },
   { txt: "Pix pronto pra copiar", lembrete: "opcional", em: 0 },
   { txt: "Dá baixa sozinho", lembrete: false, em: K.baixa },
-  { txt: "Recibo chega na hora", lembrete: false, em: K.recibo },
+  { txt: "Envia o recibo pro pai", lembrete: false, em: K.recibo },
 ];
 const Marca: React.FC<{ v: boolean | string; em?: number }> = ({ v, em = 0 }) => {
   const s = useSpring(em, { damping: 10, mass: 0.5 });
@@ -363,7 +368,7 @@ const Comparacao: React.FC = () => {
   const COL = 210;
   return (
     <AbsoluteFill style={{ alignItems: "center" }}>
-      <Manchete text="Quer que o app faça **até isso**?" ate={K.destaca - 4} size={68} />
+      <Manchete text="E se o app **cuidar de tudo**?" ate={K.destaca - 4} size={70} />
       <Manchete text="Cobrança **automática**" de={K.destaca - 4} ate={LEN(7) + 999} />
       <div
         style={{

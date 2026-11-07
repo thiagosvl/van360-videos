@@ -73,7 +73,7 @@ export const RemotionRoot: React.FC = () => (
           titulo: "Lembra **os pais** por você",
           botao: "Veja como funciona",
           icone: "▶",
-          subtitulo: "Em 41 segundos",
+          subtitulo: "Em 45 segundos",
         }),
         capa("CobrancaAutomatica", COBRANCA_DURATION, {
           Video: CobrancaAutomatica,
