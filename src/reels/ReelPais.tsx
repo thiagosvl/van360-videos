@@ -57,7 +57,7 @@ export const REEL_PAIS_DURATION = INICIO_FECHO + f(FECHO.seg) + f(2.2);
 const temAudio = (nome: string) => getStaticFiles().some((s) => s.name === `reel-pais/${nome}.mp3`);
 
 /** **palavra** em âmbar */
-const Destacado: React.FC<{ texto: string }> = ({ texto }) => (
+export const Destacado: React.FC<{ texto: string }> = ({ texto }) => (
   <>
     {texto.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
       p.startsWith("**") ? (
@@ -71,7 +71,7 @@ const Destacado: React.FC<{ texto: string }> = ({ texto }) => (
   </>
 );
 
-const Fundo: React.FC = () => (
+export const Fundo: React.FC = () => (
   <AbsoluteFill style={{ background: NAVY, overflow: "hidden" }}>
     <div
       style={{
