@@ -96,14 +96,11 @@ const Legenda: React.FC<{ trechos: Trecho[]; tamanho?: number; oculta?: [number,
   const pulso = grande ? 1 + 0.05 * Math.sin((t - f(atual.de)) / 3) : 1;
   return (
     <>
-      {degrade && (
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 400, height: 460, opacity: op, background: "linear-gradient(to bottom, rgba(11,26,46,0), rgba(11,26,46,0.9) 55%, #0b1a2e)" }} />
-      )}
     <div
       style={{
         position: "absolute",
-        left: 130,
-        right: 150,
+        left: degrade ? 80 : 130,
+        right: degrade ? 100 : 150,
         bottom: CAP_BOTTOM,
         opacity: op,
         textAlign: "center",
@@ -118,7 +115,13 @@ const Legenda: React.FC<{ trechos: Trecho[]; tamanho?: number; oculta?: [number,
         scale: String(pulso),
       }}
     >
-      <Destacado texto={atual.texto} />
+      {degrade ? (
+        <span style={{ display: "inline-block", background: "rgba(11,26,46,0.86)", padding: "18px 38px 22px", borderRadius: 36, boxShadow: "0 12px 40px rgba(0,0,0,0.35)" }}>
+          <Destacado texto={atual.texto} />
+        </span>
+      ) : (
+        <Destacado texto={atual.texto} />
+      )}
     </div>
     </>
   );
@@ -184,7 +187,7 @@ const Cena1: React.FC = () => {
           <div style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 58, letterSpacing: "0.12em", color: "rgba(255,255,255,0.85)" }}>
             ALUNOS DE
           </div>
-          <div style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 340, lineHeight: 1, letterSpacing: "-0.04em", color: "white", marginTop: 6 }}>
+          <div style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 262, lineHeight: 1, letterSpacing: "-0.04em", color: "white", marginTop: 6 }}>
             2027
           </div>
           <div style={{ width: 300, height: 14, borderRadius: 7, background: AMBER, margin: "18px auto 0" }} />
@@ -270,9 +273,9 @@ const Cena2: React.FC = () => {
 };
 
 /* ---------- celulares (telas reais) ---------- */
-const SCALE = 1.45;
+const SCALE = 1.86; // celular ocupa quase toda a altura (do topo seguro até o rodapé); a legenda fica por cima
 const CelularCentro: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <AbsoluteFill style={{ alignItems: "center", top: 230 }}>{children}</AbsoluteFill>
+  <AbsoluteFill style={{ alignItems: "center", top: 215 }}>{children}</AbsoluteFill>
 );
 
 /** Mostra a fase só no intervalo [de, ate) (segundos locais), com fade curto. */
