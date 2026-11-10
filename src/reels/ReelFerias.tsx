@@ -28,7 +28,7 @@ const AMBER = "#FFB300";
 const WHATS = "#25d366";
 const BLUE = "#2563eb";
 
-const DUR = [5.88, 8.36, 12.93, 6.35, 11.81, 4.28];
+const DUR = [5.8, 7.16, 12.93, 6.35, 11.81, 2.04];
 const START = 0.1;
 const GAP = 0.35;
 const f = (s: number) => Math.round(s * FPS);
@@ -42,7 +42,7 @@ const L: number[] = (() => {
     return x;
   });
 })();
-const FIM = L[5] + f(DUR[5]) + f(1.8);
+const FIM = L[5] + f(DUR[5]) + f(2.2);
 export const REEL_FERIAS_DURATION = FIM;
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
@@ -156,7 +156,7 @@ const pop = (t: number, quando: number, fps: number) => spring({ frame: t - f(qu
 const Cena1: React.FC = () => {
   const t = useT();
   const { fps } = useVideoConfig();
-  const p = pop(t, 2.5, fps);
+  const p = pop(t, 0.1, fps);
   return (
     <AbsoluteFill>
       <Cabecalho titulo="Férias de **janeiro**" />
@@ -181,8 +181,8 @@ const Cena1: React.FC = () => {
       </div>
       <Legenda
         trechos={[
-          { de: 0, ate: 2.5, texto: "Transportador escolar, você já ouviu:" },
-          { de: 2.55, ate: 5.9, texto: "“Meu filho não tem aula em janeiro, então **não vou pagar**”?" },
+          { de: 0, ate: 2.8, texto: "“Meu filho não tem aula em janeiro, então **não vou pagar**.”" },
+          { de: 3.3, ate: 5.8, texto: "Transportador escolar, **você já ouviu isso**?" },
         ]}
       />
     </AbsoluteFill>
@@ -251,17 +251,15 @@ const Cena2: React.FC = () => {
           itens={MESES.map((m, i) => ({
             rotulo: m,
             // até "só pelo que usa" todos parecem "paga só quando usa"; depois as férias ficam sem aula
-            estado: sem(m) && t >= f(5.6) ? "nao" : "neutro",
+            estado: sem(m) && t >= f(4.3) ? "nao" : "neutro",
             entra: interpolate(t, [f(0.3) + i * 3, f(0.3) + i * 3 + 8], [0, 1], clamp),
           })).map((x) => ({ ...x, estado: x.estado as "neutro" | "nao" }))}
         />
       </div>
       <Legenda
         trechos={[
-          { de: 0, ate: 2.2, texto: "Isso acontece porque o pai..." },
-          { de: 2.2, ate: 3.3, texto: "ACHA", grande: true },
-          { de: 3.3, ate: 5.4, texto: "que paga **mês a mês**, só pelo que usa." },
-          { de: 5.6, ate: 8.36, texto: "Aí chegam as férias, e ele acha que **não deve nada**." },
+          { de: 0, ate: 4.0, texto: "Isso acontece porque o pai “**ACHA**” que paga **mês a mês**, só pelo que usa." },
+          { de: 4.3, ate: 7.16, texto: "Aí chegam as férias, e ele acha que **não deve nada**." },
         ]}
       />
     </AbsoluteFill>
@@ -479,7 +477,7 @@ const Cena6: React.FC = () => {
   const t = useT();
   const { fps } = useVideoConfig();
   const entra = spring({ frame: t + 6, fps, config: { damping: 16, stiffness: 120 } });
-  const botao = spring({ frame: t - f(1.2), fps, config: { damping: 12, stiffness: 160 } });
+  const botao = spring({ frame: t - f(0.7), fps, config: { damping: 12, stiffness: 160 } });
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ background: NAVY }} />
@@ -513,7 +511,7 @@ const Cena6: React.FC = () => {
       <div style={{ position: "absolute", top: 1110, left: 0, right: 0, textAlign: "center", fontFamily: "Inter", fontWeight: 600, fontSize: 40, color: "rgba(226,234,246,0.85)", opacity: Math.max(botao, 0) }}>
         Você dirige. A gente organiza.
       </div>
-      <Legenda trechos={[{ de: 0, ate: 4.3, texto: "Segue o **@van360.oficial** pra saber mais." }]} />
+      <Legenda trechos={[{ de: 0, ate: 2.2, texto: "Segue o nosso **perfil no Instagram**." }]} />
     </AbsoluteFill>
   );
 };
