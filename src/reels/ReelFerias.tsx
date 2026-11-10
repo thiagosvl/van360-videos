@@ -78,27 +78,32 @@ const Fade: React.FC<{ dur: number; entra: boolean; sai: boolean; children: Reac
 type Trecho = { de: number; ate: number; texto: string; grande?: boolean };
 
 /** Legenda por trecho (segundos a partir do início da fala). */
-const CAP_BOTTOM = 480; // borda inferior da legenda em y=1440, acima da faixa do rodapé do Reels (~420px)
-const Legenda: React.FC<{ trechos: Trecho[]; tamanho?: number }> = ({ trechos, tamanho = 62 }) => {
+const CAP_BOTTOM = 440; // borda inferior da legenda em y=1480, logo acima da faixa do rodapé do Reels (~420px)
+const Legenda: React.FC<{ trechos: Trecho[]; tamanho?: number; oculta?: [number, number][]; degrade?: boolean }> = ({ trechos, tamanho = 56, oculta, degrade }) => {
   const t = useT();
   const atual = trechos.find((x) => t >= f(x.de) - 2 && t < f(x.ate) + 2);
   if (!atual) return null;
+  if (oculta && oculta.some(([a, b]) => t >= a && t < b)) return null;
   const op = interpolate(t, [f(atual.de), f(atual.de) + 5, f(atual.ate) - 3, f(atual.ate)], [0, 1, 1, 0.9], clamp);
   const grande = atual.grande;
   const pulso = grande ? 1 + 0.05 * Math.sin((t - f(atual.de)) / 3) : 1;
   return (
+    <>
+      {degrade && (
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 400, height: 460, opacity: op, background: "linear-gradient(to bottom, rgba(11,26,46,0), rgba(11,26,46,0.9) 55%, #0b1a2e)" }} />
+      )}
     <div
       style={{
         position: "absolute",
-        left: 90,
-        right: 120,
+        left: 130,
+        right: 150,
         bottom: CAP_BOTTOM,
         opacity: op,
         textAlign: "center",
         fontFamily: "Manrope",
         fontWeight: 800,
         fontSize: grande ? tamanho * 2.1 : tamanho,
-        lineHeight: 1.18,
+        lineHeight: 1.26,
         letterSpacing: "-0.02em",
         color: grande ? AMBER : "white",
         textShadow: "0 4px 24px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.5)",
@@ -108,54 +113,39 @@ const Legenda: React.FC<{ trechos: Trecho[]; tamanho?: number }> = ({ trechos, t
     >
       <Destacado texto={atual.texto} />
     </div>
+    </>
   );
 };
 
-/** Etiqueta âmbar + título + subtítulo da cena (zona segura: abaixo de 235px). */
-const Cabecalho: React.FC<{ titulo: string; sub: string }> = ({ titulo, sub }) => {
+/** Etiqueta âmbar só no gancho (segmenta quem assiste). Zona segura: abaixo de 235px. */
+const Etiqueta: React.FC = () => {
   const t = useT();
   const { fps } = useVideoConfig();
   const entra = spring({ frame: t + 6, fps, config: { damping: 15, stiffness: 150 } });
   return (
-    <div style={{ position: "absolute", top: 240, left: 80, right: 100, textAlign: "center", opacity: entra }}>
+    <div style={{ position: "absolute", top: 250, left: 80, right: 100, textAlign: "center", opacity: entra }}>
       <div
         style={{
           display: "inline-block",
-          padding: "10px 28px",
+          padding: "14px 34px",
           borderRadius: 999,
           background: AMBER,
           color: NAVY,
           fontFamily: "Manrope",
           fontWeight: 800,
-          fontSize: 28,
+          fontSize: 34,
           letterSpacing: "0.06em",
         }}
       >
         TRANSPORTADOR ESCOLAR
       </div>
-      <div
-        style={{
-          marginTop: 26,
-          fontFamily: "Manrope",
-          fontWeight: 800,
-          fontSize: 92,
-          lineHeight: 1.04,
-          letterSpacing: "-0.035em",
-          color: "white",
-          whiteSpace: "nowrap",
-          scale: String(0.92 + 0.08 * entra),
-        }}
-      >
-        <Destacado texto={titulo} />
-      </div>
-      <div style={{ marginTop: 18, fontFamily: "Inter", fontWeight: 500, fontSize: 40, lineHeight: 1.25, color: "rgba(226,234,246,0.8)" }}>{sub}</div>
     </div>
   );
 };
 
 /** Área do elemento principal da cena: entre o cabeçalho e a legenda. */
 const Hero: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div style={{ position: "absolute", top: 600, height: 620, left: 70, right: 110, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+  <div style={{ position: "absolute", top: 240, height: 1000, left: 70, right: 110, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
     {children}
   </div>
 );
@@ -170,11 +160,11 @@ const Cena1: React.FC = () => {
   const e = Math.max(0, Math.min(1, p));
   return (
     <AbsoluteFill>
-      <Cabecalho titulo="Férias de **janeiro**" sub="A mensagem que muito pai manda" />
+      <Etiqueta />
       <Hero>
         <div
           style={{
-            width: 900,
+            width: 920,
             opacity: e,
             translate: `0 ${(1 - e) * 60}px`,
             background: "white",
@@ -184,7 +174,7 @@ const Cena1: React.FC = () => {
           }}
         >
           <div style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 38, color: "#1f9d55", marginBottom: 12 }}>Pai do Lucas</div>
-          <div style={{ fontFamily: "Inter", fontWeight: 500, fontSize: 62, lineHeight: 1.28, color: "#111b21" }}>
+          <div style={{ fontFamily: "Inter", fontWeight: 500, fontSize: 66, lineHeight: 1.28, color: "#111b21" }}>
             Meu filho não tem aula em janeiro, então não vou pagar.
           </div>
           <div style={{ fontFamily: "Inter", fontSize: 30, color: "#667781", textAlign: "right", marginTop: 8 }}>08:15</div>
@@ -205,7 +195,7 @@ const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "O
 
 const Chip: React.FC<{ rotulo: string; estado: "paga" | "nao" | "neutro"; entra: number }> = ({ rotulo, estado, entra }) => {
   const e = Math.max(0, Math.min(1, entra));
-  const cor = estado === "paga" ? BLUE : estado === "nao" ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.14)";
+  const cor = estado === "paga" ? BLUE : estado === "nao" ? "rgba(239,68,68,0.28)" : "rgba(255,255,255,0.14)";
   return (
     <div
       style={{
@@ -213,7 +203,7 @@ const Chip: React.FC<{ rotulo: string; estado: "paga" | "nao" | "neutro"; entra:
         height: 164,
         borderRadius: 32,
         background: cor,
-        border: estado === "nao" ? "2px dashed rgba(255,255,255,0.35)" : "2px solid rgba(255,255,255,0.12)",
+        border: estado === "nao" ? "3px solid #ef4444" : "2px solid rgba(255,255,255,0.12)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -221,7 +211,7 @@ const Chip: React.FC<{ rotulo: string; estado: "paga" | "nao" | "neutro"; entra:
         gap: 4,
         opacity: e,
         scale: String(0.8 + 0.2 * e),
-        color: estado === "nao" ? "rgba(255,255,255,0.55)" : "white",
+        color: estado === "nao" ? "#fecaca" : "white",
       }}
     >
       <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 52 }}>{rotulo}</span>
@@ -232,7 +222,7 @@ const Chip: React.FC<{ rotulo: string; estado: "paga" | "nao" | "neutro"; entra:
           </>
         ) : estado === "nao" ? (
           <>
-            <X style={{ width: 32, height: 32 }} strokeWidth={3.4} /> sem aula
+            <X style={{ width: 32, height: 32, color: "#f87171" }} strokeWidth={3.8} /> sem aula
           </>
         ) : (
           "parcela"
@@ -256,7 +246,6 @@ const Cena2: React.FC = () => {
   const sem = (m: string) => m === "Jan" || m === "Jul";
   return (
     <AbsoluteFill>
-      <Cabecalho titulo="O que o pai **acha**" sub="Paga só o que usa. Nas férias, nada." />
       <Hero>
         <Grade
           itens={MESES.map((m, i) => ({
@@ -311,10 +300,9 @@ const Cena3: React.FC = () => {
   const pilulas = interpolate(t, [f(4.8), f(5.2)], [0, 1], clamp) * interpolate(t, [f(8.4), f(8.8)], [1, 0], clamp);
   return (
     <AbsoluteFill>
-      <Cabecalho titulo="O que está **combinado**" sub="Um valor do ano, dividido em parcelas" />
       {/* valor do ano */}
       {t >= f(1.9) && t < f(3.0) && (
-        <div style={{ position: "absolute", top: 600, height: 620, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "center", opacity: Math.min(1, cardEntra), scale: String(0.8 + 0.2 * Math.min(1, cardEntra)) }}>
+        <div style={{ position: "absolute", top: 240, height: 1000, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "center", opacity: Math.min(1, cardEntra), scale: String(0.8 + 0.2 * Math.min(1, cardEntra)) }}>
           <div style={{ display: "flex", alignItems: "center", gap: 28, padding: "48px 76px", borderRadius: 48, background: "white", boxShadow: "0 30px 60px -20px rgba(0,0,0,0.7)" }}>
             <Wallet style={{ width: 100, height: 100, color: BLUE }} strokeWidth={2.2} />
             <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 88, color: NAVY }}>Valor do ano</span>
@@ -334,7 +322,7 @@ const Cena3: React.FC = () => {
         </Hero>
       )}
       {/* 10, 11, 12 */}
-      <div style={{ position: "absolute", top: 600, height: 620, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 28, opacity: pilulas }}>
+      <div style={{ position: "absolute", top: 240, height: 1000, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 32, opacity: pilulas }}>
         <Pilula texto="10 parcelas" entra={t >= f(5.8) ? 1 : 0} />
         <Pilula texto="11 parcelas" entra={t >= f(6.7) ? 1 : 0} />
         <Pilula texto="12 parcelas · a maioria" destaque entra={t >= f(7.5) ? 1 : 0} />
@@ -360,7 +348,6 @@ const Cena4: React.FC = () => {
   const apagou = interpolate(t, [f(3.2), f(3.6)], [1, 0.35], clamp);
   return (
     <AbsoluteFill>
-      <Cabecalho titulo="A conversa **muda**" sub="Quando o pai entende como funciona" />
       <Hero>
       <div style={{ width: 880, display: "flex", flexDirection: "column", gap: 44 }}>
         <div
@@ -376,7 +363,7 @@ const Cena4: React.FC = () => {
           }}
         >
           <X style={{ width: 74, height: 74, color: "#f87171", flexShrink: 0 }} strokeWidth={3.4} />
-          <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 56, lineHeight: 1.12, color: "white", textDecoration: t >= f(3.3) ? "line-through" : "none" }}>
+          <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 62, lineHeight: 1.14, color: "white", textDecoration: t >= f(3.3) ? "line-through" : "none" }}>
             Pago mês a mês, só pelo que uso
           </span>
         </div>
@@ -394,7 +381,7 @@ const Cena4: React.FC = () => {
           }}
         >
           <Check style={{ width: 74, height: 74, color: AMBER, flexShrink: 0 }} strokeWidth={3.6} />
-          <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 56, lineHeight: 1.12, color: "white" }}>Compra parcelada em 12x</span>
+          <span style={{ fontFamily: "Manrope", fontWeight: 800, fontSize: 62, lineHeight: 1.14, color: "white" }}>Compra parcelada em 12x</span>
         </div>
       </div>
       </Hero>
@@ -422,7 +409,7 @@ const RolaMain: React.FC<{ y: number }> = ({ y }) => {
 };
 
 const P = { assinar: { x: 195, y: 790 }, tocarParaAssinar: { x: 195, y: 420 }, confirmar: { x: 293, y: 692 } };
-const A = { tocaAssinar: 252, abreDialogo: 258, tocaQuadro: 282, desenhaDe: 290, desenhaAte: 350, tocaConfirmar: 358, assinado: 366 };
+const A = { tocaAssinar: 278, abreDialogo: 284, tocaQuadro: 306, desenhaDe: 314, desenhaAte: 368, tocaConfirmar: 374, assinado: 382 };
 
 const Cena5: React.FC = () => {
   const t = useT();
@@ -431,15 +418,14 @@ const Cena5: React.FC = () => {
   const editando = t >= A.tocaQuadro + 4;
   const progresso = interpolate(t, [A.desenhaDe, A.desenhaAte], [0, 1], clamp);
   const y = interpolate(t, [20, 220], [0, 640], { ...clamp, easing: (x) => 1 - Math.pow(1 - x, 2) });
-  const rotuloIn = interpolate(t, [6, 16, 95, 115], [0, 1, 1, 0], clamp); // o rótulo some depois de situar, para não tapar o diálogo
   return (
     <AbsoluteFill>
-      <AbsoluteFill style={{ alignItems: "center", top: -200 }}>
+      <AbsoluteFill style={{ alignItems: "center", top: 230 }}>
         <VideoStateProvider value={{ assinar: { assinado }, assinatura: { editando, progresso } }}>
           <PhoneScreen
             key={`${assinado}-${dialogo}-${editando}`}
             route={`/assinar/tk-${PEDRO_ID}`}
-            scale={1.75}
+            scale={1.45}
             showChrome={false}
             contentClassName="tela-cheia"
             overlay={
@@ -465,13 +451,9 @@ const Cena5: React.FC = () => {
           </PhoneScreen>
         </VideoStateProvider>
       </AbsoluteFill>
-      <div style={{ position: "absolute", left: 0, right: 0, bottom: 380, height: 520, background: "linear-gradient(to bottom, rgba(11,26,46,0), rgba(11,26,46,0.9) 55%, #0b1a2e)" }} />
-      <div style={{ position: "absolute", top: 250, left: 0, right: 0, display: "flex", justifyContent: "center", opacity: rotuloIn }}>
-        <div style={{ padding: "12px 30px", borderRadius: 999, background: "#ecfdf5", color: "#047857", fontFamily: "Inter", fontWeight: 700, fontSize: 34, letterSpacing: "0.02em", boxShadow: "0 10px 30px -8px rgba(0,0,0,0.5)" }}>
-          Celular do pai
-        </div>
-      </div>
       <Legenda
+        degrade
+        oculta={[[A.tocaAssinar - 26, A.tocaAssinar + 14], [A.tocaConfirmar - 20, A.tocaConfirmar + 16]]}
         trechos={[
           { de: 0, ate: 3.0, texto: "E nada deixa isso mais claro do que o **contrato**," },
           { de: 3.15, ate: 4.8, texto: "com o número de **parcelas** escrito." },
@@ -493,7 +475,7 @@ const Cena6: React.FC = () => {
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ background: NAVY }} />
-      <div style={{ position: "absolute", top: 260, left: 80, right: 100, textAlign: "center", opacity: entra }}>
+      <div style={{ position: "absolute", top: 300, left: 80, right: 100, textAlign: "center", opacity: entra }}>
         <div style={{ display: "inline-block", background: "white", borderRadius: 36, padding: "22px 38px", boxShadow: "0 20px 50px -10px rgba(0,0,0,0.5)" }}>
           <img src={staticFile("logo-van360-horizontal.png")} style={{ height: 96, display: "block" }} />
         </div>
@@ -503,7 +485,7 @@ const Cena6: React.FC = () => {
           <span style={{ color: AMBER }}>pra todos os alunos</span>
         </div>
       </div>
-      <div style={{ position: "absolute", top: 800, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+      <div style={{ position: "absolute", top: 840, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
         <div
           style={{
             scale: String(Math.max(botao, 0)),
@@ -520,7 +502,7 @@ const Cena6: React.FC = () => {
           Siga @van360.oficial
         </div>
       </div>
-      <div style={{ position: "absolute", top: 1000, left: 0, right: 0, textAlign: "center", fontFamily: "Inter", fontWeight: 600, fontSize: 44, color: "rgba(226,234,246,0.85)", opacity: Math.max(botao, 0) }}>
+      <div style={{ position: "absolute", top: 1040, left: 0, right: 0, textAlign: "center", fontFamily: "Inter", fontWeight: 600, fontSize: 44, color: "rgba(226,234,246,0.85)", opacity: Math.max(botao, 0) }}>
         Você dirige. A gente organiza.
       </div>
       <Legenda
