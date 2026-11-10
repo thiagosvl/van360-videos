@@ -11,6 +11,7 @@ import { POSTS_LOTE5 } from "./posts/Lote5";
 import { POSTS_LOTE6 } from "./posts/Lote6";
 import { CapaReelPais, REEL_PAIS_DURATION, ReelPais } from "./reels/ReelPais";
 import { CapaReelFerias, REEL_FERIAS_DURATION, ReelFerias } from "./reels/ReelFerias";
+import { ANUNCIO_2027_DURATION, Anuncio2027 } from "./reels/Anuncio2027";
 import { CapaDestaque, DESTAQUES } from "./posts/Destaques";
 import { Teaser, TEASER_DURATION } from "./Teaser";
 import { HookScene } from "./scenes/HookScene";
@@ -119,6 +120,7 @@ export const RemotionRoot: React.FC = () => (
       <Composition id="ReelPais" component={ReelPais} durationInFrames={REEL_PAIS_DURATION} {...V} />
       <Still id="ReelPais-capa" component={CapaReelPais} width={1080} height={1920} />
       <Composition id="ReelFerias" component={ReelFerias} durationInFrames={REEL_FERIAS_DURATION} {...V} />
+      <Composition id="Anuncio2027" component={Anuncio2027} durationInFrames={ANUNCIO_2027_DURATION} {...V} />
       <Still id="ReelFerias-capa" component={CapaReelFerias} width={1080} height={1920} />
     </Folder>
     <Folder name="Destaques">
