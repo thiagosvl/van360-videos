@@ -28,7 +28,7 @@ const AMBER = "#FFB300";
 const WHATS = "#25d366";
 const BLUE = "#2563eb";
 
-const DUR = [5.8, 7.16, 12.93, 6.35, 11.81, 2.04];
+const DUR = [5.8, 7.16, 12.93, 6.35, 13.24, 5.07];
 const START = 0.1;
 const GAP = 0.35;
 const f = (s: number) => Math.round(s * FPS);
@@ -42,7 +42,7 @@ const L: number[] = (() => {
     return x;
   });
 })();
-const FIM = L[5] + f(DUR[5]) + f(2.2);
+const FIM = L[5] + f(DUR[5]) + f(1.5);
 export const REEL_FERIAS_DURATION = FIM;
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
@@ -409,7 +409,7 @@ const RolaMain: React.FC<{ y: number }> = ({ y }) => {
 };
 
 const P = { assinar: { x: 195, y: 790 }, tocarParaAssinar: { x: 195, y: 420 }, confirmar: { x: 293, y: 692 } };
-const A = { tocaAssinar: 222, abreDialogo: 228, tocaQuadro: 252, desenhaDe: 260, desenhaAte: 320, tocaConfirmar: 328, assinado: 336 };
+const A = { tocaAssinar: 252, abreDialogo: 258, tocaQuadro: 282, desenhaDe: 290, desenhaAte: 350, tocaConfirmar: 358, assinado: 366 };
 
 const Cena5: React.FC = () => {
   const t = useT();
@@ -417,7 +417,7 @@ const Cena5: React.FC = () => {
   const dialogo = t >= A.abreDialogo && !assinado;
   const editando = t >= A.tocaQuadro + 4;
   const progresso = interpolate(t, [A.desenhaDe, A.desenhaAte], [0, 1], clamp);
-  const y = interpolate(t, [20, 190], [0, 640], { ...clamp, easing: (x) => 1 - Math.pow(1 - x, 2) });
+  const y = interpolate(t, [20, 220], [0, 640], { ...clamp, easing: (x) => 1 - Math.pow(1 - x, 2) });
   const rotuloIn = interpolate(t, [6, 16], [0, 1], clamp);
   return (
     <AbsoluteFill>
@@ -462,10 +462,10 @@ const Cena5: React.FC = () => {
         tamanho={52}
         trechos={[
           { de: 0, ate: 3.0, texto: "E nada deixa isso mais claro do que o **contrato**," },
-          { de: 3.1, ate: 4.8, texto: "com o número de **parcelas** escrito." },
-          { de: 5.0, ate: 7.2, texto: "Se você vai fazer os contratos do ano que vem," },
-          { de: 7.3, ate: 10.2, texto: "dá pra fazer tudo **digital** no Van360," },
-          { de: 10.3, ate: 11.81, texto: "e o pai **assina no celular**." },
+          { de: 3.15, ate: 4.8, texto: "com o número de **parcelas** escrito." },
+          { de: 5.2, ate: 9.15, texto: "Se você precisa fazer contrato para os pais, **os seus clientes**," },
+          { de: 9.27, ate: 11.5, texto: "dá pra fazer tudo **digital** no Van360," },
+          { de: 11.6, ate: 13.24, texto: "e o pai **assina no celular**." },
         ]}
       />
     </AbsoluteFill>
@@ -511,7 +511,12 @@ const Cena6: React.FC = () => {
       <div style={{ position: "absolute", top: 1110, left: 0, right: 0, textAlign: "center", fontFamily: "Inter", fontWeight: 600, fontSize: 40, color: "rgba(226,234,246,0.85)", opacity: Math.max(botao, 0) }}>
         Você dirige. A gente organiza.
       </div>
-      <Legenda trechos={[{ de: 0, ate: 2.2, texto: "Segue o nosso **perfil no Instagram**." }]} />
+      <Legenda
+        trechos={[
+          { de: 0, ate: 1.9, texto: "Siga o **perfil do Van360**" },
+          { de: 1.95, ate: 5.07, texto: "pra mais dicas e assuntos sobre **transporte escolar**." },
+        ]}
+      />
     </AbsoluteFill>
   );
 };
