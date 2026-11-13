@@ -86,7 +86,7 @@ const ficha: Slide[] = [
 /* ============ 17. Carrossel: como definir o valor da mensalidade ============ */
 
 const valor: Slide[] = [
-  capaClara("Como definir o **valor da mensalidade**", "5 pontos pra cobrar o justo, sem ficar no prejuízo."),
+  capaClara("Como definir o **valor das parcelas**", "5 pontos pra cobrar o justo, sem ficar no prejuízo."),
   dica(2, 7, "Comece pelo **custo por aluno**", "Some os gastos do mês e divida pelo número de alunos. Abaixo disso, você paga pra trabalhar.", Wallet, GREEN, "PONTO"),
   dica(3, 7, "Considere a **distância**", "Quem mora mais longe ocupa mais tempo de rota e mais combustível.", MapPin, BLUE, "PONTO"),
   dica(4, 7, "Veja o **trajeto**", "Ida e volta, só um trecho, meio período ou integral. Cada caso pesa diferente na rota.", Bus, NAVY, "PONTO"),
@@ -149,7 +149,7 @@ const frete: Slide[] = [
 
 const erros: Slide[] = [
   capaClara("5 erros que fazem a van dar **prejuízo**", "E o pior: muita gente nem percebe."),
-  dica(2, 7, "Não saber o **custo por aluno**", "Sem essa conta, a mensalidade é no chute. E o chute costuma ser pra baixo.", Wallet, RED, "ERRO"),
+  dica(2, 7, "Não saber o **custo por aluno**", "Sem essa conta, o valor da parcela é no chute. E o chute costuma ser pra baixo.", Wallet, RED, "ERRO"),
   dica(3, 7, "Deixar o **atraso acumular**", "Um mês vira dois, dois viram três. Quanto mais tempo passa, mais difícil é receber.", AlertCircle, RED, "ERRO"),
   dica(4, 7, "Trabalhar **sem contrato**", "Sem nada por escrito, multa, juros e combinado viram só a sua palavra contra a do pai.", FileSignature, RED, "ERRO"),
   dica(5, 7, "Misturar o dinheiro da van **com o de casa**", "Aí nunca dá pra saber se a van está dando lucro ou só pagando as contas.", Banknote, RED, "ERRO"),

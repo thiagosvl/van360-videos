@@ -53,7 +53,7 @@ const contrato: Slide[] = [
 /* ============ 27. Carrossel: reajustar sem perder aluno ============ */
 
 const reajuste: Slide[] = [
-  capaClara("Como **reajustar** a mensalidade sem perder aluno", "5 cuidados pra conversar com os pais."),
+  capaClara("Como **reajustar** as parcelas sem perder aluno", "5 cuidados pra conversar com os pais."),
   dica(2, 7, "Refaça a **conta do custo**", "Combustível, manutenção, seguro. O reajuste tem que ter motivo, e você precisa saber qual é.", Calculator, GREEN, "CUIDADO"),
   dica(3, 7, "Avise **com antecedência**", "Ninguém gosta de surpresa. Avisar cedo dá tempo pro pai se organizar.", Megaphone, BLUE, "CUIDADO"),
   dica(4, 7, "Explique **o porquê**", "Sem pedir desculpa. Mostre o que subiu e o que você manteve de qualidade.", MessageCircle, WHATS, "CUIDADO"),

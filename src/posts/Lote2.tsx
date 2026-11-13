@@ -129,7 +129,7 @@ const whatsapp: PostDef["slides"] = [
           <Balao nome="Mãe da Ana" texto="Qual é a chave Pix mesmo?" hora="06:12" rot={-1} />
           <Balao nome="Pai do Davi" texto="Já paguei, confere aí 🙏" hora="12:47" rot={1} />
           <Balao nome="Mãe do Miguel" texto="Me manda o recibo de março?" hora="21:30" rot={-1} />
-          <Balao nome="Pai do Enzo" texto="Quanto ficou a mensalidade?" hora="23:05" rot={1} />
+          <Balao nome="Pai do Enzo" texto="Quanto ficou a parcela?" hora="23:05" rot={1} />
         </div>
       </Post>
     );

@@ -101,7 +101,7 @@ const mes: Slide[] = [
         centro
         tamanho={104}
         titulo={"Quanto sobrou\n**esse mês?**"}
-        sub="Mensalidades, gastos e lucro da van numa tela só."
+        sub="Parcelas, gastos e lucro da van numa tela só."
       />
       <Celular top={640} escala={1.95}>
         <TelaRelatorios />
